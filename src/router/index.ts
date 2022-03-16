@@ -1,20 +1,34 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import ModuleIndexView from "../modules/core/views/modules/ModuleIndexView.vue";
 
 const routes: Array<RouteRecordRaw> = [
+  // {
+  //   path: "/about",
+  //   name: "about",
+  //   component: () =>
+  //     import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+  // },
   {
-    path: "/",
-    name: "home",
-    component: HomeView,
+    path: "/modules",
+    name: "moduleIndex",
+    component: ModuleIndexView,
+  },
+
+  {
+    path: "/pmm/categories",
+    name: "categories",
+    component: () =>
+      import(
+        /* webpackChunkName: "categories" */ "../modules/pmm/views/projects/categories/CategoryViewIndex.vue"
+      ),
   },
   {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    path: "/pmm/categories/create",
+    name: "category_create",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+      import(
+        /* webpackChunkName: "categories-create" */ "../modules/pmm/views/projects/categories/CategoryViewCreate.vue"
+      ),
   },
 ];
 

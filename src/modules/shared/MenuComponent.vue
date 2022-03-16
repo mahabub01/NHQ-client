@@ -1,0 +1,94 @@
+<template>
+  <nav class="navbar navbar-expand-lg navbar-light component-navbar">
+    <div class="container-fluid">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Client <i class="fas fa-chevron-down"></i>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li>
+                <a class="dropdown-item" href=""
+                  ><i class="fas fa-plus"></i> Create Client</a
+                >
+              </li>
+
+              <li>
+                <a class="dropdown-item" href=""
+                  ><i class="fas fa-list"></i> Clients List</a
+                >
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Projects <i class="fas fa-chevron-down"></i>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li>
+                <a class="dropdown-item" href=""
+                  ><i class="fas fa-plus"></i> Create Project</a
+                >
+              </li>
+
+              <li>
+                <a class="dropdown-item" href=""
+                  ><i class="fas fa-list"></i> Project list</a
+                >
+              </li>
+
+              <li>
+                <router-link class="dropdown-item" to="/projects/categories"
+                  ><i class="fas fa-list"></i> Category list</router-link
+                >
+              </li>
+
+              <li>
+                <router-link class="dropdown-item" to="/projects/teams"
+                  ><i class="fas fa-list"></i> Team list</router-link
+                >
+              </li>
+
+              <li>
+                <router-link class="dropdown-item" to="/projects/tags"
+                  ><i class="fas fa-list"></i> Tags list</router-link
+                >
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</template>
+
+<script setup lang="ts"></script>
+
+<style scoped></style>

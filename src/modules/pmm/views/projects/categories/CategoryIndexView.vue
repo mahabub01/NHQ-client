@@ -21,34 +21,19 @@
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
                       <li v-if="datatables.totalItems != null">
-                        {{ datatables.totalItems }} Items
+                        <b>Total {{ datatables.totalItems }} Items</b>
                       </li>
-                      <li>Shorted By ID</li>
-                      <li>Filterd By</li>
-                      <li>Updated</li>
                     </ul>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="page-bootcamp-right">
-                    <!-- <div style="margin-bottom: 5px">
-                      <button class="icon_btn">
-                        <i class="fas fa-plus"></i> Create
-                      </button>
-                    </div> -->
-
                     <div>
-                      <router-link
-                        class="link_btn"
-                        style="margin-right: 30px"
-                        to="/pmm/categories/create"
-                        ><i class="fas fa-plus"></i> Create</router-link
-                      >
-
                       <label class="show-data-label">Show: </label>
                       <select
                         class="show-data-select"
                         @change="paginateEntries($event)"
+                        style="margin-right: 7px"
                       >
                         <option
                           v-for="show_en in showEntries"
@@ -59,6 +44,12 @@
                         </option>
                       </select>
 
+                      <router-link
+                        class="link_btn"
+                        style="margin-right: 7px"
+                        to="/pmm/categories/create"
+                        ><i class="fas fa-plus"></i> Create</router-link
+                      >
                       <div class="btn-group">
                         <button
                           type="button"
@@ -67,42 +58,19 @@
                           data-bs-display="static"
                           aria-expanded="false"
                         >
-                          <i class="fas fa-cog"></i>
+                          <i class="fas fa-cog"></i> Bulk Action
                         </button>
                         <ul class="dropdown-menu dropdown-menu-lg-end">
                           <li>
-                            <a href="" class="dropdown-item"
-                              ><i class="far fa-file-excel"></i> All Export</a
-                            >
-                          </li>
-
-                          <li>
                             <a
-                              href="javascript:void(0)"
-                              data-bs-toggle="modal"
-                              data-bs-target="#selectableModal"
+                              href="#"
+                              @click="bulkDelete"
                               class="dropdown-item"
-                              ><i class="fas fa-columns"></i> Show/Hide
-                              Column</a
+                              ><i class="fas fa-trash-alt"></i> Bulk Delete</a
                             >
                           </li>
                         </ul>
                       </div>
-
-                      <a href=""
-                        ><button type="button" class="icon_btn">
-                          <i class="fas fa-redo"></i></button
-                      ></a>
-
-                      <a href="#"
-                        ><button
-                          type="button"
-                          class="icon_btn"
-                          data-bs-toggle="modal"
-                          data-bs-target="#filterModal"
-                        >
-                          <i class="fas fa-filter"></i></button
-                      ></a>
                     </div>
                   </div>
                 </div>
@@ -116,7 +84,11 @@
                       :columns="columns"
                       :entries="entries"
                       :loadingState="datatables.loadingState"
-                      v-model="searchTitle"
+                      v-model:titleSearch.lazy="titleSearch"
+                      v-model:isActiveSearch.lazy="isActiveSearch"
+                      @delete="remove($event)"
+                      @activation="changeStatus($event)"
+                      ref="multiselected"
                     ></category-table>
                     <!--start table pagination -->
                     <nav aria-label="...">
@@ -173,14 +145,26 @@
         </div>
       </div>
     </div>
+    <data-deleting-spinner
+      :deleting-spinner="deletingSpinner"
+    ></data-deleting-spinner>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, reactive, watch } from "vue";
-import Axios from "@/Axios";
+import Axios from "@/http-common";
 import CategoryTable from "./CategoryTable.vue";
-let entries = ref(null) as any;
+import swal from "sweetalert";
+import DataDeletingSpinner from "@/modules/shared/DataDeletingSpinner.vue";
+
+//use for deleting spenner
+let deletingSpinner = ref(false);
+
+//use for multiselected
+const multiselected = ref([]);
+
+let entries = ref([]) as any;
 let datatables = reactive({
   totalItems: null,
   loadingState: false,
@@ -188,10 +172,31 @@ let datatables = reactive({
   allPages: 1,
   pagination: null,
 });
-let searchTitle = ref(null);
 
-watch(searchTitle, async () => {
-  console.log(searchTitle.value);
+//Search Property
+let titleSearch = ref("");
+let isActiveSearch = ref("");
+
+watch([titleSearch, isActiveSearch], async () => {
+  console.log("hey");
+  datatables.loadingState = true;
+  await Axios.get(
+    "/projects/categories?showEntries=" +
+      currentEntries +
+      "&page=" +
+      datatables.currentPage +
+      "&searchTitle=" +
+      titleSearch.value +
+      "&is_active=" +
+      isActiveSearch.value
+  ).then((response) => {
+    entries.value = response.data.data.data;
+    datatables.totalItems = response.data.data.total;
+    datatables.currentPage = response.data.data.current_page;
+    datatables.allPages = response.data.data.last_page;
+    datatables.pagination = response.data.data.links;
+    datatables.loadingState = false;
+  });
 });
 
 //Load Data form computed onMounted
@@ -250,6 +255,71 @@ function next() {
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
   fatchData();
+}
+
+//Delete Item
+function remove(id: number) {
+  //alert("Remove" + id);
+  swal({
+    title: "Are you sure?",
+    text: "Once deleted, you will not be able to recover this record!",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  }).then(async (willDelete) => {
+    if (willDelete) {
+      deletingSpinner.value = true;
+      await Axios.delete("/projects/categories/" + id).then((response) => {
+        entries.value = entries.value.filter(
+          (e: { id: number }) => e.id !== id
+        );
+        deletingSpinner.value = false;
+        swal("Poof! Your data has been deleted!", {
+          icon: "success",
+        });
+      });
+    }
+  });
+}
+
+//Bulk Delete
+function bulkDelete() {
+  if (multiselected.value.multiselect == "") {
+    swal("Warning", "Please select at-least one record", "warning");
+    return;
+  }
+
+  swal({
+    title: "Are you sure?",
+    text: "Once deleted, you will not be able to recover this record!",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  }).then(async (willDelete) => {
+    if (willDelete) {
+      deletingSpinner.value = true;
+      await Axios.post("/projects/categories-multidelete", {
+        ids: multiselected.value.multiselect,
+      }).then((response) => {
+        //Fetch Data By Api
+        fatchData();
+        deletingSpinner.value = false;
+        swal("Poof! Your data has been deleted!", {
+          icon: "success",
+        });
+      });
+    }
+  });
+}
+
+//Change Status
+async function changeStatus(status: { id: number; status: number }) {
+  await Axios.post("/projects/categories-status", status).then((response) => {
+    swal("Your data status changed", {
+      icon: "success",
+    });
+    fatchData();
+  });
 }
 </script>
 

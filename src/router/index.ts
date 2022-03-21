@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import ModuleIndexView from "../modules/core/views/modules/ModuleIndexView.vue";
+import { PmmModuleRoute } from "@/modules/pmm/router";
 
 const routes: Array<RouteRecordRaw> = [
   // {
@@ -14,22 +15,8 @@ const routes: Array<RouteRecordRaw> = [
     component: ModuleIndexView,
   },
 
-  {
-    path: "/pmm/categories",
-    name: "categories",
-    component: () =>
-      import(
-        /* webpackChunkName: "categories" */ "../modules/pmm/views/projects/categories/CategoryViewIndex.vue"
-      ),
-  },
-  {
-    path: "/pmm/categories/create",
-    name: "category_create",
-    component: () =>
-      import(
-        /* webpackChunkName: "categories-create" */ "../modules/pmm/views/projects/categories/CategoryViewCreate.vue"
-      ),
-  },
+  //module route
+  ...PmmModuleRoute,
 ];
 
 const router = createRouter({

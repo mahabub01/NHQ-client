@@ -65,19 +65,19 @@
               </li>
 
               <li>
-                <router-link class="dropdown-item" to="/projects/categories"
+                <router-link class="dropdown-item" to="/pmm/categories"
                   ><i class="fas fa-list"></i> Category list</router-link
                 >
               </li>
 
               <li>
-                <router-link class="dropdown-item" to="/projects/teams"
+                <router-link class="dropdown-item" to="/pmm/teams"
                   ><i class="fas fa-list"></i> Team list</router-link
                 >
               </li>
 
               <li>
-                <router-link class="dropdown-item" to="/projects/tags"
+                <router-link class="dropdown-item" to="/pmm/tags"
                   ><i class="fas fa-list"></i> Tags list</router-link
                 >
               </li>

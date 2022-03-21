@@ -179,7 +179,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, reactive, watch } from "vue";
-import Axios from "@/Axios";
+import Axios from "@/http-common";
 import DataTable from "@/modules/shared/DataTable.vue";
 let entries = ref(null) as any;
 let datatables = reactive({

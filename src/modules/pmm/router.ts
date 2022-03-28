@@ -40,6 +40,22 @@ export const PmmModuleRoute = [
             /* webpackChunkName: "clients" */ "./views/clients/ClientIndexView.vue"
           ),
       },
+      {
+        path: "projects",
+        name: "projects",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects" */ "./views/projects/ProjectIndexView.vue"
+          ),
+      },
+      {
+        path: "projects/create",
+        name: "projects-create",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects-create" */ "./views/projects/ProjectCreateView.vue"
+          ),
+      },
     ],
   },
 ];

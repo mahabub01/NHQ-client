@@ -44,12 +44,16 @@
                         </option>
                       </select>
 
-                      <router-link
+                      <button
+                        type="button"
                         class="link_btn"
                         style="margin-right: 7px"
-                        to="/pmm/categories/create"
-                        ><i class="fas fa-plus"></i> Create</router-link
+                        @click="
+                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true)
+                        "
                       >
+                        <i class="fas fa-plus"></i> Create
+                      </button>
                       <div class="btn-group">
                         <button
                           type="button"
@@ -81,7 +85,6 @@
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
                     <category-table
-                      :columns="columns"
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       v-model:titleSearch.lazy="titleSearch"
@@ -90,52 +93,16 @@
                       @activation="changeStatus($event)"
                       ref="multiselected"
                     ></category-table>
-                    <!--start table pagination -->
-                    <nav aria-label="...">
-                      <ul
-                        class="pagination"
-                        v-if="datatables.pagination != null"
-                      >
-                        <li
-                          :class="[
-                            datatables.currentPage == 1 ? 'disabled' : '',
-                          ]"
-                          class="page-item"
-                        >
-                          <a
-                            class="page-link"
-                            href="#"
-                            tabindex="-1"
-                            @click.prevent="prev"
-                            >Previous</a
-                          >
-                        </li>
 
-                        <li
-                          v-for="pagi in datatables.allPages"
-                          class="page-item"
-                          :key="pagi"
-                          :class="[
-                            pagi == datatables.currentPage ? 'active' : '',
-                          ]"
-                          @click.prevent="currentPage(pagi)"
-                        >
-                          <a class="page-link" href="#">{{ pagi }} </a>
-                        </li>
-                        <li
-                          class="page-item"
-                          :class="[
-                            datatables.currentPage == datatables.allPages
-                              ? 'disabled'
-                              : '',
-                          ]"
-                        >
-                          <a class="page-link" href="#" @click.prevent="next"
-                            >Next</a
-                          >
-                        </li>
-                      </ul>
-                    </nav>
+                    <!--start table pagination -->
+                    <table-pagination
+                      :current-page="datatables.currentPage"
+                      :all-pages="datatables.allPages"
+                      :have-pagination="datatables.pagination"
+                      @pagiPrev="prev()"
+                      @pagiNext="next()"
+                      @pagiCurrentPage="currentPage($event)"
+                    ></table-pagination>
                     <!--end table pagination -->
                   </div>
                 </div>
@@ -145,33 +112,144 @@
         </div>
       </div>
     </div>
-    <data-deleting-spinner
-      :deleting-spinner="deletingSpinner"
-    ></data-deleting-spinner>
+    <!--start Spinner -->
+    <the-spinner
+      :isdeleting="deletingSpinner"
+      :isSaving="savingSpinner"
+    ></the-spinner>
+
+    <!--start Create Modal -->
+    <div>
+      <create-modal>
+        <template v-slot:header
+          ><i class="fas fa-plus-square"></i> Create Category
+        </template>
+        <template v-slot:body>
+          <form @submit.prevent="categorySubmit" class="form-page">
+            <div class="row">
+              <div class="col-md-12">
+                <label class="form-label"
+                  >Title<span class="mandatory">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-page-input"
+                  :class="{ isInvalid: v$.title.$error }"
+                  placeholder="Title here"
+                  v-model.lazy="v$.title.$model"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.title.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label">Description</label>
+                <textarea
+                  class="form-page-textarea"
+                  placeholder="Discription here"
+                  v-model.lazy="state.description"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                @click.prevent="
+                  store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
+                "
+              >
+                <i class="far fa-times-circle"></i> Close
+              </button>
+              <button type="submit" class="btn pro-button">
+                <i class="fas fa-save"></i> Save
+              </button>
+            </div>
+          </form>
+        </template>
+      </create-modal>
+    </div>
+    <!--end Create Modal -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive, watch } from "vue";
+import { onMounted, ref, watch, reactive } from "vue";
 import Axios from "@/http-common";
 import CategoryTable from "./CategoryTable.vue";
 import swal from "sweetalert";
-import DataDeletingSpinner from "@/modules/shared/DataDeletingSpinner.vue";
+import { useDatatable } from "@/composables/datatables";
+import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
+import TheSpinner from "../../../../shared/spinners/TheSpinner.vue";
+import CreateModal from "../../../../core/shared/CreateModal.vue";
+import { useStore } from "vuex";
+import { useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
+
+//create store
+const store = useStore();
 
 //use for deleting spenner
 let deletingSpinner = ref(false);
+let savingSpinner = ref(false);
 
 //use for multiselected
 const multiselected = ref([]);
 
-let entries = ref([]) as any;
-let datatables = reactive({
-  totalItems: null,
-  loadingState: false,
-  currentPage: 1,
-  allPages: 1,
-  pagination: null,
+//use datatable composables
+const { entries, datatables, showEntries, currentEntries, fatchData } =
+  useDatatable();
+
+/**********************
+ * Create Category
+ ***********************/
+const state = reactive({
+  title: "",
+  description: "",
 });
+
+const rules: any = {
+  title: { required },
+};
+
+const v$ = useVuelidate(rules, state);
+
+async function categorySubmit() {
+  v$.value.$validate();
+  v$.value.$touch();
+  if (!v$.value.$error) {
+    store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
+    savingSpinner.value = true;
+    await Axios.post("projects/categories", state)
+      .then((response) => {
+        resetForm();
+        savingSpinner.value = false;
+        swal("Success Job!", "Your category created successfully!", "success");
+      })
+      .catch((error) => {
+        console.log("problem Here" + error);
+      });
+  }
+}
+
+//reset all property
+function resetForm() {
+  state.title = "";
+  state.description = "";
+  v$.value.$reset();
+}
+/**********************
+ * End Create Category
+ ***********************/
 
 //Search Property
 let titleSearch = ref("");
@@ -201,65 +279,39 @@ watch([titleSearch, isActiveSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fatchData();
+  fatchData("/projects/categories");
 });
 
-//fetch data Module Data
-async function fatchData() {
-  datatables.loadingState = true;
-  await Axios.get(
-    "/projects/categories?showEntries=" +
-      currentEntries +
-      "&page=" +
-      datatables.currentPage
-  ).then((response) => {
-    entries.value = response.data.data.data;
-    datatables.totalItems = response.data.data.total;
-    datatables.currentPage = response.data.data.current_page;
-    datatables.allPages = response.data.data.last_page;
-    datatables.pagination = response.data.data.links;
-    datatables.loadingState = false;
-  });
+//show data using show Menu
+function paginateEntries(e: any) {
+  currentEntries.value = e.target.value;
+  fatchData("/projects/categories");
 }
 
-const columns = [
-  { name: "id", text: "ID", class: "col-serial" },
-  { name: "title", text: "Title", class: "" },
-  { name: "slug", text: "Slug", class: "" },
-  { name: "description", text: "Description", class: "" },
-  { name: "actions", text: "Actions", class: "" },
-];
-const showEntries = [25, 50, 100, 250, 500];
-let currentEntries = 25;
-
-//Load Data depends on PaginateEntires
-function paginateEntries(e) {
-  currentEntries = e.target.value;
-  fatchData();
-}
-
+//show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fatchData();
+    fatchData("/projects/categories");
   }
 }
 
+//show next page data
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fatchData();
+    fatchData("/projects/categories");
   }
 }
 
+//show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fatchData();
+  fatchData("/projects/categories");
 }
 
-//Delete Item
+//Delete selected Item
 function remove(id: number) {
-  //alert("Remove" + id);
   swal({
     title: "Are you sure?",
     text: "Once deleted, you will not be able to recover this record!",
@@ -282,7 +334,7 @@ function remove(id: number) {
   });
 }
 
-//Bulk Delete
+//Delete multiselected data
 function bulkDelete() {
   if (multiselected.value.multiselect == "") {
     swal("Warning", "Please select at-least one record", "warning");
@@ -301,8 +353,7 @@ function bulkDelete() {
       await Axios.post("/projects/categories-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        //Fetch Data By Api
-        fatchData();
+        fatchData("/projects/categories");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -312,13 +363,13 @@ function bulkDelete() {
   });
 }
 
-//Change Status
+//Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
   await Axios.post("/projects/categories-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    fatchData();
+    fatchData("/projects/categories");
   });
 }
 </script>

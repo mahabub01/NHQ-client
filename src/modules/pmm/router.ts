@@ -78,6 +78,30 @@ export const PmmModuleRoute = [
             /* webpackChunkName: "teams" */ "./views/projects/teams/TeamEditView.vue"
           ),
       },
+      {
+        path: "clients",
+        name: "clients",
+        component: () =>
+          import(
+            /* webpackChunkName: "clients" */ "./views/clients/ClientIndexView.vue"
+          ),
+      },
+      {
+        path: "clients/create",
+        name: "clients-create",
+        component: () =>
+          import(
+            /* webpackChunkName: "clients" */ "./views/clients/ClientCreateView.vue"
+          ),
+      },
+      {
+        path: "clients/:id/edit",
+        name: "clients-edit",
+        component: () =>
+          import(
+            /* webpackChunkName: "clients" */ "./views/clients/ClientEditView.vue"
+          ),
+      },
     ],
   },
 ];

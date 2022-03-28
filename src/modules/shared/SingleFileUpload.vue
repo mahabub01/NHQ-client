@@ -1,6 +1,12 @@
 <template>
   <div>
-    <input type="file" ref="fileUploader" @change="fileInserted" />
+    <input
+      type="file"
+      ref="fileUploader"
+      @change="fileInserted"
+      class="form-page-input"
+      @input="$emit('update:filename', filename)"
+    />
     <div style="margin-top: 20px">
       <div v-if="isUploading" class="progress">
         <div
@@ -10,8 +16,8 @@
           role="progressbar"
           :style="{ width: currentValue + '%' }"
           aria-valuenow="{{currentValue.toFixed(2)}}"
-          aria-valuemin="{{ minValue }}"
-          aria-valuemax="{{ maxValue }}"
+          aria-valuemin="0"
+          aria-valuemax="100"
         >
           {{ currentValue.toFixed(0) }}%
         </div>
@@ -21,18 +27,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import Axios from "@/Axios";
+import { ref, defineProps, defineEmits } from "vue";
+import Axios from "@/http-common";
+const props = defineProps({
+  field_name: String,
+});
 
-const minValue = ref(0);
-const maxValue = ref(100);
 const currentValue = ref(10);
 let isUploading = ref(false);
 let file: any = null;
 const fileUploader = ref();
 let single_upload_pro = ref();
 let isApplyBgSuccess = ref(false);
+const filename = ref("");
 
+const emit = defineEmits(["update:filename"]);
+
+//file Inserted
 function fileInserted() {
   isUploading.value = true;
   file = fileUploader.value.files[0];
@@ -42,14 +53,14 @@ function fileInserted() {
   isApplyBgSuccess.value = false;
   currentValue.value = 0;
 }
+
 //fileUploader
 //this.file = this.$refs.imageUploader.files[0];
 async function fileUploaded() {
   let formData = new FormData();
   formData.append("file", file);
-  formData.append("type", "Test type");
-  console.log(file);
-  await Axios.post("attachment", formData, {
+  formData.append("field_name", props.field_name);
+  await Axios.post("demo-attachment", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -60,15 +71,11 @@ async function fileUploaded() {
       }
     },
   }).then((response) => {
+    filename.value = response.data.data;
     console.log(response.data);
     //isUploading.value = false;
   });
 }
-/****
- *         onUploadProgress: ({ total, loaded }) => {
-          this.value = (loaded / total).toFixed(2) * 100;
-        },
- */
 </script>
 
 <style scoped>

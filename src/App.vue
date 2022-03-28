@@ -1,13 +1,9 @@
 <template>
-  <vue3-progress-bar></vue3-progress-bar>
-  <HeaderComponent />
-  <menu-component></menu-component>
+  <!-- <vue3-progress-bar></vue3-progress-bar> -->
+
   <router-view />
 </template>
 <script lang="ts" setup>
-import HeaderComponent from "./modules/shared/HeaderComponent.vue";
-import MenuComponent from "./modules/shared/MenuComponent.vue";
-
 // import { useProgress } from "@marcoschulte/vue3-progress";
 // import { onMounted } from "vue";
 // import { useRouter } from "vue-router";

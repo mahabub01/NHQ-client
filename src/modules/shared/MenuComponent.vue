@@ -27,14 +27,14 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li>
-                <a class="dropdown-item" href=""
-                  ><i class="fas fa-plus"></i> Create Client</a
+                <router-link class="dropdown-item" to="/pmm/clients/create"
+                  ><i class="fas fa-list"></i> Create Client</router-link
                 >
               </li>
 
               <li>
-                <a class="dropdown-item" href=""
-                  ><i class="fas fa-list"></i> Clients List</a
+                <router-link class="dropdown-item" to="/pmm/clients"
+                  ><i class="fas fa-list"></i> Clients list</router-link
                 >
               </li>
             </ul>

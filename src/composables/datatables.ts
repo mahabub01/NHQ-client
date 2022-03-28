@@ -16,7 +16,7 @@ export function useDatatable() {
   const currentEntries = ref(25);
 
   //fetch data Module Data
-  async function fatchData(url: string) {
+  async function fetchData(url: string) {
     datatables.loadingState = true;
     await Axios.get(
       url +
@@ -39,6 +39,6 @@ export function useDatatable() {
     datatables,
     showEntries,
     currentEntries,
-    fatchData,
+    fetchData,
   };
 }

@@ -206,7 +206,7 @@ let savingSpinner = ref(false);
 const multiselected = ref([]);
 
 //use datatable composables
-const { entries, datatables, showEntries, currentEntries, fatchData } =
+const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
 /**********************
@@ -279,20 +279,20 @@ watch([titleSearch, isActiveSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fatchData("/projects/categories");
+  fetchData("/projects/categories");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fatchData("/projects/categories");
+  fetchData("/projects/categories");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fatchData("/projects/categories");
+    fetchData("/projects/categories");
   }
 }
 
@@ -300,14 +300,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fatchData("/projects/categories");
+    fetchData("/projects/categories");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fatchData("/projects/categories");
+  fetchData("/projects/categories");
 }
 
 //Delete selected Item
@@ -353,7 +353,7 @@ function bulkDelete() {
       await Axios.post("/projects/categories-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fatchData("/projects/categories");
+        fetchData("/projects/categories");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -369,7 +369,7 @@ async function changeStatus(status: { id: number; status: number }) {
     swal("Your data status changed", {
       icon: "success",
     });
-    fatchData("/projects/categories");
+    fetchData("/projects/categories");
   });
 }
 </script>

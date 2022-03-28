@@ -1098,6 +1098,7 @@ a:hover {
     font-size: 22px;
     font-weight: 600;
     margin-bottom: 40px;
+    margin-top: 30px;
 }
 
 
@@ -1154,6 +1155,7 @@ a:hover {
     vertical-align: middle;
     width: auto;
     color: #fff;
+    border:none
 }
 
 

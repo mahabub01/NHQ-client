@@ -135,7 +135,7 @@
                 </label>
                 <input
                   type="text"
-                  class="form-page-input"
+                  class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
                   placeholder="Title here"
                   v-model.lazy="v$.title.$model"
@@ -154,7 +154,7 @@
               <div class="col-md-12">
                 <label class="form-label">Description</label>
                 <textarea
-                  class="form-page-textarea"
+                  class="form-textarea"
                   placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
@@ -164,7 +164,7 @@
             <div class="modal-footer">
               <button
                 type="button"
-                class="btn btn-secondary"
+                class="form-button-danger"
                 data-bs-dismiss="modal"
                 @click.prevent="
                   store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
@@ -172,7 +172,7 @@
               >
                 <i class="far fa-times-circle"></i> Close
               </button>
-              <button type="submit" class="btn pro-button">
+              <button type="submit" class="form-button">
                 <i class="fas fa-save"></i> Save
               </button>
             </div>
@@ -198,7 +198,7 @@
                 </label>
                 <input
                   type="text"
-                  class="form-page-input"
+                  class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
                   placeholder="Title here"
                   v-model.lazy="v$.title.$model"
@@ -217,7 +217,7 @@
               <div class="col-md-12">
                 <label class="form-label">Description</label>
                 <textarea
-                  class="form-page-textarea"
+                  class="form-textarea"
                   placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
@@ -227,7 +227,7 @@
             <div class="modal-footer">
               <button
                 type="button"
-                class="btn btn-secondary"
+                class="form-button-danger"
                 data-bs-dismiss="modal"
                 @click.prevent="
                   store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
@@ -235,7 +235,7 @@
               >
                 <i class="far fa-times-circle"></i> Close
               </button>
-              <button type="submit" class="btn pro-button">
+              <button type="submit" class="form-button">
                 <i class="fas fa-save"></i> Save
               </button>
             </div>

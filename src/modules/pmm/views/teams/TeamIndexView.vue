@@ -135,7 +135,7 @@
                 </label>
                 <input
                   type="text"
-                  class="form-page-input"
+                  class="form-input"
                   :class="{ isInvalid: v$.team_name.$error }"
                   placeholder="Team Name here"
                   v-model.lazy="v$.team_name.$model"
@@ -150,11 +150,21 @@
                 </p>
               </div>
             </div>
+
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label"
+                  >Add Client<span class="mandatory">*</span></label
+                >
+                <Select2 :settings="{ placeholder: 'Choose' }" />
+              </div>
+            </div>
+
             <div class="row form-row">
               <div class="col-md-12">
                 <label class="form-label">Description</label>
                 <textarea
-                  class="form-page-textarea"
+                  class="form-textarea"
                   placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
@@ -164,7 +174,7 @@
             <div class="modal-footer">
               <button
                 type="button"
-                class="btn btn-secondary"
+                class="form-button-danger"
                 data-bs-dismiss="modal"
                 @click.prevent="
                   store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
@@ -172,7 +182,7 @@
               >
                 <i class="far fa-times-circle"></i> Close
               </button>
-              <button type="submit" class="btn pro-button">
+              <button type="submit" class="form-button">
                 <i class="fas fa-save"></i> Save
               </button>
             </div>
@@ -198,7 +208,7 @@
                 </label>
                 <input
                   type="text"
-                  class="form-page-input"
+                  class="form-input"
                   :class="{ isInvalid: v$.team_name.$error }"
                   placeholder="Team Name here"
                   v-model.lazy="v$.team_name.$model"
@@ -217,7 +227,7 @@
               <div class="col-md-12">
                 <label class="form-label">Description</label>
                 <textarea
-                  class="form-page-textarea"
+                  class="form-textarea"
                   placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
@@ -227,7 +237,7 @@
             <div class="modal-footer">
               <button
                 type="button"
-                class="btn btn-secondary"
+                class="form-button-danger"
                 data-bs-dismiss="modal"
                 @click.prevent="
                   store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
@@ -235,7 +245,7 @@
               >
                 <i class="far fa-times-circle"></i> Close
               </button>
-              <button type="submit" class="btn pro-button">
+              <button type="submit" class="form-button">
                 <i class="fas fa-save"></i> Save
               </button>
             </div>
@@ -260,6 +270,7 @@ import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import Select2 from "vue3-select2-component";
 
 //create store
 const store = useStore();

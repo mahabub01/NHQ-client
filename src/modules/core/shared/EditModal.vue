@@ -14,7 +14,7 @@
     >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header form-modal-title">
             <h5 class="modal-title"><slot name="header"></slot></h5>
             <button
               type="button"

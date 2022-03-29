@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <th class="col-serial">Serial</th>
-          <th>Title</th>
+          <th>Team Name</th>
           <th>Status</th>
           <th>Description</th>
           <th class="col-serial">Action</th>
@@ -17,9 +17,9 @@
           <th>
             <input
               type="text"
-              :value="titleSearch"
+              :value="team_nameSearch"
               class="form-input"
-              @input="$emit('update:titleSearch', $event.target.value)"
+              @input="$emit('update:team_nameSearch', $event.target.value)"
             />
           </th>
           <th>
@@ -48,7 +48,7 @@
             />
             {{ index + 1 }}
           </td>
-          <td>{{ td.title }}</td>
+          <td>{{ td.team_name }}</td>
           <td>
             <span v-if="td.is_active == 1" class="activeStatus"
               ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
@@ -126,7 +126,7 @@ let isCheckAll = ref(false);
 
 const emit = defineEmits([
   "delete",
-  "update:titleSearch",
+  "update:team_nameSearch",
   "update:isActiveSearch",
   "activation",
   "editId",
@@ -135,7 +135,7 @@ const emit = defineEmits([
 const props = defineProps({
   multiselected: Array,
   isActiveSearch: String,
-  titleSearch: String,
+  team_nameSearch: String,
 });
 
 defineExpose({ multiselect });

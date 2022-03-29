@@ -70,8 +70,8 @@
                               href="#"
                               @click="bulkDelete"
                               class="dropdown-item"
-                              ><i class="fas fa-trash-alt"></i> Bulk Delete</a
-                            >
+                              ><i class="fas fa-trash-alt"></i> Bulk Delete
+                            </a>
                           </li>
                         </ul>
                       </div>
@@ -91,6 +91,7 @@
                       v-model:isActiveSearch.lazy="isActiveSearch"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
+                      @editId="showEdit($event)"
                       ref="multiselected"
                     ></category-table>
 
@@ -128,9 +129,10 @@
           <form @submit.prevent="categorySubmit" class="form-page">
             <div class="row">
               <div class="col-md-12">
-                <label class="form-label"
-                  >Title<span class="mandatory">*</span></label
-                >
+                <label class="form-label">
+                  Title
+                  <span class="mandatory">*</span>
+                </label>
                 <input
                   type="text"
                   class="form-page-input"
@@ -179,6 +181,69 @@
       </create-modal>
     </div>
     <!--end Create Modal -->
+
+    <!--start Edit Modal -->
+    <div>
+      <edit-modal>
+        <template v-slot:header>
+          <i class="fas fa-plus-square"></i> Edit Category
+        </template>
+        <template v-slot:body>
+          <form @submit.prevent="editSubmit" class="form-page">
+            <div class="row">
+              <div class="col-md-12">
+                <label class="form-label">
+                  Title
+                  <span class="mandatory">*</span>
+                </label>
+                <input
+                  type="text"
+                  class="form-page-input"
+                  :class="{ isInvalid: v$.title.$error }"
+                  placeholder="Title here"
+                  v-model.lazy="v$.title.$model"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.title.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label">Description</label>
+                <textarea
+                  class="form-page-textarea"
+                  placeholder="Discription here"
+                  v-model.lazy="state.description"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                @click.prevent="
+                  store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
+                "
+              >
+                <i class="far fa-times-circle"></i> Close
+              </button>
+              <button type="submit" class="btn pro-button">
+                <i class="fas fa-save"></i> Save
+              </button>
+            </div>
+          </form>
+        </template>
+      </edit-modal>
+    </div>
+    <!--end Create Modal -->
   </div>
 </template>
 
@@ -191,6 +256,7 @@ import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import CreateModal from "../../../core/shared/CreateModal.vue";
+import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
@@ -204,6 +270,8 @@ let savingSpinner = ref(false);
 
 //use for multiselected
 const multiselected = ref([]);
+
+let singleData = "";
 
 //use datatable composables
 const { entries, datatables, showEntries, currentEntries, fetchData } =
@@ -231,6 +299,7 @@ async function categorySubmit() {
     savingSpinner.value = true;
     await Axios.post("projects/categories", state)
       .then((response) => {
+        fetchData("/projects/categories");
         resetForm();
         savingSpinner.value = false;
         swal("Success Job!", "Your category created successfully!", "success");
@@ -371,6 +440,43 @@ async function changeStatus(status: { id: number; status: number }) {
     });
     fetchData("/projects/categories");
   });
+}
+
+// edit pert
+const single_datas = ref([]);
+let editableId = "";
+
+async function getEditData(id: number) {
+  await Axios.get("/projects/categories/" + id).then((response) => {
+    single_datas.value = response.data.data;
+    state.title = single_datas.value.title;
+    state.description = single_datas.value.description;
+  });
+}
+
+async function editSubmit() {
+  v$.value.$validate();
+  v$.value.$touch();
+  if (!v$.value.$error) {
+    store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
+    savingSpinner.value = true;
+    await Axios.put("projects/categories/" + editableId, state)
+      .then((response) => {
+        fetchData("/projects/categories");
+        resetForm();
+        savingSpinner.value = false;
+        swal("Success Job!", "Your category created successfully!", "success");
+      })
+      .catch((error) => {
+        console.log("problem Here" + error);
+      });
+  }
+}
+
+function showEdit(id) {
+  editableId = id;
+  getEditData(id);
+  store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
 }
 </script>
 

@@ -84,7 +84,7 @@
                   <a
                     href="#"
                     v-else
-                    :to="`/pmm/categories/${td.id}/edit`"
+                    :to="`/pmm/tags/${td.id}/edit`"
                     class="dropdown-item activeStatus"
                     @click.prevent="changeStatus(td.id, td.is_active)"
                     ><i class="far fa-check-circle"></i> Active</a

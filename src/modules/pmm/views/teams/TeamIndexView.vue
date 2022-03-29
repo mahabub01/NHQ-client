@@ -48,9 +48,7 @@
                         type="button"
                         class="link_btn"
                         style="margin-right: 7px"
-                        @click="
-                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true)
-                        "
+                        @click="openCreateModal()"
                       >
                         <i class="fas fa-plus"></i> Create
                       </button>
@@ -156,7 +154,21 @@
                 <label class="form-label"
                   >Add Client<span class="mandatory">*</span></label
                 >
-                <Select2 :settings="{ placeholder: 'Choose' }" />
+                <Select2
+                  v-model="v$.user_ids.$model"
+                  :options="employeesSelectable"
+                  :settings="{ placeholder: 'Choose', multiple: true }"
+                  :class="{ isInvalid: v$.user_ids.$error }"
+                />
+
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.user_ids.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
               </div>
             </div>
 
@@ -294,10 +306,12 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
 const state = reactive({
   team_name: "",
   description: "",
+  user_ids: "",
 });
 
 const rules: any = {
   team_name: { required },
+  user_ids: { required },
 };
 
 const v$ = useVuelidate(rules, state);
@@ -325,6 +339,7 @@ async function teamSubmit() {
 function resetForm() {
   state.team_name = "";
   state.description = "";
+  state.user_ids = "";
   v$.value.$reset();
 }
 /**********************
@@ -488,6 +503,18 @@ function showEdit(id) {
   editableId = id;
   getEditData(id);
   store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
+}
+
+//Category list for Category Select
+const employeesSelectable = ref([]);
+
+// teams data get
+async function openCreateModal() {
+  store.commit("modalModule/CHNAGE_CREATE_MODAL", true);
+  await Axios.get("/employees-selectable/").then((response) => {
+    employeesSelectable.value = response.data.data;
+    console.log(response.data);
+  });
 }
 </script>
 

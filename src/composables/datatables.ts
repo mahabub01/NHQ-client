@@ -25,11 +25,11 @@ export function useDatatable() {
         "&page=" +
         datatables.currentPage
     ).then((response) => {
-      entries.value = response.data.data.data;
-      datatables.totalItems = response.data.data.total;
-      datatables.currentPage = response.data.data.current_page;
-      datatables.allPages = response.data.data.last_page;
-      datatables.pagination = response.data.data.links;
+      entries.value = response.data.data;
+      datatables.totalItems = response.data.meta.total;
+      datatables.currentPage = response.data.meta.current_page;
+      datatables.allPages = response.data.meta.last_page;
+      datatables.pagination = response.data.meta.links;
       datatables.loadingState = false;
     });
   }

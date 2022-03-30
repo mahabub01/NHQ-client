@@ -4,10 +4,12 @@
       <thead>
         <tr>
           <th class="col-serial">Serial</th>
-          <th>Team Name</th>
-          <th>Status</th>
-          <th>User</th>
-          <th>Description</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th>Depertment</th>
+          <th>Designation</th>
+          <th>Employee ID</th>
           <th class="col-serial">Action</th>
         </tr>
         <tr>
@@ -18,9 +20,9 @@
           <th>
             <input
               type="text"
-              :value="team_nameSearch"
+              :value="nameSearch"
               class="form-input"
-              @input="$emit('update:team_nameSearch', $event.target.value)"
+              @input="$emit('update:nameSearch', $event.target.value)"
             />
           </th>
           <th>
@@ -34,6 +36,8 @@
               <option value="0">In-Active</option>
             </select>
           </th>
+          <th></th>
+          <th></th>
           <th></th>
           <th></th>
           <th class="col-serial"></th>
@@ -50,24 +54,20 @@
             />
             {{ index + 1 }}
           </td>
-          <td>{{ td.team_name }}</td>
-          <td>
-            <span v-if="td.is_active == 1" class="activeStatus"
-              ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
-              {{ td.is_active }}</span
-            >
-            <span v-else class="inactiveStatus"
-              ><i class="far fa-times-circle"></i>
-              {{ isActive(td.is_active) }}</span
-            >
-          </td>
-          <td>
-            {{ td.users_id }}
-            <span v-for="user_td in td.users_id" :key="user_td"
-              >{{ user_td.user_id }},</span
-            >
-          </td>
-          <td>{{ td.description }}</td>
+          <td>{{ td.name }}</td>
+          <td>{{ td.email }}</td>
+          <td v-if="td.phone">{{ td.phone }}</td>
+          <td v-else>N/A</td>
+          <td v-if="td.depertment">{{ td.depertment }}</td>
+          <td v-else>N/A</td>
+          <td v-if="td.designation">{{ td.designation }}</td>
+          <td v-else>N/A</td>
+          <td v-if="td.employee_id">{{ td.employee_id }}</td>
+          <td v-else>N/A</td>
+          <!-- <td>{{ td.depertment }}</td>
+          <td>{{ td.designation }}</td>
+          <td>{{ td.employee_id }}</td> -->
+
           <td class="col-serial">
             <div class="btn-group">
               <button
@@ -92,17 +92,16 @@
                   <a
                     href="#"
                     v-else
-                    :to="`/pmm/categories/${td.id}/edit`"
+                    :to="`/pmm/employees/${td.id}/edit`"
                     class="dropdown-item activeStatus"
                     @click.prevent="changeStatus(td.id, td.is_active)"
                     ><i class="far fa-check-circle"></i> Active</a
                   >
 
-                  <a
-                    href="#"
-                    @click.prevent="getId(td.id)"
+                  <router-link
+                    :to="`/pmm/employees/${td.id}/edit`"
                     class="dropdown-item"
-                    ><i class="fas fa-edit"></i> Edit</a
+                    ><i class="fas fa-edit"></i> Edit</router-link
                   >
                   <a
                     href="#"
@@ -122,10 +121,6 @@
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
-import { useStore } from "vuex";
-
-//use store
-const store = useStore();
 
 const attrs = useAttrs();
 
@@ -134,16 +129,15 @@ let isCheckAll = ref(false);
 
 const emit = defineEmits([
   "delete",
-  "update:team_nameSearch",
+  "update:nameSearch",
   "update:isActiveSearch",
   "activation",
-  "editId",
 ]);
 
 const props = defineProps({
   multiselected: Array,
   isActiveSearch: String,
-  team_nameSearch: String,
+  nameSearch: String,
 });
 
 defineExpose({ multiselect });
@@ -175,11 +169,6 @@ function isActive(val: number) {
   } else {
     return "In-Active";
   }
-}
-
-//Get Id Emit use for update
-function getId(id: number) {
-  emit("editId", id);
 }
 
 //Delete Emit use for Delete

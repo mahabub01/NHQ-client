@@ -152,7 +152,7 @@
             <div class="row form-row">
               <div class="col-md-12">
                 <label class="form-label"
-                  >Add Client<span class="mandatory">*</span></label
+                  >Add User<span class="mandatory">*</span></label
                 >
                 <Select2
                   v-model="v$.user_ids.$model"
@@ -235,6 +235,30 @@
                 </p>
               </div>
             </div>
+
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label"
+                  >Add User<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="v$.user_ids.$model"
+                  :options="employeesSelectable"
+                  :settings="{ placeholder: 'Choose', multiple: true }"
+                  :class="{ isInvalid: v$.user_ids.$error }"
+                />
+
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.user_ids.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+
             <div class="row form-row">
               <div class="col-md-12">
                 <label class="form-label">Description</label>

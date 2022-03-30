@@ -56,6 +56,30 @@ export const PmmModuleRoute = [
             /* webpackChunkName: "projects-create" */ "./views/projects/ProjectCreateView.vue"
           ),
       },
+      {
+        path: "employees",
+        name: "employees",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects" */ "./views/employees/EmployeeIndexView.vue"
+          ),
+      },
+      {
+        path: "employees/create",
+        name: "employees-create",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects-create" */ "./views/employees/EmployeeCreateView.vue"
+          ),
+      },
+      {
+        path: "employees/:id/edit/",
+        name: "employees-edit",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects-create" */ "./views/employees/EmployeeEditView.vue"
+          ),
+      },
     ],
   },
 ];

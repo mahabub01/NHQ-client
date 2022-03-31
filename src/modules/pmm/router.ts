@@ -41,6 +41,22 @@ export const PmmModuleRoute = [
           ),
       },
       {
+        path: "clients/create",
+        name: "clients-create",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects-create" */ "./views/clients/ClientCreateView.vue"
+          ),
+      },
+      {
+        path: "clients/:id/edit/",
+        name: "clients-edit",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects-edit" */ "./views/clients/ClientEditView.vue"
+          ),
+      },
+      {
         path: "projects",
         name: "projects",
         component: () =>
@@ -77,7 +93,31 @@ export const PmmModuleRoute = [
         name: "employees-edit",
         component: () =>
           import(
-            /* webpackChunkName: "projects-create" */ "./views/employees/EmployeeEditView.vue"
+            /* webpackChunkName: "projects-edit" */ "./views/employees/EmployeeEditView.vue"
+          ),
+      },
+      {
+        path: "milestones",
+        name: "milestones",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects" */ "./views/milestones/MilestoneIndexView.vue"
+          ),
+      },
+      {
+        path: "milestones/create",
+        name: "milestones-create",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects-create" */ "./views/milestones/MilestoneCreateView.vue"
+          ),
+      },
+      {
+        path: "milestones/:id/edit/",
+        name: "milestones-edit",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects-edit" */ "./views/milestones/MilestoneEditView.vue"
           ),
       },
     ],

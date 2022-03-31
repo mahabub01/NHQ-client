@@ -341,18 +341,6 @@ function reset() {
   // state.description = "";
   v$.value.$reset();
 }
-
-// const single_datas = ref([]);
-
-// async function getEditData(id: number) {
-//   await Axios.get("/pmm/teams/" + id).then((response) => {
-//     single_datas.value = response.data.data;
-//     console.log(single_datas.value);
-
-//     formState.name = single_datas.value.name;
-//     formState.description = single_datas.value.description;
-//   });
-// }
 </script>
 
 <style scoped></style>

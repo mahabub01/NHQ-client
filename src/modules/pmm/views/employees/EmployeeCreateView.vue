@@ -4,8 +4,8 @@
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
-            <router-link to="/pmm/projects"
-              >Project <i class="fas fa-chevron-right"></i
+            <router-link to="/pmm/employees"
+              >Employees <i class="fas fa-chevron-right"></i
             ></router-link>
             <router-link to="#">Create</router-link>
           </div>
@@ -17,7 +17,7 @@
               <router-link
                 class="form-button-danger"
                 style="color: white"
-                to="/pmm/projects"
+                to="/pmm/employees"
                 ><i class="far fa-times-circle"></i> Discard
               </router-link>
             </div>
@@ -284,12 +284,10 @@ const genderList = reactive([
 const v$ = useVuelidate(rules, formState);
 
 async function handleSubmit() {
-  console.log(formState);
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
     buttonLoading.value = true;
-    console.log(formState);
     await Axios.post("employees", formState)
       .then((response) => {
         swal("Success Job!", "Your employee created successfully!", "success");

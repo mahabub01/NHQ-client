@@ -23,32 +23,6 @@
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              Client <i class="fas fa-chevron-down"></i>
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li>
-                <router-link class="dropdown-item" to="/pmm/clients/create"
-                  ><i class="fas fa-list"></i> Create Client</router-link
-                >
-              </li>
-
-              <li>
-                <router-link class="dropdown-item" to="/pmm/clients"
-                  ><i class="fas fa-list"></i> Clients list</router-link
-                >
-              </li>
-            </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdown"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
               Projects <i class="fas fa-chevron-down"></i>
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -85,7 +59,9 @@
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#"> Milestone </a>
+            <router-link class="nav-link" to="/pmm/milestones">
+              Milestone
+            </router-link>
           </li>
 
           <li class="nav-item dropdown">
@@ -97,11 +73,15 @@
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#"> Employee </a>
+            <router-link class="nav-link" to="/pmm/employees">
+              Employee
+            </router-link>
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#"> Client </a>
+            <router-link class="nav-link" to="/pmm/clients">
+              Client
+            </router-link>
           </li>
 
           <li class="nav-item dropdown">

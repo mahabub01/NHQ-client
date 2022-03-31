@@ -311,6 +311,11 @@ th {
   min-width: 50px !important;
 }
 
+.col-icon{
+  width: 20px !important;
+  min-width: 20px !important;
+}
+
 .table-dropdown li a {
   font-size: 12px;
 }
@@ -1289,4 +1294,34 @@ a:hover {
 .float-right {
   float: right;
   overflow: hidden;
+}
+
+/* sahos make  */
+.table_search_input {
+  border-radius: 31px;
+  border: none;
+  width: 350px;
+  font-size: 16px;
+  line-height: 19px;
+  color: #ababab;
+  padding: 5px 0 5px 35px;
+  background: #f7f7f7;
+  position: absolute;
+}
+
+.table_search_icon{
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 111;
+  line-height: 20px;
+}
+
+.table_search_icon {
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 111;
+  padding: 8px;
+  color: #b9b9b9;
 }

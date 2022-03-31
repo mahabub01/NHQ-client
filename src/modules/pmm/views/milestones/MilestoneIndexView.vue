@@ -9,12 +9,12 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-4">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <a class="rev-underline-subtitle" href="">Client List</a>
+                    <a class="rev-underline-subtitle" href="">Employees List</a>
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -23,6 +23,16 @@
                       </li>
                     </ul>
                   </div>
+                </div>
+
+                <div class="col-md-4">
+                  <input
+                    type="text"
+                    class="table_search_input"
+                    placeholder="Search Here..."
+                  />
+
+                  <i class="fa fa-search table_search_icon"></i>
                 </div>
                 <div class="col-md-4">
                   <div class="page-bootcamp-right">
@@ -43,7 +53,15 @@
                       </select>
 
                       <router-link
-                        to="/pmm/clients/create"
+                        to="/pmm/employees/create"
+                        class="link_btn"
+                        style="margin-right: 7px"
+                      >
+                        <i class="fas fa-filter"></i
+                      ></router-link>
+
+                      <router-link
+                        to="/pmm/employees/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
@@ -78,7 +96,7 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <client-table
+                    <milestone-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       v-model:nameSearch.lazy="nameSearch"
@@ -86,7 +104,7 @@
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       ref="multiselected"
-                    ></client-table>
+                    ></milestone-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -117,7 +135,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, reactive } from "vue";
 import Axios from "@/http-common";
-import ClientTable from "./ClientTable.vue";
+import MilestoneTable from "./MilestoneTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
@@ -145,9 +163,10 @@ let nameSearch = ref("");
 let isActiveSearch = ref("");
 
 watch([nameSearch, isActiveSearch], async () => {
+  console.log("hey");
   datatables.loadingState = true;
   await Axios.get(
-    "/clients?showEntries=" +
+    "/employees?showEntries=" +
       currentEntries +
       "&page=" +
       datatables.currentPage +
@@ -167,20 +186,20 @@ watch([nameSearch, isActiveSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/clients");
+  fetchData("/employees");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/clients");
+  fetchData("/employees");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/clients");
+    fetchData("/employees");
   }
 }
 
@@ -188,14 +207,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/clients");
+    fetchData("/employees");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/clients");
+  fetchData("/employees");
 }
 
 //Delete selected Item
@@ -209,7 +228,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/clients/" + id).then((response) => {
+      await Axios.delete("/employees/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -238,10 +257,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/clients-multidelete", {
+      await Axios.post("/employees-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/clients");
+        fetchData("/employees");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -253,11 +272,11 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/clients-status", status).then((response) => {
+  await Axios.post("/employees-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("/clients");
+    fetchData("/employees");
   });
 }
 </script>

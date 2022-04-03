@@ -54,7 +54,7 @@ function fileInserted() {
   currentValue.value = 0;
 }
 
-//fileUploader
+
 //this.file = this.$refs.imageUploader.files[0];
 async function fileUploaded() {
   let formData = new FormData();

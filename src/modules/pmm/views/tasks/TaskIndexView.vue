@@ -14,7 +14,7 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <a class="rev-underline-subtitle" href="">Employees List</a>
+                    <a class="rev-underline-subtitle" href="">Task List</a>
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -53,7 +53,7 @@
                       </select>
 
                       <router-link
-                        to="/pmm/milestones/create"
+                        to="/pmm/tasks/create"
                         class="link_btn"
                         style="margin-right: 7px"
                       >
@@ -61,7 +61,7 @@
                       ></router-link>
 
                       <router-link
-                        to="/pmm/milestones/create"
+                        to="/pmm/tasks/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
@@ -96,7 +96,7 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <milestone-table
+                    <task-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       v-model:nameSearch.lazy="nameSearch"
@@ -104,7 +104,7 @@
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       ref="multiselected"
-                    ></milestone-table>
+                    ></task-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -119,46 +119,6 @@
                   </div>
                 </div>
               </div>
-              <!-- <div class="row">
-                <div class="col-md-9 m-auto">
-                  <div class="row">
-                    <div class="col-md-9">
-                      <div>
-                        <table class="table" id="selectable-table">
-                          <thead>
-                            <tr>
-                              <th class="col-serial">SL</th>
-                              <th>File Name</th>
-                              <th>Updated Date</th>
-                              <th class="col-serial">Delete</th>
-                              <th class="col-serial">Edit</th>
-                              <th class="col-serial">Attchment</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td class="col-serial">1</td>
-                              <td>NP-POC-5</td>
-                              <td>27 Jun, 2022</td>
-
-                              <td class="col-serial">
-                                <i class="fa fa-trash"></i>
-                              </td>
-                              <td class="col-serial">
-                                <i class="fa fa-pen"></i>
-                              </td>
-                              <td class="col-serial">
-                                <i class="fa fa-paperclip"></i>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="col-md-3"></div>
-                  </div>
-                </div>
-              </div> -->
             </div>
           </div>
         </div>
@@ -175,7 +135,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, reactive } from "vue";
 import Axios from "@/http-common";
-import MilestoneTable from "./MilestoneTable.vue";
+import TaskTable from "./TaskTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";

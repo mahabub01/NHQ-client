@@ -311,9 +311,9 @@ th {
   min-width: 50px !important;
 }
 
-.col-icon{
-  width: 20px !important;
-  min-width: 20px !important;
+.col-icon {
+  width: 30px !important;
+  min-width: 30px !important;
 }
 
 .table-dropdown li a {
@@ -1309,7 +1309,7 @@ a:hover {
   position: absolute;
 }
 
-.table_search_icon{
+.table_search_icon {
   position: relative;
   top: 0;
   left: 0;
@@ -1324,4 +1324,33 @@ a:hover {
   z-index: 111;
   padding: 8px;
   color: #b9b9b9;
+}
+
+
+/* header right pert  */
+.header_icon .dropdown-toggle::after {
+  display: none;
+}
+
+.header_icon .btn {
+  padding: 0;
+}
+
+.header_icon .btn-check:focus + .btn,
+.header_icon .btn:focus {
+  box-shadow: none;
+}
+
+.header_bell_btn {
+  position: relative;
+}
+
+.header_bell_btn i {
+  font-size: 20px;
+  margin-top: 15px;
+}
+.header_bell_btn_allert {
+  position: absolute;
+  top: 35%;
+  left: 55%;
 }

@@ -27,85 +27,70 @@
           </li>
         </ul>
 
-        <ul class="navbar-nav d-flex icon-menu-bar">
-          <li class="nav-item dropdown nav-more-btn">
-            <a
-              style="
-                padding-left: 10px !important;
-                padding-right: 10px !important;
-              "
-              href="#"
-              class="nav-link dropdown-toggle nav-more-btn-toggle"
-              data-bs-toggle="dropdown"
-              data-bs-display="static"
-              aria-expanded="false"
-            >
-              <span class="profile-icon-design">
-                <img
-                  src="@/assets/images/ellipse_1.png"
-                  width="30"
-                  class="user-img rounded-circle mr-3"
-                />
-              </span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-lg-end" style="width: 300px">
-              <li>
+        <ul class="navbar-nav d-flex header_icon align-item-center">
+          <li>
+            <div class="dropdown">
+              <button
+                class="btn dropdown-toggle header_bell_btn text-white"
+                type="button"
+                id="dropdownMenuButton1"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="far fa-bell"></i>
+                <span
+                  class="p-1 bg-danger rounded-circle header_bell_btn_allert"
+                ></span>
+              </button>
+
+              <ul
+                class="dropdown-menu dropdown-menu-lg-end"
+                style="width: 200px"
+              >
+                <li>
+                  <router-link to="/permissions" class="dropdown-item"
+                    ><i class="fas fa-arrow-circle-right"></i>
+                    Permissions</router-link
+                  >
+                </li>
+                <li>
+                  <router-link to="/users" class="dropdown-item"
+                    ><i class="fas fa-arrow-circle-right"></i>
+                    Users</router-link
+                  >
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <div class="dropdown">
+              <button
+                class="btn dropdown-toggle header_bell_btn text-white"
+                type="button"
+                id="dropdownMenuButton1"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
                 <div class="profile-icons">
                   <img src="@/assets/images/ellipse_1.png" width="48" />
                 </div>
-                <div class="profile-info">
-                  <h3>Mr Admin</h3>
-                  <p>Role: Admin</p>
-                </div>
-              </li>
-            </ul>
-          </li>
+              </button>
 
-          <li class="nav-item dropdown nav-more-btn">
-            <a
-              style="
-                padding-left: 10px !important;
-                padding-right: 10px !important;
-                padding-top: 18px !important;
-              "
-              href="#"
-              class="nav-link dropdown-toggle nav-more-btn-toggle"
-              data-bs-toggle="dropdown"
-              data-bs-display="static"
-              aria-expanded="false"
-            >
-              <span><i class="fas fa-grip-horizontal font-size-22"></i></span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-lg-end">
-              <!-- <li>
-                <router-link to="/modules" class="dropdown-item"
-                  ><i class="fas fa-arrow-circle-right"></i>
-                  Modules</router-link
-                >
-              </li>
-              <li>
-                <router-link to="/components" class="dropdown-item"
-                  ><i class="fas fa-arrow-circle-right"></i>
-                  Components</router-link
-                >
-              </li>
-              <li>
-                <router-link to="/permissions" class="dropdown-item"
-                  ><i class="fas fa-arrow-circle-right"></i>
-                  Permissions</router-link
-                >
-              </li>
-              <li>
-                <router-link to="/users" class="dropdown-item"
-                  ><i class="fas fa-arrow-circle-right"></i> Users</router-link
-                >
-              </li>
-              <li>
-                <router-link to="/logout" class="dropdown-item"
-                  ><i class="fas fa-arrow-circle-right"></i> Logout</router-link
-                >
-              </li> -->
-            </ul>
+              <ul
+                class="dropdown-menu dropdown-menu-lg-end"
+                style="width: 300px"
+              >
+                <li>
+                  <div class="profile-icons">
+                    <img src="@/assets/images/ellipse_1.png" width="48" />
+                  </div>
+                  <div class="profile-info">
+                    <h3>Mr Admin</h3>
+                    <p>Role: Admin</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </li>
         </ul>
       </div>

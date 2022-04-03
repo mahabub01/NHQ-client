@@ -325,7 +325,6 @@ let titleSearch = ref("");
 let isActiveSearch = ref("");
 
 watch([titleSearch, isActiveSearch], async () => {
-  console.log("hey");
   datatables.loadingState = true;
   await Axios.get(
     "/projects/categories?showEntries=" +

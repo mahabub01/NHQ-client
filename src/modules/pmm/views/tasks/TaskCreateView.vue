@@ -4,8 +4,8 @@
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
-            <router-link to="/pmm/milestones"
-              >Milestones <i class="fas fa-chevron-right"></i
+            <router-link to="/pmm/tasks"
+              >Task <i class="fas fa-chevron-right"></i
             ></router-link>
             <router-link to="#">Create</router-link>
           </div>
@@ -17,7 +17,7 @@
               <router-link
                 class="form-button-danger"
                 style="color: white"
-                to="/pmm/milestones"
+                to="/pmm/tasks"
                 ><i class="far fa-times-circle"></i> Discard
               </router-link>
             </div>
@@ -26,7 +26,7 @@
       </div>
       <div class="form-design-body">
         <div class="container">
-          <h4 class="form-page-title">Create Milestone</h4>
+          <h4 class="form-page-title">Create Task</h4>
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
@@ -63,18 +63,18 @@
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
               <label class="form-label"
-                >Project ID<span class="mandatory">*</span></label
+                >Task Name<span class="mandatory">*</span></label
               >
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.project_id.$error }"
+                :class="{ isInvalid: v$.task_name.$error }"
                 placeholder="Project ID here"
-                v-model.lazy="v$.project_id.$model"
+                v-model.lazy="v$.task_name.$model"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.project_id.$errors"
+                v-for="(error, index) in v$.task_name.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
@@ -95,18 +95,18 @@
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
               <label class="form-label"
-                >Milestone Name<span class="mandatory">*</span></label
+                >Task ID<span class="mandatory">*</span></label
               >
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.milestone_name.$error }"
-                placeholder="Milestone Name here"
-                v-model.lazy="v$.milestone_name.$model"
+                :class="{ isInvalid: v$.task_id.$error }"
+                placeholder="Task Id here"
+                v-model.lazy="v$.task_id.$model"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.milestone_name.$errors"
+                v-for="(error, index) in v$.task_id.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
@@ -126,53 +126,20 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label"
-                >Milestone ID<span class="mandatory">*</span></label
-              >
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.milestone_id.$error }"
-                placeholder="Milestone ID here"
-                v-model.lazy="v$.milestone_id.$model"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.milestone_id.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label">Points</label>
-              <input
-                type="number"
-                class="form-input"
-                placeholder="Points here"
-                v-model.lazy="formState.points"
-              />
-            </div>
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
-              <label class="form-label">Assign Employee</label>
+              <label class="form-label">Assign Team/ Member</label>
               <Select2
-                v-model="formState.assign_employee"
+                v-model="formState.assign_team"
                 :options="genderList"
                 :settings="{ placeholder: 'Choose' }"
               />
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Milestone Category</label>
+              <label class="form-label">Expected Duration</label>
               <input
-                type="text"
+                type="time"
                 class="form-input"
-                placeholder="Milestone Category here"
-                v-model.lazy="formState.milestone_category"
+                placeholder="Expected Duration here"
+                v-model.lazy="formState.expected_duration"
               />
             </div>
           </div>
@@ -181,12 +148,35 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Follow Up</label>
+              <label class="form-label">Task Status</label>
+              <Select2
+                v-model="formState.task_status"
+                :options="genderList"
+                :settings="{ placeholder: 'Choose' }"
+              />
+            </div>
+            <div class="col-md-4 offset-md-2">
+              <label class="form-label">Actual Duration</label>
+              <input
+                type="time"
+                class="form-input"
+                placeholder="Task Stauts here"
+                v-model.lazy="formState.actual_duration"
+              />
+            </div>
+          </div>
+
+          <!--end row -->
+
+          <!--start row -->
+          <div class="row form-row">
+            <div class="col-md-4 offset-md-1">
+              <label class="form-label">Tags</label>
               <input
                 type="text"
                 class="form-input"
-                placeholder="Follow Up here"
-                v-model.lazy="formState.follow_up"
+                placeholder="Tags here"
+                v-model.lazy="formState.tags"
               />
             </div>
             <div class="col-md-4 offset-md-2">
@@ -218,26 +208,25 @@ import Select2 from "vue3-select2-component";
 let buttonLoading = ref(false);
 const formState = reactive({
   project_name: "",
-  project_id: "",
-  milestone_name: "",
-  milestone_id: "",
-  assign_employee: "",
-  follow_up: "",
+  task_name: "",
+  task_id: "",
+  assign_team: "",
+  task_status: "",
   project_description: "",
   start_date: "",
   end_date: "",
   extended_date: "",
-  points: "",
-  milestone_category: "",
+  expected_duration: "",
+  actual_duration: "",
   file_name: "",
-  milestone_file: "",
+  task_file: "",
 });
 
 const rules: any = {
   project_name: { required },
   project_id: { required },
-  milestone_name: { required },
-  milestone_id: { required },
+  task_name: { required },
+  task_id: { required },
 };
 
 const emit = defineEmits(["select"]);
@@ -255,9 +244,9 @@ async function handleSubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     buttonLoading.value = true;
-    await Axios.post("milestones", formState)
+    await Axios.post("tasks", formState)
       .then((response) => {
-        swal("Success Job!", "Your milestone created successfully!", "success");
+        swal("Success Job!", "Your task created successfully!", "success");
         reset(); //reset all property
         buttonLoading.value = false;
       })

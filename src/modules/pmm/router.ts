@@ -120,6 +120,23 @@ export const PmmModuleRoute = [
             /* webpackChunkName: "projects-edit" */ "./views/milestones/MilestoneEditView.vue"
           ),
       },
+
+      {
+        path: "tasks",
+        name: "tasks",
+        component: () =>
+          import(
+            /* webpackChunkName: "tasks-index" */ "./views/tasks/TaskIndexView.vue"
+          ),
+      },
+      {
+        path: "tasks/create",
+        name: "tasks-create",
+        component: () =>
+          import(
+            /* webpackChunkName: "task-create" */ "./views/tasks/TaskCreateView.vue"
+          ),
+      },
     ],
   },
 ];

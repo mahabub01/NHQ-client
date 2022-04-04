@@ -330,11 +330,7 @@ watch([titleSearch, isActiveSearch], async () => {
     "/projects/categories?showEntries=" +
       currentEntries +
       "&page=" +
-      datatables.currentPage +
-      "&searchTitle=" +
-      titleSearch.value +
-      "&is_active=" +
-      isActiveSearch.value
+      datatables.currentPage
   ).then((response) => {
     entries.value = response.data.data.data;
     datatables.totalItems = response.data.data.total;

@@ -145,7 +145,6 @@ let nameSearch = ref("");
 let isActiveSearch = ref("");
 
 watch([nameSearch, isActiveSearch], async () => {
-  console.log("hey");
   datatables.loadingState = true;
   await Axios.get(
     "/employees?showEntries=" +

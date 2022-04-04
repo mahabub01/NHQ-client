@@ -9,33 +9,6 @@
           <th>Description</th>
           <th class="col-serial">Action</th>
         </tr>
-        <tr>
-          <th class="col-serial">
-            <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
-            All
-          </th>
-          <th>
-            <input
-              type="text"
-              :value="titleSearch"
-              class="form-input"
-              @input="$emit('update:titleSearch', $event.target.value)"
-            />
-          </th>
-          <th>
-            <select
-              class="form-input"
-              :value="isActiveSearch"
-              @input="$emit('update:isActiveSearch', $event.target.value)"
-            >
-              <option value="">Choose</option>
-              <option value="1">Active</option>
-              <option value="0">In-Active</option>
-            </select>
-          </th>
-          <th></th>
-          <th class="col-serial"></th>
-        </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
         <tr v-for="(td, index) in $attrs.entries" :key="td">

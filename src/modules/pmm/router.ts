@@ -137,6 +137,15 @@ export const PmmModuleRoute = [
             /* webpackChunkName: "task-create" */ "./views/tasks/TaskCreateView.vue"
           ),
       },
+
+      {
+        path: "pocs/:project_id",
+        name: "pocs",
+        component: () =>
+          import(
+            /* webpackChunkName: "pocs" */ "./views/pocs/PocIndexView.vue"
+          ),
+      },
     ],
   },
 ];

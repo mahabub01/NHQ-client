@@ -27,32 +27,26 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li>
-                <a class="dropdown-item" href=""
-                  ><i class="fas fa-plus"></i> Create Project</a
-                >
-              </li>
-
-              <li>
-                <a class="dropdown-item" href=""
-                  ><i class="fas fa-list"></i> Project list</a
+                <a class="dropdown-item" href="/pmm/projects"
+                  ><i class="fas fa-table"></i> Project list</a
                 >
               </li>
 
               <li>
                 <router-link class="dropdown-item" to="/pmm/categories"
-                  ><i class="fas fa-list"></i> Category list</router-link
+                  ><i class="fas fa-table"></i> Category list</router-link
                 >
               </li>
 
               <li>
                 <router-link class="dropdown-item" to="/pmm/teams"
-                  ><i class="fas fa-list"></i> Team list</router-link
+                  ><i class="fas fa-table"></i> Team list</router-link
                 >
               </li>
 
               <li>
                 <router-link class="dropdown-item" to="/pmm/tags"
-                  ><i class="fas fa-list"></i> Tags list</router-link
+                  ><i class="fas fa-table"></i> Tags list</router-link
                 >
               </li>
             </ul>

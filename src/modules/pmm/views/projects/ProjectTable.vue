@@ -3,36 +3,51 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
+<<<<<<< HEAD
           <th class="col-serial">Serial</th>
           <th>Title</th>
           <th>Status</th>
           <th>Description</th>
+=======
+          <th
+            class="action-field"
+            style="width: 20px !important; text-align: center"
+          >
+            <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
+          </th>
+          <th>Project Name</th>
+          <th>Project ID</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Extended</th>
+          <th>Project Progress</th>
+          <th>Status</th>
+          <th>Milestone Progress</th>
+          <th class="col-serial">Edit</th>
+          <th class="col-serial">File</th>
+>>>>>>> 3292f90672a1b61b2c69af2b7c814d92df1e04e8
           <th class="col-serial">Action</th>
         </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
-        <tr v-for="(td, index) in $attrs.entries" :key="td">
-          <td class="col-serial">
+        <tr>
+          <td class="action-field align-center">
             <input
               type="checkbox"
               v-model="multiselect"
-              :value="td.id"
               @change="updateCheckall"
             />
-            {{ index + 1 }}
           </td>
-          <td>{{ td.title }}</td>
-          <td>
-            <span v-if="td.is_active == 1" class="activeStatus"
-              ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
-              {{ td.is_active }}</span
-            >
-            <span v-else class="inactiveStatus"
-              ><i class="far fa-times-circle"></i>
-              {{ isActive(td.is_active) }}</span
-            >
-          </td>
-          <td>{{ td.description }}</td>
+          <td>Project name here</td>
+          <td>Pro2321</td>
+          <td>20/12/2022</td>
+          <td>24/12/2022</td>
+          <td>30/12/2022</td>
+          <td>project progress</td>
+          <td>Status</td>
+          <td>milesotre progress</td>
+          <td class="col-serial">Edit</td>
+          <td class="col-serial">File</td>
           <td class="col-serial">
             <div class="btn-group">
               <button
@@ -44,9 +59,20 @@
               >
                 <i class="fas fa-sort-down"></i>
               </button>
-              <ul class="dropdown-menu table-dropdown">
+              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
-                  <a
+                  <router-link :to="`/pmm/pocs/1`" class="dropdown-item"
+                    ><i class="far fa-plus-square"></i> Create POC</router-link
+                  >
+
+                  <router-link :to="`/pmm/boq/1`" class="dropdown-item"
+                    ><i class="far fa-plus-square"></i> Create BOQ</router-link
+                  >
+
+                  <router-link :to="`/pmm/oem/1`" class="dropdown-item"
+                    ><i class="far fa-plus-square"></i> Create OEM</router-link
+                  >
+                  <!-- <a
                     href="#"
                     v-if="td.is_active == 1"
                     class="dropdown-item inactiveStatus"
@@ -73,7 +99,7 @@
                     @click.prevent="removeItem(td.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
-                  >
+                  > -->
                 </li>
               </ul>
             </div>

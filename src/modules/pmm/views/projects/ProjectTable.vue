@@ -3,12 +3,6 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-<<<<<<< HEAD
-          <th class="col-serial">Serial</th>
-          <th>Title</th>
-          <th>Status</th>
-          <th>Description</th>
-=======
           <th
             class="action-field"
             style="width: 20px !important; text-align: center"
@@ -25,7 +19,7 @@
           <th>Milestone Progress</th>
           <th class="col-serial">Edit</th>
           <th class="col-serial">File</th>
->>>>>>> 3292f90672a1b61b2c69af2b7c814d92df1e04e8
+
           <th class="col-serial">Action</th>
         </tr>
       </thead>

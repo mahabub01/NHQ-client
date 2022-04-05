@@ -42,6 +42,14 @@
     <!--end deleting -->
 
     <!--start deleting -->
+    <div v-if="isFiltering" class="data-deleting-container">
+      <div class="data-deleting-indicator">
+        <span>Filtering</span> <span class="loading"></span>
+      </div>
+    </div>
+    <!--end deleting -->
+
+    <!--start deleting -->
     <div v-if="isUpdating" class="data-deleting-container">
       <div class="data-deleting-indicator">
         <span>Updating</span> <span class="loading"></span>
@@ -78,6 +86,11 @@ const props = defineProps({
   },
 
   isLoading: {
+    type: Boolean,
+    default: false,
+  },
+
+  isFiltering: {
     type: Boolean,
     default: false,
   },

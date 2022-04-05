@@ -10,6 +10,7 @@
           <th>Depertment</th>
           <th>Designation</th>
           <th>Employee ID</th>
+          <th>Status</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -34,9 +35,17 @@
           <td v-else>N/A</td>
           <td v-if="td.employee_id">{{ td.employee_id }}</td>
           <td v-else>N/A</td>
-          <!-- <td>{{ td.depertment }}</td>
-          <td>{{ td.designation }}</td>
-          <td>{{ td.employee_id }}</td> -->
+
+          <td>
+            <span v-if="td.is_active == 1" class="activeStatus"
+              ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
+              {{ td.is_active }}</span
+            >
+            <span v-else class="inactiveStatus"
+              ><i class="far fa-times-circle"></i>
+              {{ isActive(td.is_active) }}</span
+            >
+          </td>
 
           <td class="col-serial">
             <div class="btn-group">
@@ -62,7 +71,7 @@
                   <a
                     href="#"
                     v-else
-                    :to="`/pmm/employees/${td.id}/edit`"
+                    :to="`/pmm/categories/${td.id}/edit`"
                     class="dropdown-item activeStatus"
                     @click.prevent="changeStatus(td.id, td.is_active)"
                     ><i class="far fa-check-circle"></i> Active</a

@@ -101,7 +101,7 @@
                 >Phone<span class="mandatory">*</span></label
               >
               <input
-                type="number"
+                type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.phone.$error }"
                 placeholder="Phone here"

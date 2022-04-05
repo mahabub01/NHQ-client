@@ -9,7 +9,7 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-7">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
@@ -24,7 +24,7 @@
                     </ul>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-5">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -41,6 +41,22 @@
                           {{ show_en }}
                         </option>
                       </select>
+                      <input
+                        type="text"
+                        placeholder="Search Title"
+                        style="margin-right: 7px"
+                        v-model.lazy="nameSearch"
+                      />
+                      <button
+                        type="button"
+                        class="link_btn"
+                        style="margin-right: 7px"
+                        @click="
+                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true)
+                        "
+                      >
+                        <i class="fas fa-filter"></i>
+                      </button>
 
                       <router-link
                         to="/pmm/employees/create"
@@ -81,8 +97,6 @@
                     <employee-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
-                      v-model:nameSearch.lazy="nameSearch"
-                      v-model:isActiveSearch.lazy="isActiveSearch"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       ref="multiselected"
@@ -110,7 +124,79 @@
     <the-spinner
       :isdeleting="deletingSpinner"
       :isSaving="savingSpinner"
+      :isFiltering="filteringSpinner"
     ></the-spinner>
+
+    <!--start Create Modal -->
+    <div>
+      <filter-modal>
+        <template v-slot:header
+          ><i class="fas fa-filter"></i> Filter Employee
+        </template>
+        <template v-slot:body>
+          <form @submit.prevent="filterSubmit" class="form-page">
+            <div class="row">
+              <div class="col-md-4">
+                <label class="form-label"> Name/Emil/Phone/Nid </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.name_email_phone_nid"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">
+                  Designation/Depertment/Employee ID
+                </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.designation_depertMent_employee_id"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label"> Date of Birth </label>
+                <input
+                  type="date"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.date_of_birth"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label"> Joinning Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.joinning_date"
+                />
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="form-button-danger"
+                data-bs-dismiss="modal"
+                @click.prevent="
+                  store.commit('modalModule/CHNAGE_FILTER_MODAL', false)
+                "
+              >
+                <i class="far fa-times-circle"></i> Close
+              </button>
+              <button type="submit" class="form-button">
+                <i class="fas fa-filter"></i> Filter
+              </button>
+            </div>
+          </form>
+          <!-- <h1>filter body</h1> -->
+        </template>
+      </filter-modal>
+    </div>
+    <!--end Create Modal -->
   </div>
 </template>
 
@@ -122,6 +208,7 @@ import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import FilterModal from "../../../core/shared/FilterModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
@@ -132,6 +219,7 @@ const store = useStore();
 //use for deleting spenner
 let deletingSpinner = ref(false);
 let savingSpinner = ref(false);
+let filteringSpinner = ref(false);
 
 //use for multiselected
 const multiselected = ref([]);
@@ -142,25 +230,22 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
 
 //Search Property
 let nameSearch = ref("");
-let isActiveSearch = ref("");
 
-watch([nameSearch, isActiveSearch], async () => {
+watch([nameSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
     "/employees?showEntries=" +
-      currentEntries +
+      currentEntries.value +
       "&page=" +
       datatables.currentPage +
       "&searchName=" +
-      nameSearch.value +
-      "&is_active=" +
-      isActiveSearch.value
+      nameSearch.value
   ).then((response) => {
-    entries.value = response.data.data.data;
-    datatables.totalItems = response.data.data.total;
-    datatables.currentPage = response.data.data.current_page;
-    datatables.allPages = response.data.data.last_page;
-    datatables.pagination = response.data.data.links;
+    entries.value = response.data.data;
+    datatables.totalItems = response.data.meta.total;
+    datatables.currentPage = response.data.meta.current_page;
+    datatables.allPages = response.data.meta.last_page;
+    datatables.pagination = response.data.meta.links;
     datatables.loadingState = false;
   });
 });
@@ -260,6 +345,35 @@ async function changeStatus(status: { id: number; status: number }) {
     fetchData("/employees");
   });
 }
+
+// Filter Pert
+
+const filterState = reactive({
+  name_email_phone_nid: "",
+  designation_depertMent_employee_id: "",
+  date_of_birth: "",
+  joinning_date: "",
+});
+
+async function filterSubmit() {
+  store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
+  datatables.loadingState = true;
+
+  filteringSpinner.value = true;
+  await Axios.post("employees-filter", filterState).then((response) => {
+    filteringSpinner.value = false;
+    entries.value = response.data.data;
+    datatables.totalItems = response.data.meta.total;
+    datatables.currentPage = response.data.meta.current_page;
+    datatables.allPages = response.data.meta.last_page;
+    datatables.pagination = response.data.meta.links;
+    datatables.loadingState = false;
+  });
+}
 </script>
 
-<style scoped></style>
+<style scoped>
+.form-input {
+  margin-bottom: 20px;
+}
+</style>

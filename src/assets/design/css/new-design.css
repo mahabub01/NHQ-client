@@ -1354,3 +1354,29 @@ a:hover {
   top: 35%;
   left: 55%;
 }
+
+
+.align-center{
+  text-align: center;
+}
+
+.action-field{
+  width: 20px !important;
+}
+
+.theme-color-btn {
+  border-radius: 4px;
+  margin: 0 3px;
+  padding: 4px 10px;
+  color: #fff;
+  background-color: #2C3E50;
+  border: none;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.theme-color-btn:hover {
+  color: white;
+  background-color: #000;
+}

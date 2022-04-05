@@ -101,7 +101,7 @@
                 >Phone<span class="mandatory">*</span></label
               >
               <input
-                type="number"
+                type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.phone.$error }"
                 placeholder="Phone here"
@@ -286,6 +286,8 @@ const v$ = useVuelidate(rules, formState);
 async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
+  console.log(formState.phone);
+
   if (!v$.value.$error) {
     buttonLoading.value = true;
     await Axios.post("employees", formState)
@@ -302,9 +304,21 @@ async function handleSubmit() {
 
 //reset all property
 function reset() {
-  // state.title = "";
-  // state.description = "";
-  // v$.value.$reset();
+  formState.name = "";
+  formState.email = "";
+  formState.phone = "";
+  formState.designation = "";
+  formState.password = "";
+  formState.gender = "";
+  formState.employee_id = "";
+  formState.date_of_birth = "";
+  formState.present_address = "";
+  formState.parmanent_address = "";
+  formState.nid_number = "";
+  formState.depertment = "";
+  formState.joinning_date = "";
+  formState.about_employee = "";
+  v$.value.$reset();
 }
 </script>
 

@@ -9,7 +9,7 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-7">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
@@ -26,7 +26,7 @@
                     </ul>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-5">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -43,6 +43,13 @@
                           {{ show_en }}
                         </option>
                       </select>
+
+                      <input
+                        type="text"
+                        placeholder="Search Title"
+                        style="margin-right: 7px"
+                        v-model.lazy="titleSearch"
+                      />
 
                       <button
                         type="button"
@@ -87,8 +94,6 @@
                     <tag-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
-                      v-model:titleSearch.lazy="titleSearch"
-                      v-model:isActiveSearch.lazy="isActiveSearch"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       @editId="showEdit($event)"
@@ -322,26 +327,22 @@ function resetForm() {
 
 //Search Property
 let titleSearch = ref("");
-let isActiveSearch = ref("");
 
-watch([titleSearch, isActiveSearch], async () => {
-  console.log("hey");
+watch([titleSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
     "/projects/tags?showEntries=" +
-      currentEntries +
+      currentEntries.value +
       "&page=" +
       datatables.currentPage +
       "&searchTitle=" +
-      titleSearch.value +
-      "&is_active=" +
-      isActiveSearch.value
+      titleSearch.value
   ).then((response) => {
-    entries.value = response.data.data.data;
-    datatables.totalItems = response.data.data.total;
-    datatables.currentPage = response.data.data.current_page;
-    datatables.allPages = response.data.data.last_page;
-    datatables.pagination = response.data.data.links;
+    entries.value = response.data.data;
+    datatables.totalItems = response.data.meta.total;
+    datatables.currentPage = response.data.meta.current_page;
+    datatables.allPages = response.data.meta.last_page;
+    datatables.pagination = response.data.meta.links;
     datatables.loadingState = false;
   });
 });

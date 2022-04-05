@@ -9,14 +9,13 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-7">
+                <div class="col-md-6">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <a class="rev-underline-subtitle" href=""
-                      >Projects > Category List</a
-                    >
+                    <a class="rev-underline-subtitle" href="">NHQ Project</a> >
+                    <a class="rev-underline-subtitle" href="">Poc List</a>
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -26,7 +25,7 @@
                     </ul>
                   </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-6">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -46,10 +45,16 @@
 
                       <input
                         type="text"
-                        placeholder="Search Title"
+                        placeholder="Search Team"
                         style="margin-right: 7px"
-                        v-model.lazy="titleSearch"
                       />
+
+                      <router-link
+                        to="/pmm/projects/create"
+                        class="theme-color-btn"
+                        style="margin-right: 7px"
+                        ><i class="fas fa-filter"></i
+                      ></router-link>
 
                       <button
                         type="button"
@@ -61,27 +66,28 @@
                       >
                         <i class="fas fa-plus"></i> Create
                       </button>
-                      <div class="btn-group">
-                        <button
-                          type="button"
-                          class="icon_btn page-bootcamp-group-btn"
-                          data-bs-toggle="dropdown"
-                          data-bs-display="static"
-                          aria-expanded="false"
-                        >
-                          <i class="fas fa-cog"></i> Bulk Action
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-lg-end">
-                          <li>
-                            <a
-                              href="#"
-                              @click="bulkDelete"
-                              class="dropdown-item"
-                              ><i class="fas fa-trash-alt"></i> Bulk Delete
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
+
+                      <router-link
+                        to="/pmm/projects/create"
+                        class="link_btn"
+                        style="margin-right: 7px"
+                        ><i class="fas fa-plus"></i> Create</router-link
+                      >
+
+                      <router-link
+                        to="/pmm/projects/create"
+                        class="theme-color-btn"
+                        style="margin-right: 7px"
+                        ><i class="fas fa-cloud-upload-alt"></i>
+                        Import</router-link
+                      >
+
+                      <router-link
+                        to="/pmm/projects/create"
+                        class="theme-color-btn"
+                        style="margin-right: 7px"
+                        ><i class="fas fa-file-excel"></i> Export</router-link
+                      >
                     </div>
                   </div>
                 </div>
@@ -91,14 +97,15 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <category-table
+                    <poc-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
+                      v-model:titleSearch.lazy="titleSearch"
+                      v-model:isActiveSearch.lazy="isActiveSearch"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
-                      @editId="showEdit($event)"
                       ref="multiselected"
-                    ></category-table>
+                    ></poc-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -134,13 +141,12 @@
           <form @submit.prevent="categorySubmit" class="form-page">
             <div class="row">
               <div class="col-md-12">
-                <label class="form-label">
-                  Title
-                  <span class="mandatory">*</span>
-                </label>
+                <label class="form-label"
+                  >Title<span class="mandatory">*</span></label
+                >
                 <input
                   type="text"
-                  class="form-input"
+                  class="form-page-input"
                   :class="{ isInvalid: v$.title.$error }"
                   placeholder="Title here"
                   v-model.lazy="v$.title.$model"
@@ -159,7 +165,7 @@
               <div class="col-md-12">
                 <label class="form-label">Description</label>
                 <textarea
-                  class="form-textarea"
+                  class="form-page-textarea"
                   placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
@@ -169,7 +175,7 @@
             <div class="modal-footer">
               <button
                 type="button"
-                class="form-button-danger"
+                class="btn btn-secondary"
                 data-bs-dismiss="modal"
                 @click.prevent="
                   store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
@@ -177,7 +183,7 @@
               >
                 <i class="far fa-times-circle"></i> Close
               </button>
-              <button type="submit" class="form-button">
+              <button type="submit" class="btn pro-button">
                 <i class="fas fa-save"></i> Save
               </button>
             </div>
@@ -186,82 +192,18 @@
       </create-modal>
     </div>
     <!--end Create Modal -->
-
-    <!--start Edit Modal -->
-    <div>
-      <edit-modal>
-        <template v-slot:header>
-          <i class="fas fa-plus-square"></i> Edit Category
-        </template>
-        <template v-slot:body>
-          <form @submit.prevent="editSubmit" class="form-page">
-            <div class="row">
-              <div class="col-md-12">
-                <label class="form-label">
-                  Title
-                  <span class="mandatory">*</span>
-                </label>
-                <input
-                  type="text"
-                  class="form-input"
-                  :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
-                  v-model.lazy="v$.title.$model"
-                />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.title.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
-              </div>
-            </div>
-            <div class="row form-row">
-              <div class="col-md-12">
-                <label class="form-label">Description</label>
-                <textarea
-                  class="form-textarea"
-                  placeholder="Discription here"
-                  v-model.lazy="state.description"
-                ></textarea>
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="form-button-danger"
-                data-bs-dismiss="modal"
-                @click.prevent="
-                  store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
-                "
-              >
-                <i class="far fa-times-circle"></i> Close
-              </button>
-              <button type="submit" class="form-button">
-                <i class="fas fa-save"></i> Save
-              </button>
-            </div>
-          </form>
-        </template>
-      </edit-modal>
-    </div>
-    <!--end Create Modal -->
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch, reactive } from "vue";
 import Axios from "@/http-common";
-import CategoryTable from "./CategoryTable.vue";
+import PocTable from "./PocTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import CreateModal from "../../../core/shared/CreateModal.vue";
-import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
@@ -275,8 +217,6 @@ let savingSpinner = ref(false);
 
 //use for multiselected
 const multiselected = ref([]);
-
-let singleData = "";
 
 //use datatable composables
 const { entries, datatables, showEntries, currentEntries, fetchData } =
@@ -304,7 +244,6 @@ async function categorySubmit() {
     savingSpinner.value = true;
     await Axios.post("projects/categories", state)
       .then((response) => {
-        fetchData("/projects/categories");
         resetForm();
         savingSpinner.value = false;
         swal("Success Job!", "Your category created successfully!", "success");
@@ -327,42 +266,46 @@ function resetForm() {
 
 //Search Property
 let titleSearch = ref("");
+let isActiveSearch = ref("");
 
-watch([titleSearch], async () => {
+watch([titleSearch, isActiveSearch], async () => {
+  console.log("hey");
   datatables.loadingState = true;
   await Axios.get(
     "/projects/categories?showEntries=" +
-      currentEntries.value +
+      currentEntries +
       "&page=" +
       datatables.currentPage +
       "&searchTitle=" +
-      titleSearch.value
+      titleSearch.value +
+      "&is_active=" +
+      isActiveSearch.value
   ).then((response) => {
     entries.value = response.data.data;
-    datatables.totalItems = response.data.meta.total;
-    datatables.currentPage = response.data.meta.current_page;
-    datatables.allPages = response.data.meta.last_page;
-    datatables.pagination = response.data.meta.links;
+    datatables.totalItems = response.data.data.total;
+    datatables.currentPage = response.data.data.current_page;
+    datatables.allPages = response.data.data.last_page;
+    datatables.pagination = response.data.data.links;
     datatables.loadingState = false;
   });
 });
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/projects/categories");
+  fetchData("/pocs");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/projects/categories");
+  fetchData("/pocs");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/projects/categories");
+    fetchData("/pocs");
   }
 }
 
@@ -370,14 +313,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/projects/categories");
+    fetchData("/pocs");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/projects/categories");
+  fetchData("/pocs");
 }
 
 //Delete selected Item
@@ -441,43 +384,6 @@ async function changeStatus(status: { id: number; status: number }) {
     });
     fetchData("/projects/categories");
   });
-}
-
-// edit pert
-const single_datas = ref([]);
-let editableId = "";
-
-async function getEditData(id: number) {
-  await Axios.get("/projects/categories/" + id).then((response) => {
-    single_datas.value = response.data.data;
-    state.title = single_datas.value.title;
-    state.description = single_datas.value.description;
-  });
-}
-
-async function editSubmit() {
-  v$.value.$validate();
-  v$.value.$touch();
-  if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-    savingSpinner.value = true;
-    await Axios.put("projects/categories/" + editableId, state)
-      .then((response) => {
-        fetchData("/projects/categories");
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your category created successfully!", "success");
-      })
-      .catch((error) => {
-        console.log("problem Here" + error);
-      });
-  }
-}
-
-function showEdit(id) {
-  editableId = id;
-  getEditData(id);
-  store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
 }
 </script>
 

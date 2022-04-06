@@ -45,7 +45,7 @@ export const PmmModuleRoute = [
         name: "clients-create",
         component: () =>
           import(
-            /* webpackChunkName: "projects-create" */ "./views/clients/ClientCreateView.vue"
+            /* webpackChunkName: "clients-create" */ "./views/clients/ClientCreateView.vue"
           ),
       },
       {
@@ -53,7 +53,7 @@ export const PmmModuleRoute = [
         name: "clients-edit",
         component: () =>
           import(
-            /* webpackChunkName: "projects-edit" */ "./views/clients/ClientEditView.vue"
+            /* webpackChunkName: "clients-edit" */ "./views/clients/ClientEditView.vue"
           ),
       },
       {

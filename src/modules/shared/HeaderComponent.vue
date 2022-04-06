@@ -77,17 +77,52 @@
               </button>
 
               <ul
-                class="dropdown-menu dropdown-menu-lg-end"
+                class="dropdown-menu dropdown-menu-lg-end pt_15"
                 style="width: 300px"
               >
                 <li>
-                  <div class="profile-icons">
-                    <img src="@/assets/images/ellipse_1.png" width="48" />
+                  <div>
+                    <ul class="auth_card">
+                      <li class="auth_img">
+                        <img src="@/assets/images/ellipse_1.png" width="48" />
+                      </li>
+                      <li class="auth_name">
+                        <h3>Mr Admin</h3>
+                      </li>
+                      <li class="auth_email">
+                        <p>sahosmiaisocial@gmail.com</p>
+                      </li>
+                    </ul>
+                    <ul class="pl_0">
+                      <li class="auth_option">
+                        <a class="auth_option_item" href="#"
+                          ><i class="fas fa-user-plus"></i> Add another
+                          account</a
+                        >
+                      </li>
+                      <li class="auth_option">
+                        <a class="auth_option_item" href="#"
+                          ><i class="fas fa-key"></i> Change password</a
+                        >
+                      </li>
+                      <li class="auth_option">
+                        <a class="auth_option_item" href="#"
+                          ><i class="fas fa-edit"></i> Profile Update</a
+                        >
+                      </li>
+                      <li class="auth_option">
+                        <a class="auth_option_item" href="#"
+                          ><i class="fas fa-user"></i> Profile Information</a
+                        >
+                      </li>
+                    </ul>
+                    <ul class="auth_card pt_15">
+                      <li class="auth_email">
+                        <button class="sign_out_btn">Log Out</button>
+                      </li>
+                    </ul>
                   </div>
-                  <div class="profile-info">
-                    <h3>Mr Admin</h3>
-                    <p>Role: Admin</p>
-                  </div>
+                  <div class="profile-info"></div>
                 </li>
               </ul>
             </div>

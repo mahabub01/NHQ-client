@@ -50,7 +50,9 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Company Person Name</label>
+              <label class="form-label"
+                >Company Person Name <span class="mandatory">*</span></label
+              >
               <input
                 type="text"
                 class="form-input"
@@ -294,8 +296,6 @@ const emit = defineEmits(["select"]);
 const v$ = useVuelidate(rules, formState);
 
 async function handleSubmit() {
-  console.log(formState);
-
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {

@@ -1451,3 +1451,6 @@ a:hover {
   width: 50px;
   margin: 0 auto;
 }
+.auth_main_card{
+  z-index: 11111;
+}

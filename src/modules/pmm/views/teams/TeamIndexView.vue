@@ -160,15 +160,15 @@
                   >Add User<span class="mandatory">*</span></label
                 >
                 <Select2
-                  v-model="v$.user_ids.$model"
+                  v-model="v$.clients.$model"
                   :options="employeesSelectable"
                   :settings="{ placeholder: 'Choose', multiple: true }"
-                  :class="{ isInvalid: v$.user_ids.$error }"
+                  :class="{ isInvalid: v$.clients.$error }"
                 />
 
                 <p
                   class="error-mgs"
-                  v-for="(error, index) in v$.user_ids.$errors"
+                  v-for="(error, index) in v$.clients.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -247,15 +247,15 @@
                   >Add User<span class="mandatory">*</span></label
                 >
                 <Select2
-                  v-model="v$.user_ids.$model"
+                  v-model="v$.clients.$model"
                   :options="employeesSelectable"
                   :settings="{ placeholder: 'Choose', multiple: true }"
-                  :class="{ isInvalid: v$.user_ids.$error }"
+                  :class="{ isInvalid: v$.clients.$error }"
                 />
 
                 <p
                   class="error-mgs"
-                  v-for="(error, index) in v$.user_ids.$errors"
+                  v-for="(error, index) in v$.clients.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -335,12 +335,12 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
 const state = reactive({
   team_name: "",
   description: "",
-  user_ids: "",
+  clients: "",
 });
 
 const rules: any = {
   team_name: { required },
-  user_ids: { required },
+  clients: { required },
 };
 
 const v$ = useVuelidate(rules, state);
@@ -368,7 +368,7 @@ async function teamSubmit() {
 function resetForm() {
   state.team_name = "";
   state.description = "";
-  state.user_ids = "";
+  state.clients = "";
   v$.value.$reset();
 }
 /**********************
@@ -499,15 +499,27 @@ let editableId = "";
 
 async function getEditData(id: number) {
   await Axios.get("/projects/teams/" + id).then((response) => {
-    single_datas.value = response.data.data;
+    single_datas.value = response.data;
     state.team_name = single_datas.value.team_name;
+    state.clients = single_datas.value.clients[0];
     state.description = single_datas.value.description;
+    console.log(state.clients);
+  });
+}
+
+async function userdata() {
+  // console.log(id);
+
+  await Axios.get("/employees-selectable/").then((response) => {
+    employeesSelectable.value = response.data.data;
   });
 }
 
 async function editSubmit() {
   v$.value.$validate();
   v$.value.$touch();
+  console.log(state);
+
   if (!v$.value.$error) {
     store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
     savingSpinner.value = true;
@@ -527,6 +539,7 @@ async function editSubmit() {
 function showEdit(id) {
   editableId = id;
   getEditData(id);
+  userdata();
   store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
 }
 
@@ -538,7 +551,6 @@ async function openCreateModal() {
   store.commit("modalModule/CHNAGE_CREATE_MODAL", true);
   await Axios.get("/employees-selectable/").then((response) => {
     employeesSelectable.value = response.data.data;
-    console.log(response.data);
   });
 }
 </script>

@@ -34,9 +34,9 @@
             >
           </td>
           <td>
-            {{ td.users_id }}
-            <span v-for="user_td in td.users_id" :key="user_td"
-              >{{ user_td.user_id }},</span
+            <!-- {{ td.clients }} -->
+            <span v-for="user_td in td.clients" :key="user_td"
+              >{{ user_td.member.name }},</span
             >
           </td>
           <td>{{ td.description }}</td>

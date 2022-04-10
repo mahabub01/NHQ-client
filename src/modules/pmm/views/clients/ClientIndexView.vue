@@ -153,46 +153,29 @@
     <div>
       <filter-modal>
         <template v-slot:header
-          ><i class="fas fa-filter"></i> Filter Milestone
+          ><i class="fas fa-filter"></i> Filter Client
         </template>
         <template v-slot:body>
           <form @submit.prevent="filterSubmit" class="form-page">
             <div class="row">
-              <div class="col-md-4">
-                <label class="form-label"> Name/ID </label>
+              <div class="col-md-4 mb_30">
+                <label class="form-label"> Company Name/Email </label>
                 <input
                   type="text"
                   class="form-input"
                   placeholder="Search here"
-                  v-model="filterState.milestone_name_id"
+                  v-model="filterState.company_name_email"
                 />
               </div>
-
-              <div class="col-md-4">
-                <label class="form-label"> Extend Date </label>
+              <div class="col-md-4 mb_30">
+                <label class="form-label">
+                  Contact Person Name/Email/Phone
+                </label>
                 <input
-                  type="date"
+                  type="text"
                   class="form-input"
                   placeholder="Search here"
-                  v-model="filterState.extended_date"
-                />
-              </div>
-              <div class="col-md-4">
-                <label class="form-label"> Start Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  placeholder="Search here"
-                  v-model="filterState.start_date"
-                />
-              </div>
-              <div class="col-md-4">
-                <label class="form-label"> End Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  placeholder="Search here"
-                  v-model="filterState.end_date"
+                  v-model="filterState.contact_person_name_email_phone"
                 />
               </div>
             </div>
@@ -229,6 +212,7 @@ import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
+import FilterModal from "../../../core/shared/FilterModal.vue";
 
 //create store
 const store = useStore();
@@ -345,6 +329,33 @@ async function changeStatus(status: { id: number; status: number }) {
       icon: "success",
     });
     fetchData("/clients");
+  });
+}
+
+// Filter Pert
+
+// use for filter
+let filteringSpinner = ref(false);
+
+const filterState = reactive({
+  company_name_email: "",
+  contact_person_name_email_phone: "",
+});
+
+async function filterSubmit() {
+  store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
+  datatables.loadingState = true;
+  filteringSpinner.value = true;
+  console.log(filterState);
+
+  await Axios.post("clients-filter", filterState).then((response) => {
+    filteringSpinner.value = false;
+    entries.value = response.data.data;
+    datatables.totalItems = response.data.meta.total;
+    datatables.currentPage = response.data.meta.current_page;
+    datatables.allPages = response.data.meta.last_page;
+    datatables.pagination = response.data.meta.links;
+    datatables.loadingState = false;
   });
 }
 </script>

@@ -306,7 +306,6 @@ async function handleSubmit() {
     buttonLoading.value = true;
     await Axios.post("/clients", formState)
       .then((response) => {
-        console.log(response.data);
         buttonLoading.value = false;
         if (response.data.code === 200) {
           resetForm();

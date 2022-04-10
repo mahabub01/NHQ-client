@@ -12,7 +12,7 @@
         modalDisplay: stateCreateModal,
       }"
     >
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-dialog-centered" :class="`${modalsize}`">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title form-modal-title">
@@ -34,11 +34,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, defineProps } from "vue";
 import { useStore } from "vuex";
 
 //use store
 const store = useStore();
+
+const props = defineProps({
+  modalsize: {
+    type: String,
+    default: "modal-md",
+  },
+});
 
 const stateCreateModal = computed(() => store.state.modalModule.creatModal);
 

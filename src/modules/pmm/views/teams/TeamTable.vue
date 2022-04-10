@@ -5,9 +5,9 @@
         <tr>
           <th class="col-serial">Serial</th>
           <th>Team Name</th>
-          <th>Status</th>
           <th>User</th>
           <th>Description</th>
+          <th>Status</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -24,6 +24,12 @@
           </td>
           <td>{{ td.team_name }}</td>
           <td>
+            <span v-for="client in td.clients" :key="client.id"
+              >{{ client.member.name }},</span
+            >
+          </td>
+          <td>{{ td.description }}</td>
+          <td>
             <span v-if="td.is_active == 1" class="activeStatus"
               ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
               {{ td.is_active }}</span
@@ -33,13 +39,6 @@
               {{ isActive(td.is_active) }}</span
             >
           </td>
-          <td>
-            <!-- {{ td.clients }} -->
-            <span v-for="user_td in td.clients" :key="user_td"
-              >{{ user_td.member.name }},</span
-            >
-          </td>
-          <td>{{ td.description }}</td>
           <td class="col-serial">
             <div class="btn-group">
               <button

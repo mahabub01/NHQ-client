@@ -132,13 +132,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, minLength, maxLength } from "@vuelidate/validators";
 import axios from "axios";
 import TheSpinner from "@/modules/shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { useCookies } from "vue3-cookies";
 
 const isShowAlert = ref(false);
 const alertMessage = ref("");
@@ -147,6 +148,8 @@ const is_authenticated = ref(false);
 const router = useRouter();
 
 const store = useStore();
+
+const { cookies } = useCookies();
 
 const formState = reactive({
   email: "",
@@ -160,6 +163,9 @@ const rules = {
 
 const v$ = useVuelidate(rules, formState);
 
+// onMounted(() => {
+//   console.log(cookies.get("mydomain_api"));
+// }),
 async function handleSubmit() {
   v$.value.$validate();
 
@@ -168,6 +174,7 @@ async function handleSubmit() {
   if (!v$.value.$error) {
     is_authenticating.value = true;
     isShowAlert.value = false;
+    await axios.get(process.env.VUE_APP_DOMAIN_URL + "/sanctum/csrf-cookie");
     await axios
       .post("login", formState, {
         baseURL: process.env.VUE_APP_API_URL,
@@ -184,11 +191,17 @@ async function handleSubmit() {
         }
         isShowAlert.value = false;
         is_authenticated.value = true;
-        localStorage.setItem("token", response.data.data.access_token);
-        store.dispatch("assignCurrentUser", response.data.data.user);
-        store.dispatch("isLogin", {
+        // localStorage.setItem("token", response.data.data.access_token);
+        cookies.set("user-token", response.data.data.access_token);
+        store.dispatch(
+          "currentUser/assignCurrentUser",
+          response.data.data.user
+        );
+
+        store.dispatch("currentUser/isLogin", {
           isLoggedIn: true,
         });
+
         router.push("/core/dashboard");
       })
       .catch((error) => {

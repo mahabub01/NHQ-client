@@ -14,8 +14,17 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <a class="rev-underline-subtitle" href=""
-                      >Projects > Team List</a
+                    <router-link
+                      to="/pmm/projects"
+                      class="rev-underline-subtitle"
+                      >Project
+                      <i
+                        class="fas fa-chevron-right"
+                        style="margin-left: 6px; margin-right: 6px"
+                      ></i>
+                    </router-link>
+                    <router-link to="/pmm/teams" class="rev-underline-subtitle"
+                      >Teams List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -67,7 +76,8 @@
                           data-bs-display="static"
                           aria-expanded="false"
                         >
-                          <i class="fas fa-cog"></i> Bulk Action
+                          <i class="fas fa-wrench"></i> Bulk Action
+                          <i class="fas fa-chevron-down"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-lg-end">
                           <li>

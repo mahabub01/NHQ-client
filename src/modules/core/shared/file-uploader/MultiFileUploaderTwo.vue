@@ -1,10 +1,12 @@
 <template>
   <div>
-    <label class="form-label" for="v_card_attchment">{{ label }}</label>
+    <label class="form-label" for="v_card_attchment"
+      >{{ label }}<span v-if="mandatory" class="mandatory">*</span></label
+    >
     <input
       ref="files"
       type="file"
-      class="form-page-input"
+      class="form-input"
       id="v_card_attchment"
       @change="pickerMultiFiles"
       multiple
@@ -55,6 +57,10 @@ const props = defineProps({
   field_name: {
     type: String,
     default: "default",
+  },
+  mandatory: {
+    type: Boolean,
+    default: false,
   },
 });
 

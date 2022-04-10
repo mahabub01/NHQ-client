@@ -1,10 +1,12 @@
 <template>
   <div>
-    <label class="form-label" for="image-upload">{{ label }}</label>
+    <label class="form-label" for="image-upload"
+      >{{ label }}<span v-if="mandatory" class="mandatory">*</span></label
+    >
     <input
       ref="files"
       type="file"
-      class="form-page-input"
+      class="form-input"
       id="image-upload"
       @change="pickerMultiFiles"
     />
@@ -54,6 +56,10 @@ const props = defineProps({
   field_name: {
     type: String,
     default: "default",
+  },
+  mandatory: {
+    type: Boolean,
+    default: false,
   },
 });
 

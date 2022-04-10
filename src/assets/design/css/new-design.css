@@ -966,6 +966,7 @@ a:hover {
   margin-right: 5px;
   float: left;
   font-size: 10px;
+  margin-left: 6px;
 }
 
 .page-bootcamp-title {
@@ -1276,7 +1277,7 @@ a:hover {
   border: none;
 }
 
-.form-design-body .pro-button {
+.pro-button {
   border-radius: 3px;
   text-align: center;
   text-decoration: none;
@@ -1451,6 +1452,53 @@ a:hover {
   width: 50px;
   margin: 0 auto;
 }
+
+.action-icon{
+  color: #7CC4D6;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.file-uploader-design{
+  min-height: 120px;
+  border:2px dashed #C4C4C4;
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.file-uploader-design p{
+  font-size: 16px;
+  text-align: center;
+  color: #737B7D;
+  font-weight: 500;
+  margin-bottom: 0px;
+}
+
+.file-uploader-design label{
+  margin: 0px auto;
+  display: block;
+  background-color: #014e51;
+  border: none;
+  color: white;
+  margin-top: 20px;
+  padding: 4px 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  width: 100px;
+  text-align: center;
+}
+
+.ql-toolbar.ql-snow {
+  background-color: #edf0f4;
+}
+
+.table-search{
+  padding-left: 10px;
+}
+
 .auth_main_card{
   z-index: 11111;
 }

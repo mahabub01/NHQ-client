@@ -16,14 +16,36 @@ export function useDatatable() {
   const currentEntries = ref(25);
 
   //fetch data Module Data
-  async function fetchData(url: string) {
+  async function fetchData(url: string, search = "") {
     datatables.loadingState = true;
     await Axios.get(
       url +
         "?showEntries=" +
         currentEntries.value +
         "&page=" +
-        datatables.currentPage
+        datatables.currentPage +
+        "&search=" +
+        search
+    ).then((response) => {
+      entries.value = response.data.data;
+      datatables.totalItems = response.data.meta.total;
+      datatables.currentPage = response.data.meta.current_page;
+      datatables.allPages = response.data.meta.last_page;
+      datatables.pagination = response.data.meta.links;
+      datatables.loadingState = false;
+    });
+  }
+
+  //filter filter Data
+  async function filterData(url: string, filter_filed = "") {
+    datatables.loadingState = true;
+    await Axios.get(
+      url +
+        "?showEntries=" +
+        currentEntries.value +
+        "&page=" +
+        datatables.currentPage +
+        filter_filed
     ).then((response) => {
       entries.value = response.data.data;
       datatables.totalItems = response.data.meta.total;
@@ -40,5 +62,6 @@ export function useDatatable() {
     showEntries,
     currentEntries,
     fetchData,
+    filterData,
   };
 }

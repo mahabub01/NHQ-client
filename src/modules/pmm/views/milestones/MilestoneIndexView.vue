@@ -14,7 +14,9 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <a class="rev-underline-subtitle" href="">Employees List</a>
+                    <a class="rev-underline-subtitle" href=""
+                      >milestones List</a
+                    >
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -52,13 +54,16 @@
                         </option>
                       </select>
 
-                      <router-link
-                        to="/pmm/milestones/create"
+                      <button
+                        type="button"
                         class="link_btn"
                         style="margin-right: 7px"
+                        @click="
+                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true)
+                        "
                       >
-                        <i class="fas fa-filter"></i
-                      ></router-link>
+                        <i class="fas fa-filter"></i>
+                      </button>
 
                       <router-link
                         to="/pmm/milestones/create"
@@ -100,7 +105,6 @@
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       v-model:nameSearch.lazy="nameSearch"
-                      v-model:isActiveSearch.lazy="isActiveSearch"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       ref="multiselected"
@@ -119,46 +123,6 @@
                   </div>
                 </div>
               </div>
-              <!-- <div class="row">
-                <div class="col-md-9 m-auto">
-                  <div class="row">
-                    <div class="col-md-9">
-                      <div>
-                        <table class="table" id="selectable-table">
-                          <thead>
-                            <tr>
-                              <th class="col-serial">SL</th>
-                              <th>File Name</th>
-                              <th>Updated Date</th>
-                              <th class="col-serial">Delete</th>
-                              <th class="col-serial">Edit</th>
-                              <th class="col-serial">Attchment</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td class="col-serial">1</td>
-                              <td>NP-POC-5</td>
-                              <td>27 Jun, 2022</td>
-
-                              <td class="col-serial">
-                                <i class="fa fa-trash"></i>
-                              </td>
-                              <td class="col-serial">
-                                <i class="fa fa-pen"></i>
-                              </td>
-                              <td class="col-serial">
-                                <i class="fa fa-paperclip"></i>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="col-md-3"></div>
-                  </div>
-                </div>
-              </div> -->
             </div>
           </div>
         </div>
@@ -169,6 +133,76 @@
       :isdeleting="deletingSpinner"
       :isSaving="savingSpinner"
     ></the-spinner>
+
+    <!--start Filter Modal -->
+    <div>
+      <filter-modal>
+        <template v-slot:header
+          ><i class="fas fa-filter"></i> Filter Milestone
+        </template>
+        <template v-slot:body>
+          <form @submit.prevent="filterSubmit" class="form-page">
+            <div class="row">
+              <div class="col-md-4">
+                <label class="form-label"> Name/ID </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.milestone_name_id"
+                />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label"> Extend Date </label>
+                <input
+                  type="date"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.extended_date"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label"> Start Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.start_date"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label"> End Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.end_date"
+                />
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="form-button-danger"
+                data-bs-dismiss="modal"
+                @click.prevent="
+                  store.commit('modalModule/CHNAGE_FILTER_MODAL', false)
+                "
+              >
+                <i class="far fa-times-circle"></i> Close
+              </button>
+              <button type="submit" class="form-button">
+                <i class="fas fa-filter"></i> Filter
+              </button>
+            </div>
+          </form>
+          <!-- <h1>filter body</h1> -->
+        </template>
+      </filter-modal>
+    </div>
+    <!--end Filter Modal -->
   </div>
 </template>
 
@@ -180,6 +214,7 @@ import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import FilterModal from "../../../core/shared/FilterModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
@@ -191,6 +226,9 @@ const store = useStore();
 let deletingSpinner = ref(false);
 let savingSpinner = ref(false);
 
+// use for filter
+let filteringSpinner = ref(false);
+
 //use for multiselected
 const multiselected = ref([]);
 
@@ -200,20 +238,17 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
 
 //Search Property
 let nameSearch = ref("");
-let isActiveSearch = ref("");
 
-watch([nameSearch, isActiveSearch], async () => {
+watch([nameSearch], async () => {
   console.log("hey");
   datatables.loadingState = true;
   await Axios.get(
-    "/employees?showEntries=" +
+    "/milestones?showEntries=" +
       currentEntries +
       "&page=" +
       datatables.currentPage +
       "&searchName=" +
-      nameSearch.value +
-      "&is_active=" +
-      isActiveSearch.value
+      nameSearch.value
   ).then((response) => {
     entries.value = response.data.data.data;
     datatables.totalItems = response.data.data.total;
@@ -226,20 +261,20 @@ watch([nameSearch, isActiveSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/employees");
+  fetchData("/milestones");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/employees");
+  fetchData("/milestones");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/employees");
+    fetchData("/milestones");
   }
 }
 
@@ -247,14 +282,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/employees");
+    fetchData("/milestones");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/employees");
+  fetchData("/milestones");
 }
 
 //Delete selected Item
@@ -268,7 +303,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/employees/" + id).then((response) => {
+      await Axios.delete("/milestones/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -297,10 +332,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/employees-multidelete", {
+      await Axios.post("/milestones-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/employees");
+        fetchData("/milestones");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -312,11 +347,35 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/employees-status", status).then((response) => {
+  await Axios.post("/milestones-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("/employees");
+    fetchData("/milestones");
+  });
+}
+
+// Filter Pert
+
+const filterState = reactive({
+  milestone_name_id: "",
+  extended_date: "",
+  start_date: "",
+  end_date: "",
+});
+
+async function filterSubmit() {
+  store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
+  datatables.loadingState = true;
+  filteringSpinner.value = true;
+  await Axios.post("milestones-filter", filterState).then((response) => {
+    filteringSpinner.value = false;
+    entries.value = response.data.data.data;
+    datatables.totalItems = response.data.meta.total;
+    datatables.currentPage = response.data.meta.current_page;
+    datatables.allPages = response.data.meta.last_page;
+    datatables.pagination = response.data.meta.links;
+    datatables.loadingState = false;
   });
 }
 </script>

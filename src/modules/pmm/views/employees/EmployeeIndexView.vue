@@ -127,7 +127,7 @@
       :isFiltering="filteringSpinner"
     ></the-spinner>
 
-    <!--start Create Modal -->
+    <!--start Filter Modal -->
     <div>
       <filter-modal>
         <template v-slot:header
@@ -196,7 +196,7 @@
         </template>
       </filter-modal>
     </div>
-    <!--end Create Modal -->
+    <!--end Filter Modal -->
   </div>
 </template>
 
@@ -219,6 +219,8 @@ const store = useStore();
 //use for deleting spenner
 let deletingSpinner = ref(false);
 let savingSpinner = ref(false);
+
+// use for filter
 let filteringSpinner = ref(false);
 
 //use for multiselected
@@ -347,7 +349,6 @@ async function changeStatus(status: { id: number; status: number }) {
 }
 
 // Filter Pert
-
 const filterState = reactive({
   name_email_phone_nid: "",
   designation_depertMent_employee_id: "",
@@ -358,7 +359,6 @@ const filterState = reactive({
 async function filterSubmit() {
   store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
   datatables.loadingState = true;
-
   filteringSpinner.value = true;
   await Axios.post("employees-filter", filterState).then((response) => {
     filteringSpinner.value = false;

@@ -284,11 +284,8 @@ const rules: any = {
   email: { required },
   contant_person_email: { required },
   contant_person_phone: { required },
-  // company_logo: { required },
-  // v_card_attchment: { required },
   number_of_projects: { required },
   contant_person_designation: { required },
-  // company_profile_attachment: { required },
 };
 
 const emit = defineEmits(["select"]);

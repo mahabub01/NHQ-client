@@ -4,11 +4,13 @@
       <thead>
         <tr>
           <th class="col-serial">Serial</th>
-          <th>Project ID</th>
-          <th>Created Date</th>
-          <th>Updated Date</th>
-          <th>Scope of Work List</th>
-          <th>Latest Version</th>
+          <th>Milestone Name</th>
+          <th>Milestone ID</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Extended</th>
+          <th>Status</th>
+          <th>Milestone Progress</th>
           <th class="col-icon">Edit</th>
           <th class="col-icon">File</th>
           <th class="col-serial">Action</th>
@@ -25,15 +27,21 @@
             />
             {{ index + 1 }}
           </td>
-          <td>NP-POC-5</td>
-          <td>27 Jun, 2022</td>
-          <td>27 Jun, 2022</td>
+          <td>{{ td.milestone_name }}</td>
+          <td>{{ td.milestone_id }}</td>
+          <td>{{ td.start_date }}</td>
+          <td>{{ td.end_date }}</td>
+          <td>{{ td.extended_date }}</td>
           <td>
-            NHQ Lorem Ipsum has been the industry's standard dummy text ever
-            since the 1500s
+            <span v-if="td.is_active == 1" class="activeStatus"
+              ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
+            </span>
+            <span v-else class="inactiveStatus"
+              ><i class="far fa-times-circle"></i>
+              {{ isActive(td.is_active) }}</span
+            >
           </td>
-
-          <td>Version 3</td>
+          <td>Milestone Prograss</td>
 
           <td class="col-icon"><i class="fa fa-pen"></i></td>
           <td class="col-icon"><i class="fa fa-paperclip"></i></td>
@@ -62,14 +70,14 @@
                   <a
                     href="#"
                     v-else
-                    :to="`/pmm/employees/${td.id}/edit`"
+                    :to="`/pmm/milestones/${td.id}/edit`"
                     class="dropdown-item activeStatus"
                     @click.prevent="changeStatus(td.id, td.is_active)"
                     ><i class="far fa-check-circle"></i> Active</a
                   >
 
                   <router-link
-                    :to="`/pmm/employees/${td.id}/edit`"
+                    :to="`/pmm/milestones/${td.id}/edit`"
                     class="dropdown-item"
                     ><i class="fas fa-edit"></i> Edit</router-link
                   >
@@ -135,9 +143,9 @@ function updateCheckall() {
 //isActive Data
 function isActive(val: number) {
   if (val == 1) {
-    return "Active";
+    return "Complete";
   } else {
-    return "In-Active";
+    return "In-Complete";
   }
 }
 

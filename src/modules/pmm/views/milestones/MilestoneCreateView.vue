@@ -31,70 +31,6 @@
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
               <label class="form-label"
-                >Project Name<span class="mandatory">*</span></label
-              >
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.project_name.$error }"
-                placeholder="Project Name here"
-                v-model.lazy="v$.project_name.$model"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.project_name.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label">Start Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model.lazy="formState.start_date"
-              />
-            </div>
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
-              <label class="form-label"
-                >Project ID<span class="mandatory">*</span></label
-              >
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.project_id.$error }"
-                placeholder="Project ID here"
-                v-model.lazy="v$.project_id.$model"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.project_id.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label">End Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model.lazy="formState.end_date"
-              />
-            </div>
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
-              <label class="form-label"
                 >Milestone Name<span class="mandatory">*</span></label
               >
               <input
@@ -113,11 +49,11 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Extended Date</label>
+              <label class="form-label">Start Date</label>
               <input
                 type="date"
                 class="form-input"
-                v-model.lazy="formState.extended_date"
+                v-model.lazy="formState.start_date"
               />
             </div>
           </div>
@@ -145,12 +81,33 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Points</label>
+              <label class="form-label">End Date</label>
               <input
-                type="number"
+                type="date"
                 class="form-input"
-                placeholder="Points here"
-                v-model.lazy="formState.points"
+                v-model.lazy="formState.end_date"
+              />
+            </div>
+          </div>
+          <!--end row -->
+
+          <!--start row -->
+          <div class="row form-row">
+            <div class="col-md-4 offset-md-1">
+              <label class="form-label">Priority</label>
+              <input
+                type="text"
+                class="form-input"
+                placeholder="Priority here"
+                v-model.lazy="formState.priority"
+              />
+            </div>
+            <div class="col-md-4 offset-md-2">
+              <label class="form-label">Extended Date</label>
+              <input
+                type="date"
+                class="form-input"
+                v-model.lazy="formState.extended_date"
               />
             </div>
           </div>
@@ -167,12 +124,12 @@
               />
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Milestone Category</label>
+              <label class="form-label">Project Wise Point</label>
               <input
-                type="text"
+                type="number"
                 class="form-input"
-                placeholder="Milestone Category here"
-                v-model.lazy="formState.milestone_category"
+                placeholder="Project Wise Points here"
+                v-model.lazy="formState.project_wise_point"
               />
             </div>
           </div>
@@ -181,15 +138,6 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Follow Up</label>
-              <input
-                type="text"
-                class="form-input"
-                placeholder="Follow Up here"
-                v-model.lazy="formState.follow_up"
-              />
-            </div>
-            <div class="col-md-4 offset-md-2">
               <label class="form-label">File Name</label>
               <input
                 type="text"
@@ -197,6 +145,22 @@
                 placeholder="File Name here"
                 v-model.lazy="formState.file_name"
               />
+            </div>
+            <div class="col-md-4 offset-md-2">
+              <label class="form-label">File Attachment</label>
+              <input type="file" class="form-input" />
+            </div>
+          </div>
+          <!--end row -->
+
+          <!--start row -->
+          <div class="row form-row">
+            <div class="col-md-4 offset-md-1">
+              <label class="form-label">Description</label>
+              <textarea
+                placeholder="Present Address here"
+                v-model.lazy="formState.description"
+              ></textarea>
             </div>
           </div>
           <!--end row -->
@@ -217,25 +181,20 @@ import Select2 from "vue3-select2-component";
 
 let buttonLoading = ref(false);
 const formState = reactive({
-  project_name: "",
-  project_id: "",
   milestone_name: "",
   milestone_id: "",
   assign_employee: "",
-  follow_up: "",
-  project_description: "",
+  priority: "",
   start_date: "",
   end_date: "",
   extended_date: "",
-  points: "",
-  milestone_category: "",
+  project_wise_point: "",
   file_name: "",
-  milestone_file: "",
+  file_attachment: "",
+  description: "",
 });
 
 const rules: any = {
-  project_name: { required },
-  project_id: { required },
   milestone_name: { required },
   milestone_id: { required },
 };

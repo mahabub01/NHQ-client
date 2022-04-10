@@ -198,7 +198,6 @@
               </button>
             </div>
           </form>
-          <!-- <h1>filter body</h1> -->
         </template>
       </filter-modal>
     </div>
@@ -240,7 +239,6 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
 let nameSearch = ref("");
 
 watch([nameSearch], async () => {
-  console.log("hey");
   datatables.loadingState = true;
   await Axios.get(
     "/milestones?showEntries=" +
@@ -368,9 +366,10 @@ async function filterSubmit() {
   store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
   datatables.loadingState = true;
   filteringSpinner.value = true;
+
   await Axios.post("milestones-filter", filterState).then((response) => {
     filteringSpinner.value = false;
-    entries.value = response.data.data.data;
+    entries.value = response.data.data;
     datatables.totalItems = response.data.meta.total;
     datatables.currentPage = response.data.meta.current_page;
     datatables.allPages = response.data.meta.last_page;

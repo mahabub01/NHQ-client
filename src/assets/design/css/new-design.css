@@ -1498,3 +1498,7 @@ a:hover {
 .table-search{
   padding-left: 10px;
 }
+
+.auth_main_card{
+  z-index: 11111;
+}

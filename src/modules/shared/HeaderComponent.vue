@@ -77,7 +77,7 @@
               </button>
 
               <ul
-                class="dropdown-menu dropdown-menu-lg-end pt_15"
+                class="dropdown-menu dropdown-menu-lg-end pt_15 auth_main_card"
                 style="width: 300px"
               >
                 <li>
@@ -87,10 +87,10 @@
                         <img src="@/assets/images/ellipse_1.png" width="48" />
                       </li>
                       <li class="auth_name">
-                        <h3>Mr Admin</h3>
+                        <h3>{{ auth.name }}</h3>
                       </li>
                       <li class="auth_email">
-                        <p>sahosmiaisocial@gmail.com</p>
+                        <p>{{ auth.email }}</p>
                       </li>
                     </ul>
                     <ul class="pl_0">
@@ -101,14 +101,20 @@
                         >
                       </li>
                       <li class="auth_option">
-                        <a class="auth_option_item" href="#"
-                          ><i class="fas fa-key"></i> Change password</a
+                        <router-link
+                          class="auth_option_item"
+                          to="/core/password-change"
                         >
+                          <i class="fas fa-key"></i> Change password
+                        </router-link>
                       </li>
                       <li class="auth_option">
-                        <a class="auth_option_item" href="#"
-                          ><i class="fas fa-edit"></i> Profile Update</a
+                        <router-link
+                          class="auth_option_item"
+                          to="/core/profile-update"
                         >
+                          <i class="fas fa-edit"></i> Update Profile
+                        </router-link>
                       </li>
                       <li class="auth_option">
                         <a class="auth_option_item" href="#"
@@ -133,6 +139,43 @@
   </nav>
   <!--end nav section-->
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { reactive, onMounted } from "vue";
+import Axios from "@/http-common";
+import swal from "sweetalert";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
+let singleData = "";
+
+const auth = reactive({
+  name: "",
+  email: "",
+});
+
+onMounted(async () => {
+  await Axios.get("/auth-inforamtion").then((response) => {
+    singleData = response.data.data[0];
+    if (singleData != "") {
+      auth.name = singleData.name;
+      auth.email = singleData.email;
+    }
+  });
+});
+
+// sign out code
+
+// async function signOut() {
+//   await Axios.post("signout/")
+//     .then((response) => {
+//       swal("Success Job!", "Your accout logout successfully!", "success");
+//       router.push("/login");
+//     })
+//     .catch((error) => {
+//       console.log("problem Here" + error);
+//     });
+// }
+</script>
 
 <style scoped></style>

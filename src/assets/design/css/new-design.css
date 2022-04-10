@@ -28,14 +28,13 @@ ol {
 }
 
 .content_section {
-  background-position: center !important;
-  background-size: cover !important;
+  background-position: bottom !important;
+  background-size: auto;
   background-repeat: no-repeat !important;
-
   height: 100vh;
   padding: 65px 130px;
   background-color: white !important;
-  background-image: url("~@/assets/images/bg.png");
+  background-image: url(http://127.0.0.1:8080/img/bg.8252dcd9.png);
 }
 
 .show-image {
@@ -312,8 +311,7 @@ th {
 }
 
 .col-icon {
-  width: 40px !important;
-  min-width: 40px !important;
+  width: 50px !important;
 }
 
 .table-dropdown li a {
@@ -1362,7 +1360,7 @@ a:hover {
 }
 
 .action-field{
-  width: 20px !important;
+  width: 50px !important;
 }
 
 .theme-color-btn {

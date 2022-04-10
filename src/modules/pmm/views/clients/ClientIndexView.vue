@@ -9,7 +9,7 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
@@ -28,7 +28,7 @@
                     </ul>
                   </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-8">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -53,6 +53,16 @@
                         v-model.lazy="search"
                         class="table-search"
                       />
+                      <button
+                        type="button"
+                        class="link_btn"
+                        style="margin-right: 7px"
+                        @click="
+                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true)
+                        "
+                      >
+                        <i class="fas fa-filter"></i>
+                      </button>
 
                       <router-link
                         to="/pmm/clients/create"
@@ -138,6 +148,75 @@
       :isdeleting="deletingSpinner"
       :isSaving="savingSpinner"
     ></the-spinner>
+
+    <!--start Filter Modal -->
+    <div>
+      <filter-modal>
+        <template v-slot:header
+          ><i class="fas fa-filter"></i> Filter Milestone
+        </template>
+        <template v-slot:body>
+          <form @submit.prevent="filterSubmit" class="form-page">
+            <div class="row">
+              <div class="col-md-4">
+                <label class="form-label"> Name/ID </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.milestone_name_id"
+                />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label"> Extend Date </label>
+                <input
+                  type="date"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.extended_date"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label"> Start Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.start_date"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label"> End Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  placeholder="Search here"
+                  v-model="filterState.end_date"
+                />
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="form-button-danger"
+                data-bs-dismiss="modal"
+                @click.prevent="
+                  store.commit('modalModule/CHNAGE_FILTER_MODAL', false)
+                "
+              >
+                <i class="far fa-times-circle"></i> Close
+              </button>
+              <button type="submit" class="form-button">
+                <i class="fas fa-filter"></i> Filter
+              </button>
+            </div>
+          </form>
+        </template>
+      </filter-modal>
+    </div>
+    <!--end Filter Modal -->
   </div>
 </template>
 

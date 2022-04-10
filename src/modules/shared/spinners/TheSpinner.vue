@@ -123,7 +123,7 @@ const props = defineProps({
   color: black;
   border: 1px solid gray;
   position: fixed;
-  top: 50px;
+  top: 60px;
   left: 48%;
   padding: 5px 10px;
   font-weight: 600;
@@ -133,7 +133,7 @@ const props = defineProps({
   width: 100%;
   height: 100%;
   position: absolute;
-  z-index: 1000;
+  z-index: 3000;
   background-color: rgba(255, 255, 255, 0);
   top: 0;
 }

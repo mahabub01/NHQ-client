@@ -14,27 +14,36 @@
           <th>Updated Date</th>
           <th>Scope of Work List</th>
           <th>Latest Version</th>
-          <th class="col-serial">Edit</th>
-          <th class="col-serial">File</th>
+          <th class="action-field">Edit</th>
+          <th class="action-field">File</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
-        <tr>
+        <tr v-for="(item, index) in $attrs.entries" :key="index">
           <td class="action-field align-center">
             <input
               type="checkbox"
               v-model="multiselect"
+              :value="item.id"
               @change="updateCheckall"
             />
           </td>
-          <td>Pro2321</td>
-          <td>20/12/2022</td>
-          <td>24/12/2022</td>
-          <td>project progress sdfasdfasdf asdjfasdjfljasdfsad sdfasdfsd</td>
-          <td>V1</td>
-          <td class="col-serial">Edit</td>
-          <td class="col-serial">File</td>
+          <td>{{ item.poc_id }}</td>
+          <td>{{ item.created_at }}</td>
+          <td>{{ item.updated_at }}</td>
+          <td>{{ item.poc_title }}</td>
+          <td>{{ item.version }}</td>
+          <td class="action-field" style="text-align: center">
+            <a href="#" @click.prevent="getEdit(item.id)" title="Edit POC"
+              ><i class="fa fa-pen action-icon"></i
+            ></a>
+          </td>
+          <td class="action-field" style="text-align: center">
+            <a href="#" @click.prevent="getFile(item.id)" title="Download File"
+              ><i class="fa fa-paperclip action-icon"></i
+            ></a>
+          </td>
           <td class="col-serial">
             <div class="btn-group">
               <button
@@ -48,17 +57,6 @@
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
-                  <router-link :to="`/pmm/pocs/1`" class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create POC</router-link
-                  >
-
-                  <router-link :to="`/pmm/boq/1`" class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create BOQ</router-link
-                  >
-
-                  <router-link :to="`/pmm/oem/1`" class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create OEM</router-link
-                  >
                   <!-- <a
                     href="#"
                     v-if="td.is_active == 1"
@@ -81,156 +79,13 @@
                     class="dropdown-item"
                     ><i class="fas fa-edit"></i> Edit</router-link
                   >
+                  -->
                   <a
                     href="#"
-                    @click.prevent="removeItem(td.id)"
+                    @click.prevent="removeItem(item.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
-                  > -->
-                </li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td class="action-field align-center">
-            <input
-              type="checkbox"
-              v-model="multiselect"
-              @change="updateCheckall"
-            />
-          </td>
-          <td>Pro2321</td>
-          <td>20/12/2022</td>
-          <td>24/12/2022</td>
-          <td>project progress sdfasdfasdf asdjfasdjfljasdfsad sdfasdfsd</td>
-          <td>V1</td>
-          <td class="col-serial">Edit</td>
-          <td class="col-serial">File</td>
-          <td class="col-serial">
-            <div class="btn-group">
-              <button
-                type="button"
-                class="table_icon_btn"
-                data-bs-toggle="dropdown"
-                data-bs-display="static"
-                aria-expanded="false"
-              >
-                <i class="fas fa-sort-down"></i>
-              </button>
-              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li>
-                  <router-link :to="`/pmm/pocs/1`" class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create POC</router-link
                   >
-
-                  <router-link :to="`/pmm/boq/1`" class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create BOQ</router-link
-                  >
-
-                  <router-link :to="`/pmm/oem/1`" class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create OEM</router-link
-                  >
-                  <!-- <a
-                    href="#"
-                    v-if="td.is_active == 1"
-                    class="dropdown-item inactiveStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-times-circle"></i> In-Active</a
-                  >
-
-                  <a
-                    href="#"
-                    v-else
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item activeStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-check-circle"></i> Active</a
-                  >
-
-                  <router-link
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item"
-                    ><i class="fas fa-edit"></i> Edit</router-link
-                  >
-                  <a
-                    href="#"
-                    @click.prevent="removeItem(td.id)"
-                    class="dropdown-item"
-                    ><i class="fas fa-trash-alt"></i> Delete</a
-                  > -->
-                </li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td class="action-field align-center">
-            <input
-              type="checkbox"
-              v-model="multiselect"
-              @change="updateCheckall"
-            />
-          </td>
-          <td>Pro2321</td>
-          <td>20/12/2022</td>
-          <td>24/12/2022</td>
-          <td>project progress sdfasdfasdf asdjfasdjfljasdfsad sdfasdfsd</td>
-          <td>V1</td>
-          <td class="col-serial">Edit</td>
-          <td class="col-serial">File</td>
-          <td class="col-serial">
-            <div class="btn-group">
-              <button
-                type="button"
-                class="table_icon_btn"
-                data-bs-toggle="dropdown"
-                data-bs-display="static"
-                aria-expanded="false"
-              >
-                <i class="fas fa-sort-down"></i>
-              </button>
-              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li>
-                  <router-link :to="`/pmm/pocs/1`" class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create POC</router-link
-                  >
-
-                  <router-link :to="`/pmm/boq/1`" class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create BOQ</router-link
-                  >
-
-                  <router-link :to="`/pmm/oem/1`" class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create OEM</router-link
-                  >
-                  <!-- <a
-                    href="#"
-                    v-if="td.is_active == 1"
-                    class="dropdown-item inactiveStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-times-circle"></i> In-Active</a
-                  >
-
-                  <a
-                    href="#"
-                    v-else
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item activeStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-check-circle"></i> Active</a
-                  >
-
-                  <router-link
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item"
-                    ><i class="fas fa-edit"></i> Edit</router-link
-                  >
-                  <a
-                    href="#"
-                    @click.prevent="removeItem(td.id)"
-                    class="dropdown-item"
-                    ><i class="fas fa-trash-alt"></i> Delete</a
-                  > -->
                 </li>
               </ul>
             </div>
@@ -254,6 +109,8 @@ const emit = defineEmits([
   "update:titleSearch",
   "update:isActiveSearch",
   "activation",
+  "getFiles",
+  "edit",
 ]);
 
 const props = defineProps({
@@ -296,6 +153,16 @@ function isActive(val: number) {
 //Delete Emit use for Delete
 function removeItem(id: number) {
   emit("delete", id);
+}
+
+//Delete Emit use for Delete
+function getFile(pid: number) {
+  emit("getFiles", pid);
+}
+
+//Get Id Emit use for update
+function getEdit(id: number) {
+  emit("edit", id);
 }
 
 //Change Status

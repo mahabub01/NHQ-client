@@ -17,31 +17,66 @@
           <th>Project Progress</th>
           <th>Status</th>
           <th>Milestone Progress</th>
-          <th class="col-serial">Edit</th>
-          <th class="col-serial">File</th>
+          <th class="action-field">Edit</th>
+          <th class="action-field">File</th>
 
           <th class="col-serial">Action</th>
         </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
-        <tr>
+        <tr v-for="(item, index) in $attrs.entries" :key="index">
           <td class="action-field align-center">
             <input
               type="checkbox"
               v-model="multiselect"
               @change="updateCheckall"
+              :value="item.id"
             />
           </td>
-          <td>Project name here</td>
-          <td>Pro2321</td>
-          <td>20/12/2022</td>
-          <td>24/12/2022</td>
-          <td>30/12/2022</td>
-          <td>project progress</td>
-          <td>Status</td>
-          <td>milesotre progress</td>
-          <td class="col-serial">Edit</td>
-          <td class="col-serial">File</td>
+          <td>{{ item.project_name }}</td>
+          <td>{{ item.project_ID }}</td>
+          <td>{{ item.start_date }}</td>
+          <td>{{ item.end_date }}</td>
+          <td>{{ item.extended_date }}</td>
+          <td>
+            <div class="progress" style="height: 14px">
+              <div
+                class="progress-bar bg-info"
+                role="progressbar"
+                style="width: 50%"
+                aria-valuenow="50"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                50%
+              </div>
+            </div>
+          </td>
+          <td>{{ item.status }}</td>
+          <td>
+            <div class="progress" style="height: 14px">
+              <div
+                class="progress-bar bg-warning"
+                role="progressbar"
+                style="width: 75%"
+                aria-valuenow="75"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                75%
+              </div>
+            </div>
+          </td>
+          <td class="action-field" style="text-align: center">
+            <router-link
+              :to="`/pmm/projects/${item.id}/edit`"
+              title="Edit Project"
+              ><i class="fa fa-pen action-icon"></i
+            ></router-link>
+          </td>
+          <td class="action-field" style="text-align: center">
+            <i class="fa fa-paperclip action-icon"></i>
+          </td>
           <td class="col-serial">
             <div class="btn-group">
               <button
@@ -55,7 +90,9 @@
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
-                  <router-link :to="`/pmm/pocs/1`" class="dropdown-item"
+                  <router-link
+                    :to="`/pmm/pocs/${item.id}`"
+                    class="dropdown-item"
                     ><i class="far fa-plus-square"></i> Create POC</router-link
                   >
 
@@ -66,34 +103,13 @@
                   <router-link :to="`/pmm/oem/1`" class="dropdown-item"
                     ><i class="far fa-plus-square"></i> Create OEM</router-link
                   >
-                  <!-- <a
-                    href="#"
-                    v-if="td.is_active == 1"
-                    class="dropdown-item inactiveStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-times-circle"></i> In-Active</a
-                  >
 
                   <a
                     href="#"
-                    v-else
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item activeStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-check-circle"></i> Active</a
-                  >
-
-                  <router-link
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item"
-                    ><i class="fas fa-edit"></i> Edit</router-link
-                  >
-                  <a
-                    href="#"
-                    @click.prevent="removeItem(td.id)"
+                    @click.prevent="removeItem(item.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
-                  > -->
+                  >
                 </li>
               </ul>
             </div>

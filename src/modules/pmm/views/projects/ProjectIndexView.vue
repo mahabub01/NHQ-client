@@ -9,12 +9,14 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-6">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <a class="rev-underline-subtitle" href="">Projects List</a>
+                    <a class="rev-underline-subtitle" href="/pmm/projects"
+                      >Projects List</a
+                    >
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -24,7 +26,7 @@
                     </ul>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -42,12 +44,35 @@
                         </option>
                       </select>
 
+                      <input
+                        type="text"
+                        placeholder="Search By Project ID/Title"
+                        style="margin-right: 7px"
+                        v-model.lazy="search"
+                        class="table-search"
+                      />
+
                       <router-link
                         to="/pmm/projects/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
                       >
+                      <router-link
+                        to="#"
+                        class="theme-color-btn"
+                        style="margin-right: 7px"
+                        ><i class="fas fa-cloud-upload-alt"></i>
+                        Import</router-link
+                      >
+
+                      <router-link
+                        to="#"
+                        class="theme-color-btn"
+                        style="margin-right: 7px"
+                        ><i class="fas fa-file-excel"></i> Export</router-link
+                      >
+
                       <div class="btn-group">
                         <button
                           type="button"
@@ -56,7 +81,8 @@
                           data-bs-display="static"
                           aria-expanded="false"
                         >
-                          <i class="fas fa-cog"></i> Bulk Action
+                          <i class="fas fa-wrench"></i> Bulk Action
+                          <i class="fas fa-chevron-down"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-lg-end">
                           <li>
@@ -64,8 +90,8 @@
                               href="#"
                               @click="bulkDelete"
                               class="dropdown-item"
-                              ><i class="fas fa-trash-alt"></i> Bulk Delete</a
-                            >
+                              ><i class="fas fa-trash-alt"></i> Bulk Delete
+                            </a>
                           </li>
                         </ul>
                       </div>
@@ -81,10 +107,7 @@
                     <project-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
-                      v-model:titleSearch.lazy="titleSearch"
-                      v-model:isActiveSearch.lazy="isActiveSearch"
                       @delete="remove($event)"
-                      @activation="changeStatus($event)"
                       ref="multiselected"
                     ></project-table>
 
@@ -188,6 +211,7 @@ import CreateModal from "../../../core/shared/CreateModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import toastr from "toastr";
 
 //create store
 const store = useStore();
@@ -200,11 +224,11 @@ let savingSpinner = ref(false);
 const multiselected = ref([]);
 
 //use datatable composables
-const { entries, datatables, showEntries, currentEntries, fatchData } =
+const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
 /**********************
- * Create Category
+ * Create Project
  ***********************/
 const state = reactive({
   title: "",
@@ -245,48 +269,30 @@ function resetForm() {
  * End Create Category
  ***********************/
 
-//Search Property
-let titleSearch = ref("");
-let isActiveSearch = ref("");
+//search field
+let search = ref("");
 
-watch([titleSearch, isActiveSearch], async () => {
-  console.log("hey");
-  datatables.loadingState = true;
-  await Axios.get(
-    "/projects/categories?showEntries=" +
-      currentEntries +
-      "&page=" +
-      datatables.currentPage +
-      "&searchTitle=" +
-      titleSearch.value +
-      "&is_active=" +
-      isActiveSearch.value
-  ).then((response) => {
-    entries.value = response.data.data.data;
-    datatables.totalItems = response.data.data.total;
-    datatables.currentPage = response.data.data.current_page;
-    datatables.allPages = response.data.data.last_page;
-    datatables.pagination = response.data.data.links;
-    datatables.loadingState = false;
-  });
+//filter by POC ID/ Poc title
+watch([search], async () => {
+  fetchData("/projects/projects", search.value);
 });
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fatchData("/projects/categories");
+  fetchData("/projects/projects");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fatchData("/projects/categories");
+  fetchData("/projects/projects");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fatchData("/projects/categories");
+    fetchData("/projects/projects");
   }
 }
 
@@ -294,14 +300,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fatchData("/projects/categories");
+    fetchData("/projects/projects");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fatchData("/projects/categories");
+  fetchData("/projects/projects");
 }
 
 //Delete selected Item
@@ -315,14 +321,19 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/projects/categories/" + id).then((response) => {
-        entries.value = entries.value.filter(
-          (e: { id: number }) => e.id !== id
-        );
+      await Axios.delete("/projects/projects/" + id).then((response) => {
         deletingSpinner.value = false;
-        swal("Poof! Your data has been deleted!", {
-          icon: "success",
-        });
+        if (response.data.code === 200) {
+          entries.value = entries.value.filter(
+            (e: { id: number }) => e.id !== id
+          );
+          swal("Poof! Your data has been deleted!", {
+            icon: "success",
+          });
+        } else {
+          //Show Error message
+          toastr.error(response.data.message);
+        }
       });
     }
   });
@@ -344,26 +355,20 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/projects/categories-multidelete", {
+      await Axios.post("/projects/projects-multiple-delete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fatchData("/projects/categories");
         deletingSpinner.value = false;
-        swal("Poof! Your data has been deleted!", {
-          icon: "success",
-        });
+        if (response.data.code === 200) {
+          fetchData("/projects/projects");
+          swal("Poof! Your data has been deleted!", {
+            icon: "success",
+          });
+        } else {
+          toastr.error(response.data.message);
+        }
       });
     }
-  });
-}
-
-//Change selected data status
-async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/projects/categories-status", status).then((response) => {
-    swal("Your data status changed", {
-      icon: "success",
-    });
-    fatchData("/projects/categories");
   });
 }
 </script>

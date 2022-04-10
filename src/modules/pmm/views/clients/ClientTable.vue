@@ -11,6 +11,7 @@
           <th>Contact Person Email</th>
           <th>Contact Person Phone Number</th>
           <th>Number of Projects</th>
+          <th class="action-field">Edit</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -27,11 +28,16 @@
           </td>
           <td>{{ td.company_name }}</td>
           <td>{{ td.email }}</td>
-          <td>{{ td.contant_person_name }}</td>
-          <td>{{ td.contant_person_designation }}</td>
-          <td>{{ td.contant_person_email }}</td>
-          <td>{{ td.contant_person_phone }}</td>
+          <td>{{ td.contact_person_name }}</td>
+          <td>{{ td.contact_person_designation }}</td>
+          <td>{{ td.contact_person_email }}</td>
+          <td>{{ td.contact_person_phone }}</td>
           <td>{{ td.number_of_projects }}</td>
+          <td class="action-field" style="text-align: center">
+            <router-link :to="`/pmm/clients/${td.id}/edit`" title="Edit Project"
+              ><i class="fa fa-pen action-icon"></i
+            ></router-link>
+          </td>
 
           <td class="col-serial">
             <div class="btn-group">
@@ -44,30 +50,8 @@
               >
                 <i class="fas fa-sort-down"></i>
               </button>
-              <ul class="dropdown-menu table-dropdown">
+              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
-                  <a
-                    href="#"
-                    v-if="td.is_active == 1"
-                    class="dropdown-item inactiveStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-times-circle"></i> In-Active</a
-                  >
-
-                  <a
-                    href="#"
-                    v-else
-                    :to="`/pmm/clients/${td.id}/edit`"
-                    class="dropdown-item activeStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-check-circle"></i> Active</a
-                  >
-
-                  <router-link
-                    :to="`/pmm/clients/${td.id}/edit`"
-                    class="dropdown-item"
-                    ><i class="fas fa-edit"></i> Edit</router-link
-                  >
                   <a
                     href="#"
                     @click.prevent="removeItem(td.id)"

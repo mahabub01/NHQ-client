@@ -1,13 +1,16 @@
 <template>
   <div class="container-fluid">
+    <!--start Spinner -->
+    <the-spinner :isSaving="savingSpinner"></the-spinner>
+
     <form @submit.prevent="handleSubmit">
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
             <router-link to="/pmm/projects"
-              >Project <i class="fas fa-chevron-right"></i
+              >Project List <i class="fas fa-chevron-right"></i
             ></router-link>
-            <router-link to="#">Create</router-link>
+            <router-link to="/pmm/projects/create">Create</router-link>
           </div>
           <div class="col-md-8">
             <div class="float-right">
@@ -119,7 +122,7 @@
                 >Add Client<span class="mandatory">*</span></label
               >
               <Select2
-                v-model="v$.lead_id.$model"
+                v-model="v$.client_id.$model"
                 :options="clientList"
                 :settings="{ placeholder: 'Choose' }"
                 :class="{ isInvalid: v$.client_id.$error }"
@@ -160,7 +163,7 @@
                 >Start Date<span class="mandatory">*</span></label
               >
               <input
-                type="text"
+                type="date"
                 class="form-input"
                 :class="{ isInvalid: v$.start_date.$error }"
                 placeholder="Title here"
@@ -179,7 +182,7 @@
                 >End Date<span class="mandatory">*</span></label
               >
               <input
-                type="text"
+                type="date"
                 class="form-input"
                 :class="{ isInvalid: v$.end_date.$error }"
                 placeholder="Title here"
@@ -199,43 +202,67 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Description</label>
-              <textarea
-                placeholder="Discription here"
-                v-model.lazy="formState.description"
-              ></textarea>
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label"
-                >Extended Date<span class="mandatory">*</span></label
-              >
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.extended_date.$error }"
-                placeholder="Title here"
-                v-model.lazy="v$.extended_date.$model"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.extended_date.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row">
-            <div class="col-md-4 offset-md-1">
-              <div class="col-md-12">
-                <label class="form-label">File Name</label>
-                <input class="form-input" type="file" />
+              <div class="form-row">
+                <label class="form-label"
+                  >Extended Date<span class="mandatory">*</span></label
+                >
+                <input
+                  type="date"
+                  class="form-input"
+                  :class="{ isInvalid: v$.extended_date.$error }"
+                  placeholder="Title here"
+                  v-model.lazy="v$.extended_date.$model"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.extended_date.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
               </div>
+
+              <!--start row-->
+              <div class="row form-row">
+                <label class="form-label"
+                  >Status<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="v$.status.$model"
+                  :options="StatusList"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.status.$error }"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.status.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+              <!--end row-->
+
+              <!--start row -->
+              <div class="row form-row">
+                <div class="col-md-12">
+                  <label class="form-label"
+                    >Choose File<span class="mandatory">*</span></label
+                  >
+                  <single-file-uploader
+                    field_name="create_project"
+                  ></single-file-uploader>
+                </div>
+              </div>
+              <!--end row -->
             </div>
-            <div class="col-md-4 offset-md-2"></div>
+
+            <div class="col-md-4 offset-md-2">
+              <label class="form-label">Description</label>
+              <TheCKEditor @sendContent="setDescription" />
+            </div>
           </div>
           <!--end row -->
         </div>
@@ -245,15 +272,27 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, defineEmits } from "vue";
+import { reactive, ref, defineEmits, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";
 import swal from "sweetalert";
-import TheButton from "@/modules/shared/TheButton.vue";
 import Select2 from "vue3-select2-component";
+import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
+import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
+import toastr from "toastr";
+import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
-let buttonLoading = ref(false);
+//use for saving preloader
+let savingSpinner = ref(false);
+
+const router = useRouter();
+
+//create store
+const store = useStore();
+
 const formState = reactive({
   name: "",
   category_id: "",
@@ -265,6 +304,8 @@ const formState = reactive({
   client_id: "",
   tags: "",
   description: "",
+  status: "",
+  token: store.state.currentUser.token,
 });
 
 const rules: any = {
@@ -277,55 +318,162 @@ const rules: any = {
   tags: { required },
   client_id: { required },
   lead_id: { required },
+  status: { required },
 };
 
 const emit = defineEmits(["select"]);
 
-//Category list for Category Select
-const categoryList = reactive([
-  { id: 1, text: "Category 1" },
-  { id: 2, text: "Category 2" },
-  { id: 3, text: "Category 3" },
+//set CKEditor Data
+const setDescription = (value: any) => {
+  formState.description = value;
+};
+
+//Status List for Status Select
+const StatusList = reactive([
+  { id: 0, text: "In Progress" },
+  { id: 1, text: "Completed" },
 ]);
 
+//Category list for Category Select
+const categoryList = ref([]);
+
 //team list for Team Select
-const teamList = reactive(["Team 1", "Team 2", "Team 3"]);
+const teamList = ref([]);
 
 //lead list for lead Select
-const leadList = reactive(["Lead 1", "Lead 2", "Lead 3"]);
+const leadList = ref([]);
 
 //client list for client Select
-const clientList = reactive(["Client 1", "Client 2", "Client 3"]);
+const clientList = ref([]);
 
 //team list for Team Select
-const tagList = reactive(["Tag 1", "Tag 2", "Tag 3"]);
+const tagList = ref([]);
 
+//Load Data form computed onMounted
+onMounted(() => {
+  getTeams();
+  getLeadList();
+  getClientList();
+  getTagList();
+  getCategoryList();
+});
+
+//get Selectable TeamList
+async function getTeams() {
+  await Axios.get("teams-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        teamList.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+//get Selectable leadList
+async function getLeadList() {
+  await Axios.get("teamlead-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        leadList.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+//get Selectable leadList
+async function getClientList() {
+  await Axios.get("clients-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        clientList.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+//get Selectable TagList
+async function getTagList() {
+  await Axios.get("tags-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        tagList.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+//get Selectable CategoryList
+async function getCategoryList() {
+  await Axios.get("categories-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        categoryList.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
 const v$ = useVuelidate(rules, formState);
 
 async function handleSubmit() {
-  console.log(formState);
   v$.value.$validate();
   v$.value.$touch();
+
   if (!v$.value.$error) {
-    buttonLoading.value = true;
-    console.log(formState);
-    // await Axios.post("projects/categories", state)
-    //   .then((response) => {
-    //     swal("Success Job!", "Your category created successfully!", "success");
-    //     reset(); //reset all property
-    //     buttonLoading.value = false;
-    //   })
-    //   .catch((error) => {
-    //     console.log("problem Here" + error);
-    //   });
+    savingSpinner.value = true;
+    await Axios.post("/projects/projects", formState)
+      .then((response) => {
+        if (response.data.code === 200) {
+          resetForm();
+          //Stop Saving Spinner
+          savingSpinner.value = false;
+          swal("Success Job!", "Created record successfully!", "success");
+          router.push("/pmm/projects");
+        } else {
+          savingSpinner.value = false;
+          //Show Error message
+          toastr.error(response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.log("problem Here" + error);
+      });
   }
 }
 
 //reset all property
-function reset() {
-  // state.title = "";
-  // state.description = "";
-  // v$.value.$reset();
+function resetForm() {
+  formState.name = "";
+  formState.category_id = "";
+  formState.team_id = "";
+  formState.lead_id = "";
+  formState.start_date = "";
+  formState.end_date = "";
+  formState.extended_date = "";
+  formState.client_id = "";
+  formState.tags = "";
+  formState.description = "";
+  formState.status = "";
+  v$.value.$reset();
 }
 </script>
 

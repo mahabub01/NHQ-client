@@ -9,12 +9,16 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-6">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <a class="rev-underline-subtitle" href="">Client List</a>
+                    <router-link
+                      class="rev-underline-subtitle"
+                      to="/pmm/clients"
+                      >Clients List</router-link
+                    >
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -24,7 +28,7 @@
                     </ul>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -42,12 +46,36 @@
                         </option>
                       </select>
 
+                      <input
+                        type="text"
+                        placeholder="Search by Email"
+                        style="margin-right: 7px"
+                        v-model.lazy="search"
+                        class="table-search"
+                      />
+
                       <router-link
                         to="/pmm/clients/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
                       >
+
+                      <router-link
+                        to="#"
+                        class="theme-color-btn"
+                        style="margin-right: 7px"
+                        ><i class="fas fa-cloud-upload-alt"></i>
+                        Import</router-link
+                      >
+
+                      <router-link
+                        to="#"
+                        class="theme-color-btn"
+                        style="margin-right: 7px"
+                        ><i class="fas fa-file-excel"></i> Export</router-link
+                      >
+
                       <div class="btn-group">
                         <button
                           type="button"
@@ -56,7 +84,8 @@
                           data-bs-display="static"
                           aria-expanded="false"
                         >
-                          <i class="fas fa-cog"></i> Bulk Action
+                          <i class="fas fa-wrench"></i> Bulk Action
+                          <i class="fas fa-chevron-down"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-lg-end">
                           <li>
@@ -64,8 +93,8 @@
                               href="#"
                               @click="bulkDelete"
                               class="dropdown-item"
-                              ><i class="fas fa-trash-alt"></i> Bulk Delete</a
-                            >
+                              ><i class="fas fa-trash-alt"></i> Bulk Delete
+                            </a>
                           </li>
                         </ul>
                       </div>
@@ -81,8 +110,6 @@
                     <client-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
-                      v-model:nameSearch.lazy="nameSearch"
-                      v-model:isActiveSearch.lazy="isActiveSearch"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       ref="multiselected"
@@ -123,8 +150,6 @@ import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
-import { useVuelidate } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
 
 //create store
 const store = useStore();
@@ -140,34 +165,17 @@ const multiselected = ref([]);
 const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
-//Search Property
-let nameSearch = ref("");
-let isActiveSearch = ref("");
-
-watch([nameSearch, isActiveSearch], async () => {
-  datatables.loadingState = true;
-  await Axios.get(
-    "/clients?showEntries=" +
-      currentEntries +
-      "&page=" +
-      datatables.currentPage +
-      "&searchName=" +
-      nameSearch.value +
-      "&is_active=" +
-      isActiveSearch.value
-  ).then((response) => {
-    entries.value = response.data.data.data;
-    datatables.totalItems = response.data.data.total;
-    datatables.currentPage = response.data.data.current_page;
-    datatables.allPages = response.data.data.last_page;
-    datatables.pagination = response.data.data.links;
-    datatables.loadingState = false;
-  });
-});
-
 //Load Data form computed onMounted
 onMounted(() => {
   fetchData("/clients");
+});
+
+//Search Property
+let search = ref("");
+
+//filter by POC ID/ Poc title
+watch([search], async () => {
+  fetchData("/clients", search.value);
 });
 
 //show data using show Menu

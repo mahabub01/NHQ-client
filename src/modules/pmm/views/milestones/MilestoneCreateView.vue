@@ -49,7 +49,9 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Start Date</label>
+              <label class="form-label"
+                >Start Date<span class="mandatory">*</span></label
+              >
               <input
                 type="date"
                 class="form-input"
@@ -81,7 +83,9 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">End Date</label>
+              <label class="form-label"
+                >End Date<span class="mandatory">*</span></label
+              >
               <input
                 type="date"
                 class="form-input"
@@ -94,7 +98,9 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Priority</label>
+              <label class="form-label"
+                >Priority<span class="mandatory">*</span></label
+              >
               <input
                 type="text"
                 class="form-input"
@@ -103,7 +109,9 @@
               />
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Extended Date</label>
+              <label class="form-label"
+                >Extended Date<span class="mandatory">*</span></label
+              >
               <input
                 type="date"
                 class="form-input"
@@ -116,15 +124,19 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Assign Employee</label>
+              <label class="form-label"
+                >Assign Employee<span class="mandatory">*</span></label
+              >
               <Select2
-                v-model="formState.assign_employee"
+                v-model="formState.assign_member"
                 :options="genderList"
                 :settings="{ placeholder: 'Choose' }"
               />
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Project Wise Point</label>
+              <label class="form-label"
+                >Project Wise Point<span class="mandatory">*</span></label
+              >
               <input
                 type="number"
                 class="form-input"
@@ -183,7 +195,7 @@ let buttonLoading = ref(false);
 const formState = reactive({
   milestone_name: "",
   milestone_id: "",
-  assign_employee: "",
+  assign_member: "",
   priority: "",
   start_date: "",
   end_date: "",
@@ -216,6 +228,7 @@ async function handleSubmit() {
     buttonLoading.value = true;
     await Axios.post("milestones", formState)
       .then((response) => {
+        console.log(formState);
         swal("Success Job!", "Your milestone created successfully!", "success");
         reset(); //reset all property
         buttonLoading.value = false;

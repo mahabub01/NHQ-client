@@ -9,17 +9,13 @@
           >
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
           </th>
-          <th>Project Name</th>
-          <th>Project ID</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Extended</th>
-          <th>Project Progress</th>
-          <th>Status</th>
-          <th>Milestone Progress</th>
+          <th>BOQ ID</th>
+          <th>Created Date</th>
+          <th>Updated Date</th>
+          <th>Scope of Work List</th>
+          <th>Latest Version</th>
           <th class="action-field">Edit</th>
           <th class="action-field">File</th>
-
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -29,53 +25,24 @@
             <input
               type="checkbox"
               v-model="multiselect"
-              @change="updateCheckall"
               :value="item.id"
+              @change="updateCheckall"
             />
           </td>
-          <td>{{ item.project_name }}</td>
-          <td>{{ item.project_ID }}</td>
-          <td>{{ item.start_date }}</td>
-          <td>{{ item.end_date }}</td>
-          <td>{{ item.extended_date }}</td>
-          <td>
-            <div class="progress" style="height: 14px">
-              <div
-                class="progress-bar bg-info"
-                role="progressbar"
-                style="width: 50%"
-                aria-valuenow="50"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                50%
-              </div>
-            </div>
-          </td>
-          <td>{{ item.status }}</td>
-          <td>
-            <div class="progress" style="height: 14px">
-              <div
-                class="progress-bar bg-warning"
-                role="progressbar"
-                style="width: 75%"
-                aria-valuenow="75"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                75%
-              </div>
-            </div>
-          </td>
+          <td>{{ item.boq_unique_id }}</td>
+          <td>{{ item.created_at }}</td>
+          <td>{{ item.updated_at }}</td>
+          <td>{{ item.boq_title }}</td>
+          <td>{{ item.version }}</td>
           <td class="action-field" style="text-align: center">
-            <router-link
-              :to="`/pmm/projects/${item.id}/edit`"
-              title="Edit Project"
+            <a href="#" @click.prevent="getEdit(item.id)" title="Edit Boq"
               ><i class="fa fa-pen action-icon"></i
-            ></router-link>
+            ></a>
           </td>
           <td class="action-field" style="text-align: center">
-            <i class="fa fa-paperclip action-icon"></i>
+            <a href="#" @click.prevent="getFile(item.id)" title="Download File"
+              ><i class="fa fa-paperclip action-icon"></i
+            ></a>
           </td>
           <td class="col-serial">
             <div class="btn-group">
@@ -90,24 +57,29 @@
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
-                  <router-link
-                    :to="`/pmm/pocs/${item.id}`"
-                    class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create POC</router-link
+                  <!-- <a
+                    href="#"
+                    v-if="td.is_active == 1"
+                    class="dropdown-item inactiveStatus"
+                    @click.prevent="changeStatus(td.id, td.is_active)"
+                    ><i class="far fa-times-circle"></i> In-Active</a
+                  >
+
+                  <a
+                    href="#"
+                    v-else
+                    :to="`/pmm/categories/${td.id}/edit`"
+                    class="dropdown-item activeStatus"
+                    @click.prevent="changeStatus(td.id, td.is_active)"
+                    ><i class="far fa-check-circle"></i> Active</a
                   >
 
                   <router-link
-                    :to="`/pmm/boqs/${item.id}`"
+                    :to="`/pmm/categories/${td.id}/edit`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create BOQ</router-link
+                    ><i class="fas fa-edit"></i> Edit</router-link
                   >
-
-                  <router-link
-                    :to="`/pmm/oems/${item.id}`"
-                    class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create OEM</router-link
-                  >
-
+                  -->
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
@@ -137,6 +109,8 @@ const emit = defineEmits([
   "update:titleSearch",
   "update:isActiveSearch",
   "activation",
+  "getFiles",
+  "edit",
 ]);
 
 const props = defineProps({
@@ -181,6 +155,16 @@ function removeItem(id: number) {
   emit("delete", id);
 }
 
+//Delete Emit use for Delete
+function getFile(pid: number) {
+  emit("getFiles", pid);
+}
+
+//Get Id Emit use for update
+function getEdit(id: number) {
+  emit("edit", id);
+}
+
 //Change Status
 function changeStatus(id: number, status: number) {
   let full_status = {
@@ -197,5 +181,8 @@ function changeStatus(id: number, status: number) {
 }
 .inactiveStatus {
   color: red;
+}
+.action-field {
+  width: 20px !important;
 }
 </style>

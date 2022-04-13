@@ -182,4 +182,7 @@ function changeStatus(id: number, status: number) {
 .inactiveStatus {
   color: red;
 }
+.action-field {
+  width: 20px !important;
+}
 </style>

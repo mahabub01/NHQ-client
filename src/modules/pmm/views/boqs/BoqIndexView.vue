@@ -21,7 +21,7 @@
                       >NHQ Project</router-link
                     >
                     >
-                    <a class="rev-underline-subtitle" href="">Poc List</a>
+                    <a class="rev-underline-subtitle" href="">Boq List</a>
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -51,7 +51,7 @@
 
                       <input
                         type="text"
-                        placeholder="Search By POC ID/Title"
+                        placeholder="Search By BOQ ID/Title"
                         style="margin-right: 7px"
                         v-model.lazy="search"
                         class="table-search"
@@ -126,7 +126,7 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <poc-table
+                    <boq-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       @delete="remove($event)"
@@ -134,7 +134,7 @@
                       @getFiles="downloadFile($event)"
                       @edit="editModal($event)"
                       ref="multiselected"
-                    ></poc-table>
+                    ></boq-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -165,7 +165,7 @@
     <div>
       <create-modal :modalsize="modalSize" v-if="createModalState">
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create POC
+          ><i class="fas fa-plus-square"></i> Create BOQ
         </template>
         <template v-slot:body>
           <form @submit.prevent="submitHandler" class="form-page">
@@ -193,14 +193,14 @@
 
               <div class="col-md-6">
                 <label class="form-label">
-                  POC Title
+                  BOQ Title
                   <span class="mandatory">*</span>
                 </label>
                 <input
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="POC title"
+                  placeholder="BOQ title"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -226,7 +226,7 @@
               <div class="col-md-12">
                 <label class="form-label">Choose File</label>
                 <single-file-uploader
-                  field_name="create_poc"
+                  field_name="create_boq"
                   :version-id="v$.version_id.$model"
                 ></single-file-uploader>
               </div>
@@ -256,7 +256,7 @@
     <!--start Edit Modal -->
     <EditModal :modalsize="modalSize" v-if="editModalState">
       <template v-slot:editheader
-        ><i class="fas fa-plus-square"></i> Edit POC
+        ><i class="fas fa-plus-square"></i> Edit BOQ
       </template>
       <template v-slot:editbody>
         <form @submit.prevent="updateHandler" class="form-page">
@@ -284,14 +284,14 @@
 
             <div class="col-md-6">
               <label class="form-label">
-                POC Title
+                BOQ Title
                 <span class="mandatory">*</span>
               </label>
               <input
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.title.$error }"
-                placeholder="POC title"
+                placeholder="BOQ title"
                 v-model.lazy="v$.title.$model"
               />
               <p
@@ -321,7 +321,7 @@
             <div class="col-md-12">
               <label class="form-label">Choose File</label>
               <single-file-uploader
-                field_name="create_poc"
+                field_name="create_boq"
                 :version-id="v$.version_id.$model"
               ></single-file-uploader>
             </div>
@@ -350,13 +350,13 @@
     <!--start filter Modal -->
     <filter-modal v-if="fileModalState">
       <template v-slot:header
-        ><i class="fas fa-filter"></i> Filter POC
+        ><i class="fas fa-filter"></i> Filter BOQ
       </template>
       <template v-slot:body>
         <form class="form-page" @submit.prevent="filterHandler">
           <div class="row form-row">
             <div class="col-md-4">
-              <label class="form-label"> POC ID/Title </label>
+              <label class="form-label"> BOQ ID/Title </label>
               <input
                 type="text"
                 class="form-input"
@@ -418,7 +418,7 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive, computed, watch } from "vue";
 import Axios from "@/http-common";
-import PocTable from "./PocTable.vue";
+import BoqTable from "./BoqTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
@@ -463,7 +463,7 @@ const {
 } = useDatatable();
 
 /**********************
- * Create POC
+ * Create BOQ
  ***********************/
 const formState = reactive({
   version_id: "",
@@ -492,7 +492,7 @@ function resetForm() {
   v$.value.$reset();
 }
 /**********************
- * End Create POC
+ * End Create BOQ
  ***********************/
 
 //Search Property
@@ -501,13 +501,13 @@ const versions = ref([]);
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/projects/pocs");
+  fetchData("/projects/boqs");
   getVersions();
 });
 
-//filter by POC ID/ Poc title
+//filter by BOQ ID/ BOQ title
 watch([search], async () => {
-  fetchData("/projects/pocs", search.value);
+  fetchData("/projects/boqs", search.value);
 });
 
 //modal setting
@@ -531,11 +531,11 @@ async function submitHandler() {
   if (!v$.value.$error) {
     //Start data saving spinner
     savingSpinner.value = true;
-    await Axios.post("projects/pocs", formState)
+    await Axios.post("projects/boqs", formState)
       .then((response) => {
         if (response.data.code === 200) {
           //get Data using api
-          fetchData("/projects/pocs");
+          fetchData("/projects/boqs");
           //Close Create Modal
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
           //reset form field
@@ -569,12 +569,12 @@ async function editModal(id: number) {
   loadingSpinner.value = true;
   editable_id.value = id;
   store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
-  await Axios.get("/projects/pocs/" + id).then((response) => {
+  await Axios.get("/projects/boqs/" + id).then((response) => {
     loadingSpinner.value = false;
     if (response.data.code === 200) {
       formState.project_id = response.data.data[0].project_id;
       formState.version_id = response.data.data[0].version_id;
-      formState.title = response.data.data[0].poc_title;
+      formState.title = response.data.data[0].boq_title;
       formState.description = response.data.data[0].project_description;
       store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
     } else {
@@ -592,11 +592,11 @@ async function updateHandler() {
   if (!v$.value.$error) {
     //Start data saving spinner
     savingSpinner.value = true;
-    await Axios.put("projects/pocs/" + editable_id.value, formState)
+    await Axios.put("projects/boqs/" + editable_id.value, formState)
       .then((response) => {
         if (response.data.code === 200) {
           //get Data using api
-          fetchData("/projects/pocs");
+          fetchData("/projects/boqs");
           //Close Create Modal
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
           //reset form field
@@ -645,21 +645,21 @@ function filterHandler() {
     filterState.updated_date +
     "&version_id=" +
     filterState.version;
-  filterData("/projects/pocs", path);
+  filterData("/projects/boqs", path);
   store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
 }
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/projects/pocs");
+  fetchData("/projects/boqs");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/projects/pocs");
+    fetchData("/projects/boqs");
   }
 }
 
@@ -667,14 +667,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/projects/pocs");
+    fetchData("/projects/boqs");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/projects/pocs");
+  fetchData("/projects/boqs");
 }
 
 //Delete selected Item
@@ -688,7 +688,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/projects/pocs/" + id).then((response) => {
+      await Axios.delete("/projects/boqs/" + id).then((response) => {
         deletingSpinner.value = false;
         if (response.data.code === 200) {
           entries.value = entries.value.filter(
@@ -722,12 +722,12 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/projects/pocs-multidelete", {
+      await Axios.post("/projects/boqs-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
         deletingSpinner.value = false;
         if (response.data.code === 200) {
-          fetchData("/projects/pocs");
+          fetchData("/projects/boqs");
           swal("Poof! Your data has been deleted!", {
             icon: "success",
           });
@@ -740,11 +740,11 @@ function bulkDelete() {
 }
 
 //download files
-async function downloadFile(poc_id: number) {
+async function downloadFile(boq_unique_id: number) {
   await Axios.post(
-    "/projects/pocs-file-download",
+    "/projects/boqs-file-download",
     {
-      id: poc_id,
+      id: boq_unique_id,
     },
     {
       responseType: "blob",
@@ -766,7 +766,7 @@ async function downloadFile(poc_id: number) {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/projects/pocs-change-status", status).then((response) => {
+  await Axios.post("/projects/boqs-change-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });

@@ -143,7 +143,7 @@
         <template v-slot:body>
           <form @submit.prevent="filterSubmit" class="form-page">
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-4 mb_30">
                 <label class="form-label"> Name/ID </label>
                 <input
                   type="text"
@@ -153,7 +153,7 @@
                 />
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-4 mb_30">
                 <label class="form-label"> Extend Date </label>
                 <input
                   type="date"
@@ -162,7 +162,7 @@
                   v-model="filterState.extended_date"
                 />
               </div>
-              <div class="col-md-4">
+              <div class="col-md-4 mb_30">
                 <label class="form-label"> Start Date</label>
                 <input
                   type="date"
@@ -171,7 +171,7 @@
                   v-model="filterState.start_date"
                 />
               </div>
-              <div class="col-md-4">
+              <div class="col-md-4 mb_30">
                 <label class="form-label"> End Date</label>
                 <input
                   type="date"
@@ -224,9 +224,6 @@ const store = useStore();
 //use for deleting spenner
 let deletingSpinner = ref(false);
 let savingSpinner = ref(false);
-
-// use for filter
-let filteringSpinner = ref(false);
 
 //use for multiselected
 const multiselected = ref([]);
@@ -355,6 +352,9 @@ async function changeStatus(status: { id: number; status: number }) {
 }
 
 // Filter Pert
+
+// use for filter
+let filteringSpinner = ref(false);
 
 const filterState = reactive({
   milestone_name_id: "",

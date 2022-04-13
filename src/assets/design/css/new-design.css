@@ -1500,3 +1500,7 @@ a:hover {
 .auth_main_card{
   z-index: 11111;
 }
+
+.mb_30{
+  margin-bottom: 30px;
+}

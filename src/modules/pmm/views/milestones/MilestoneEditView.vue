@@ -7,7 +7,7 @@
             <router-link to="/pmm/milestones"
               >Milestones <i class="fas fa-chevron-right"></i
             ></router-link>
-            <router-link to="#">Create</router-link>
+            <router-link to="#">Edit</router-link>
           </div>
           <div class="col-md-8">
             <div class="float-right">
@@ -26,7 +26,7 @@
       </div>
       <div class="form-design-body">
         <div class="container">
-          <h4 class="form-page-title">Create Milestone</h4>
+          <h4 class="form-page-title">Edit Milestone</h4>
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">

@@ -6,7 +6,7 @@ const { cookies } = useCookies();
 export default {
   namespaced: true,
   state: {
-    user: {},
+    user: cookies.get("user-token") == null ? {} : cookies.get("user"),
     isLoggedIn: cookies.get("user-token") == null ? false : true,
     token: cookies.get("user-token"),
   },
@@ -17,6 +17,7 @@ export default {
   },
   mutations: {
     ASSIGN_CURRENT_USER(state: any, data: any) {
+      state.user.id = data.id;
       state.user.name = data.name;
       state.user.email = data.email;
     },

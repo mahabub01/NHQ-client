@@ -363,6 +363,7 @@ async function teamSubmit() {
     savingSpinner.value = true;
     await Axios.post("projects/teams", state)
       .then((response) => {
+        console.log(response);
         fetchData("/projects/teams");
         resetForm();
         savingSpinner.value = false;
@@ -520,7 +521,7 @@ async function getEditData(id: number) {
 async function userdata() {
   // console.log(id);
 
-  await Axios.get("/employees-selectable/").then((response) => {
+  await Axios.get("/employees-selectable").then((response) => {
     employeesSelectable.value = response.data.data;
   });
 }
@@ -559,7 +560,7 @@ const employeesSelectable = ref([]);
 // teams data get
 async function openCreateModal() {
   store.commit("modalModule/CHNAGE_CREATE_MODAL", true);
-  await Axios.get("/employees-selectable/").then((response) => {
+  await Axios.get("/employees-selectable").then((response) => {
     employeesSelectable.value = response.data.data;
   });
 }

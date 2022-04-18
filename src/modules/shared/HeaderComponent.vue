@@ -124,7 +124,13 @@
                     </ul>
                     <ul class="auth_card pt_15">
                       <li class="auth_email">
-                        <button class="sign_out_btn">Log Out</button>
+                        <button
+                          type="button"
+                          class="sign_out_btn"
+                          @click="signOut"
+                        >
+                          Sign Out
+                        </button>
                       </li>
                     </ul>
                   </div>
@@ -142,10 +148,11 @@
 <script setup lang="ts">
 import { reactive, onMounted } from "vue";
 import Axios from "@/http-common";
-import swal from "sweetalert";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
+import toastr from "toastr";
+import { useCookies } from "vue3-cookies";
+import { useStore } from "vuex";
 
-const route = useRoute();
 const router = useRouter();
 let singleData = "";
 
@@ -153,6 +160,9 @@ const auth = reactive({
   name: "",
   email: "",
 });
+
+const store = useStore();
+const { cookies } = useCookies();
 
 onMounted(async () => {
   await Axios.get("/auth-inforamtion").then((response) => {
@@ -166,16 +176,37 @@ onMounted(async () => {
 
 // sign out code
 
-// async function signOut() {
-//   await Axios.post("signout/")
-//     .then((response) => {
-//       swal("Success Job!", "Your accout logout successfully!", "success");
-//       router.push("/login");
-//     })
-//     .catch((error) => {
-//       console.log("problem Here" + error);
-//     });
-// }
+async function signOut() {
+  const signoutState = {
+    token: store.state.currentUser.token,
+    user_id: store.state.currentUser.user.id,
+  };
+
+  await Axios.post("/signout", signoutState)
+    .then((response) => {
+      if (response.data.code == 200) {
+        toastr.success("Logout your account successfully.");
+        cookies.remove("user-token", "/");
+        cookies.remove("user", "/");
+        cookies.remove("user-token", "/core");
+        cookies.remove("user", "/core");
+
+        localStorage.removeItem("token");
+        //store.dispatch("currentUser/assignCurrentUser", {});
+
+        // store.dispatch("currentUser/isLogin", {
+        //   isLoggedIn: false,
+        // });
+
+        router.push("/login");
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
 </script>
 
 <style scoped></style>

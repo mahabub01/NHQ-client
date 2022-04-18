@@ -163,9 +163,6 @@ const rules = {
 
 const v$ = useVuelidate(rules, formState);
 
-// onMounted(() => {
-//   console.log(cookies.get("mydomain_api"));
-// }),
 async function handleSubmit() {
   v$.value.$validate();
 
@@ -191,8 +188,10 @@ async function handleSubmit() {
         }
         isShowAlert.value = false;
         is_authenticated.value = true;
-        // localStorage.setItem("token", response.data.data.access_token);
-        cookies.set("user-token", response.data.data.access_token);
+        localStorage.setItem("token", response.data.data.access_token);
+        cookies.set("user-token", response.data.data.access_token, "/");
+        cookies.set("user", response.data.data.user, "/");
+
         store.dispatch(
           "currentUser/assignCurrentUser",
           response.data.data.user
@@ -200,6 +199,7 @@ async function handleSubmit() {
 
         store.dispatch("currentUser/isLogin", {
           isLoggedIn: true,
+          token: response.data.data.access_token,
         });
 
         router.push("/core/dashboard");

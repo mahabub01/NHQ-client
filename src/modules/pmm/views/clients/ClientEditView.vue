@@ -311,8 +311,6 @@ async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    console.log(formState);
-
     buttonLoading.value = true;
     await Axios.put("clients/" + route.params.id, formState)
       .then((response) => {

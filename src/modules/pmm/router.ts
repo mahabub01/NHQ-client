@@ -143,6 +143,15 @@ export const PmmModuleRoute = [
           ),
         meta: { middleware: "auth" },
       },
+      {
+        path: "milestones-categories",
+        name: "milestones-categories",
+        component: () =>
+          import(
+            /* webpackChunkName: "category" */ "./views/milestones-categories/CategoryIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
 
       {
         path: "tasks",

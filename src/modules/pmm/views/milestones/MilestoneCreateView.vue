@@ -127,10 +127,12 @@
               <label class="form-label"
                 >Assign Employee<span class="mandatory">*</span></label
               >
+
               <Select2
-                v-model="formState.assign_member"
-                :options="genderList"
+                v-model="v$.assign_member.$model"
+                :options="assign_members"
                 :settings="{ placeholder: 'Choose' }"
+                :class="{ isInvalid: v$.assign_member.$error }"
               />
             </div>
             <div class="col-md-4 offset-md-2">
@@ -183,15 +185,24 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, defineEmits } from "vue";
+import { reactive, ref, defineEmits, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";
 import swal from "sweetalert";
 import TheButton from "@/modules/shared/TheButton.vue";
 import Select2 from "vue3-select2-component";
+import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
+import toastr from "toastr";
+import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 let buttonLoading = ref(false);
+
+//use for saving preloader
+let savingSpinner = ref(false);
+
 const formState = reactive({
   milestone_name: "",
   milestone_id: "",
@@ -209,15 +220,32 @@ const formState = reactive({
 const rules: any = {
   milestone_name: { required },
   milestone_id: { required },
+  assign_member: { required },
 };
 
 const emit = defineEmits(["select"]);
 
-//Gender list for Gender Select
-const genderList = reactive([
-  { id: 1, text: "Male" },
-  { id: 2, text: "Female" },
-]);
+//lead list for lead Select
+const assign_members = ref([]);
+
+//Load Data form computed onMounted
+onMounted(() => {
+  getAssignMembers();
+});
+
+async function getAssignMembers() {
+  await Axios.get("/employees-selectable/")
+    .then((response) => {
+      if (response.data.code === 200) {
+        assign_members.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
 
 const v$ = useVuelidate(rules, formState);
 
@@ -241,9 +269,18 @@ async function handleSubmit() {
 
 //reset all property
 function reset() {
-  // state.title = "";
-  // state.description = "";
-  // v$.value.$reset();
+  formState.milestone_name = "";
+  formState.milestone_id = "";
+  formState.assign_member = "";
+  formState.priority = "";
+  formState.start_date = "";
+  formState.end_date = "";
+  formState.extended_date = "";
+  formState.project_wise_point = "";
+  formState.file_name = "";
+  formState.file_attachment = "";
+  formState.description = "";
+  v$.value.$reset();
 }
 </script>
 

@@ -4,15 +4,9 @@
       <thead>
         <tr>
           <th class="col-serial">Serial</th>
-          <th>Milestone Name</th>
-          <th>Milestone ID</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Extended</th>
+          <th>Title</th>
           <th>Status</th>
-          <th>Milestone Progress</th>
-          <th class="col-icon">Edit</th>
-          <th class="col-icon">File</th>
+          <th>Description</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -27,47 +21,18 @@
             />
             {{ index + 1 }}
           </td>
-          <td>{{ td.milestone_name }}</td>
-          <td>{{ td.milestone_id }}</td>
-          <td>{{ td.start_date }}</td>
-          <td>{{ td.end_date }}</td>
-          <td>{{ td.extended_date }}</td>
+          <td>{{ td.title }}</td>
           <td>
             <span v-if="td.is_active == 1" class="activeStatus"
               ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
-            </span>
+              {{ td.is_active }}</span
+            >
             <span v-else class="inactiveStatus"
               ><i class="far fa-times-circle"></i>
               {{ isActive(td.is_active) }}</span
             >
           </td>
-          <td>
-            <div class="progress" style="height: 14px">
-              <div
-                class="progress-bar bg-danger"
-                role="progressbar"
-                style="width: 75%"
-                aria-valuenow="75"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                75%
-              </div>
-            </div>
-          </td>
-
-          <td class="action-field" style="text-align: center">
-            <router-link
-              :to="`/pmm/milestones/${td.id}/edit`"
-              title="Edit Project"
-              ><i class="fa fa-pen action-icon"></i
-            ></router-link>
-          </td>
-
-          <td class="action-field" style="text-align: center">
-            <i class="fa fa-paperclip action-icon"></i>
-          </td>
-
+          <td>{{ td.description }}</td>
           <td class="col-serial">
             <div class="btn-group">
               <button
@@ -86,18 +51,24 @@
                     v-if="td.is_active == 1"
                     class="dropdown-item inactiveStatus"
                     @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-times-circle"></i> In-complete</a
+                    ><i class="far fa-times-circle"></i> In-Active</a
                   >
 
                   <a
                     href="#"
                     v-else
-                    :to="`/pmm/milestones/${td.id}/edit`"
+                    :to="`/pmm/categories/${td.id}/edit`"
                     class="dropdown-item activeStatus"
                     @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-check-circle"></i> Complete</a
+                    ><i class="far fa-check-circle"></i> Active</a
                   >
 
+                  <a
+                    href="#"
+                    @click.prevent="getId(td.id)"
+                    class="dropdown-item"
+                    ><i class="fas fa-edit"></i> Edit</a
+                  >
                   <a
                     href="#"
                     @click.prevent="removeItem(td.id)"
@@ -116,6 +87,10 @@
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import { useStore } from "vuex";
+
+//use store
+const store = useStore();
 
 const attrs = useAttrs();
 
@@ -124,15 +99,16 @@ let isCheckAll = ref(false);
 
 const emit = defineEmits([
   "delete",
-  "update:nameSearch",
+  "update:titleSearch",
   "update:isActiveSearch",
   "activation",
+  "editId",
 ]);
 
 const props = defineProps({
   multiselected: Array,
   isActiveSearch: String,
-  nameSearch: String,
+  titleSearch: String,
 });
 
 defineExpose({ multiselect });
@@ -160,10 +136,15 @@ function updateCheckall() {
 //isActive Data
 function isActive(val: number) {
   if (val == 1) {
-    return "Complete";
+    return "Active";
   } else {
-    return "In-Complete";
+    return "In-Active";
   }
+}
+
+//Get Id Emit use for update
+function getId(id: number) {
+  emit("editId", id);
 }
 
 //Delete Emit use for Delete

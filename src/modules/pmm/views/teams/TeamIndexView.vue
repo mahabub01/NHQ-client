@@ -222,10 +222,10 @@
     <!--start Edit Modal -->
     <div>
       <edit-modal>
-        <template v-slot:header>
+        <template v-slot:editheader>
           <i class="fas fa-plus-square"></i> Edit Team
         </template>
-        <template v-slot:body>
+        <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
             <div class="row">
               <div class="col-md-12">
@@ -518,8 +518,6 @@ async function getEditData(id: number) {
 }
 
 async function userdata() {
-  // console.log(id);
-
   await Axios.get("/employees-selectable/").then((response) => {
     employeesSelectable.value = response.data.data;
   });

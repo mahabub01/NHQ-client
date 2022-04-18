@@ -53,9 +53,31 @@
           </li>
 
           <li class="nav-item dropdown">
-            <router-link class="nav-link" to="/pmm/milestones">
-              Milestone
-            </router-link>
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Milestone <i class="fas fa-chevron-down"></i>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li>
+                <a class="dropdown-item" href="/pmm/milestones"
+                  ><i class="fas fa-table"></i> Milestone list</a
+                >
+              </li>
+
+              <li>
+                <router-link
+                  class="dropdown-item"
+                  to="/pmm/milestones-categories"
+                  ><i class="fas fa-table"></i> Category list</router-link
+                >
+              </li>
+            </ul>
           </li>
 
           <li class="nav-item dropdown">

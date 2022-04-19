@@ -182,6 +182,15 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
+        path: "pocs-categories",
+        name: "pocs-categories",
+        component: () =>
+          import(
+            /* webpackChunkName: "category" */ "./views/pocs-categories/CategoryIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
         path: "boqs/:project_id",
         name: "boqs",
         component: () =>

@@ -71,7 +71,7 @@ async function categorySubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     buttonLoading.value = true;
-    await Axios.post("projects/categories", state)
+    await Axios.post("milestone-categories", state)
       .then((response) => {
         swal("Success Job!", "Your category created successfully!", "success");
         reset(); //reset all property

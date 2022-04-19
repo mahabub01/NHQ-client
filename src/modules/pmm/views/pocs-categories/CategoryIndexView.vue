@@ -14,10 +14,8 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link
-                      to="/pmm/milestones"
-                      class="rev-underline-subtitle"
-                      >Milestone
+                    <router-link to="/pmm/pocs" class="rev-underline-subtitle"
+                      >Project
                       <i
                         class="fas fa-chevron-right"
                         style="margin-left: 6px; margin-right: 6px"
@@ -314,9 +312,9 @@ async function categorySubmit() {
   if (!v$.value.$error) {
     store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
     savingSpinner.value = true;
-    await Axios.post("milestone-categories", state)
+    await Axios.post("pocs/categories", state)
       .then((response) => {
-        fetchData("/milestone-categories");
+        fetchData("/pocs/categories");
         resetForm();
         savingSpinner.value = false;
         swal("Success Job!", "Your category created successfully!", "success");
@@ -343,7 +341,7 @@ let titleSearch = ref("");
 watch([titleSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
-    "/milestone-categories?showEntries=" +
+    "/pocs/categories?showEntries=" +
       currentEntries.value +
       "&page=" +
       datatables.currentPage +
@@ -361,20 +359,20 @@ watch([titleSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/milestone-categories");
+  fetchData("/pocs/categories");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/milestone-categories");
+  fetchData("/pocs/categories");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/milestone-categories");
+    fetchData("/pocs/categories");
   }
 }
 
@@ -382,14 +380,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/milestone-categories");
+    fetchData("/pocs/categories");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/milestone-categories");
+  fetchData("/pocs/categories");
 }
 
 //Delete selected Item
@@ -403,7 +401,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/milestone-categories/" + id).then((response) => {
+      await Axios.delete("/pocs/categories/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -432,10 +430,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/milestone-categories-multidelete", {
+      await Axios.post("/pocs/categories-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/milestones/categories");
+        fetchData("/pocs/categories");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -447,11 +445,11 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/milestone-categories-status", status).then((response) => {
+  await Axios.post("/pocs/categories-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("/milestone-categories");
+    fetchData("/pocs/categories");
   });
 }
 
@@ -460,7 +458,7 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
-  await Axios.get("/milestone-categories/" + id).then((response) => {
+  await Axios.get("/pocs/categories/" + id).then((response) => {
     single_datas.value = response.data.data;
     state.title = single_datas.value.title;
     state.description = single_datas.value.description;
@@ -473,9 +471,9 @@ async function editSubmit() {
   if (!v$.value.$error) {
     store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
     savingSpinner.value = true;
-    await Axios.put("milestone-categories/" + editableId, state)
+    await Axios.put("pocs/categories/" + editableId, state)
       .then((response) => {
-        fetchData("/milestone-categories");
+        fetchData("/pocs/categories");
         resetForm();
         savingSpinner.value = false;
         swal("Success Job!", "Your category created successfully!", "success");

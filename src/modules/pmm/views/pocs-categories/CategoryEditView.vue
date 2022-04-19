@@ -88,7 +88,7 @@ async function categoryUpdate() {
   v$.value.$touch();
   if (!v$.value.$error) {
     buttonLoading.value = true;
-    await Axios.put("milestone-categories/" + route.params.id, state)
+    await Axios.put("pocs/categories/" + route.params.id, state)
       .then((response) => {
         swal("Success Job!", "Your category update successfully!", "success");
         reset(); //reset all property
@@ -103,16 +103,14 @@ async function categoryUpdate() {
 
 onMounted(async () => {
   loadingSpinner.value = true;
-  await Axios.get("/milestone-categories/" + route.params.id).then(
-    (response) => {
-      singleData = response.data.data;
-      if (singleData != "") {
-        state.title = singleData.title;
-        state.description = singleData.description;
-      }
-      loadingSpinner.value = false;
+  await Axios.get("/pocs/categories/" + route.params.id).then((response) => {
+    singleData = response.data.data;
+    if (singleData != "") {
+      state.title = singleData.title;
+      state.description = singleData.description;
     }
-  );
+    loadingSpinner.value = false;
+  });
 });
 
 //reset all property

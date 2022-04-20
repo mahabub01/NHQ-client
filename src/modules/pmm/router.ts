@@ -208,6 +208,25 @@ export const PmmModuleRoute = [
           ),
         meta: { middleware: "auth" },
       },
+
+      {
+        path: "designations",
+        name: "designations",
+        component: () =>
+          import(
+            /* webpackChunkName: "designations" */ "./views/designations/DesignationIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "departments",
+        name: "departments",
+        component: () =>
+          import(
+            /* webpackChunkName: "depertments" */ "./views/departments/DepartmentIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
     ],
   },
 ];

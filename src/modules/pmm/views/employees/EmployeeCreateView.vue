@@ -5,7 +5,7 @@
         <div class="row">
           <div class="col-md-4">
             <router-link to="/pmm/employees"
-              >Employees <i class="fas fa-chevron-right"></i
+              >Employee <i class="fas fa-chevron-right"></i
             ></router-link>
             <router-link to="#">Create</router-link>
           </div>
@@ -83,13 +83,23 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Employee ID</label>
+              <label class="form-label"
+                >Depertment <span class="mandatory">*</span></label
+              >
               <input
                 type="text"
                 class="form-input"
-                placeholder="Employee ID here"
-                v-model.lazy="formState.employee_id"
+                :class="{ isInvalid: v$.depertment.$error }"
+                placeholder="Depertment here"
+                v-model.lazy="v$.depertment.$model"
               />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.depertment.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
+              </p>
             </div>
           </div>
           <!--end row -->
@@ -203,13 +213,11 @@
               ></textarea>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Depertment</label>
-              <input
-                type="text"
-                class="form-input"
-                placeholder="Depertment here"
-                v-model.lazy="formState.depertment"
-              />
+              <label class="form-label">About Employee</label>
+              <textarea
+                placeholder="About Employee here"
+                v-model.lazy="formState.about_employee"
+              ></textarea>
             </div>
           </div>
           <!--end row -->
@@ -221,13 +229,6 @@
               <textarea
                 placeholder="Parmanent Address here"
                 v-model.lazy="formState.parmanent_address"
-              ></textarea>
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label">About Employee</label>
-              <textarea
-                placeholder="About Employee here"
-                v-model.lazy="formState.about_employee"
               ></textarea>
             </div>
           </div>
@@ -246,7 +247,10 @@ import Axios from "@/http-common";
 import swal from "sweetalert";
 import TheButton from "@/modules/shared/TheButton.vue";
 import Select2 from "vue3-select2-component";
+import { useRoute, useRouter } from "vue-router";
 
+const route = useRoute();
+const router = useRouter();
 let buttonLoading = ref(false);
 const formState = reactive({
   name: "",
@@ -255,7 +259,6 @@ const formState = reactive({
   designation: "",
   password: "",
   gender: "",
-  employee_id: "",
   date_of_birth: "",
   present_address: "",
   parmanent_address: "",
@@ -270,6 +273,7 @@ const rules: any = {
   email: { required },
   phone: { required },
   designation: { required },
+  depertment: { required },
   password: { required },
 };
 
@@ -295,6 +299,7 @@ async function handleSubmit() {
         swal("Success Job!", "Your employee created successfully!", "success");
         reset(); //reset all property
         buttonLoading.value = false;
+        router.push("/pmm/employees");
       })
       .catch((error) => {
         console.log("problem Here" + error);
@@ -310,7 +315,6 @@ function reset() {
   formState.designation = "";
   formState.password = "";
   formState.gender = "";
-  formState.employee_id = "";
   formState.date_of_birth = "";
   formState.present_address = "";
   formState.parmanent_address = "";

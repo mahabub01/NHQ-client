@@ -14,8 +14,8 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link to="/pmm/pocs" class="rev-underline-subtitle"
-                      >Project
+                    <router-link to="/" class="rev-underline-subtitle"
+                      >Admin
                       <i
                         class="fas fa-chevron-right"
                         style="margin-left: 6px; margin-right: 6px"
@@ -24,7 +24,7 @@
                     <router-link
                       to="/pmm/categories"
                       class="rev-underline-subtitle"
-                      >Categories List</router-link
+                      >Category List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">

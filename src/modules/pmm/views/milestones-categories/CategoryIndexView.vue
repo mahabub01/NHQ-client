@@ -26,7 +26,7 @@
                     <router-link
                       to="/pmm/categories"
                       class="rev-underline-subtitle"
-                      >Categories List</router-link
+                      >Category List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">

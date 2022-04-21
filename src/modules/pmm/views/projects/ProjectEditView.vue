@@ -33,245 +33,183 @@
       <div class="form-design-body">
         <div class="container">
           <h4 class="form-page-title">Edit Project</h4>
-          <!--start row -->
-          <div class="row form-row">
+          <div class="row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label"
-                >Project Name<span class="mandatory">*</span></label
-              >
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.name.$error }"
-                placeholder="Title here"
-                v-model.lazy="v$.name.$model"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.name.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-            <!--start Category Field -->
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label"
-                >Category Name<span class="mandatory">*</span></label
-              >
-              <Select2
-                v-model="v$.category_id.$model"
-                :options="categoryList"
-                :settings="{ placeholder: 'Choose' }"
-                :class="{ isInvalid: v$.category_id.$error }"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.category_id.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-            <!--end Category Field -->
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
-              <label class="form-label"
-                >Project Team<span class="mandatory">*</span></label
-              >
-              <Select2
-                v-model="v$.team_id.$model"
-                :options="teamList"
-                :settings="{ placeholder: 'Choose' }"
-                :class="{ isInvalid: v$.team_id.$error }"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.team_id.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label"
-                >Project Lead<span class="mandatory">*</span></label
-              >
-              <Select2
-                v-model="v$.lead_id.$model"
-                :options="leadList"
-                :settings="{ placeholder: 'Choose' }"
-                :class="{ isInvalid: v$.lead_id.$error }"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.lead_id.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
-              <label class="form-label"
-                >Add Client<span class="mandatory">*</span></label
-              >
-              <Select2
-                v-model="v$.client_id.$model"
-                :options="clientList"
-                :settings="{ placeholder: 'Choose' }"
-                :class="{ isInvalid: v$.client_id.$error }"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.client_id.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label"
-                >Tags<span class="mandatory">*</span></label
-              >
-              <Select2
-                v-model="v$.tags.$model"
-                :options="tagList"
-                :settings="{ placeholder: 'Choose', multiple: true }"
-                :class="{ isInvalid: v$.tags.$error }"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.tags.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
-              <label class="form-label"
-                >Start Date<span class="mandatory">*</span></label
-              >
-              <input
-                type="date"
-                class="form-input"
-                :class="{ isInvalid: v$.start_date.$error }"
-                placeholder="Title here"
-                v-model.lazy="v$.start_date.$model"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.start_date.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label"
-                >End Date<span class="mandatory">*</span></label
-              >
-              <input
-                type="date"
-                class="form-input"
-                :class="{ isInvalid: v$.end_date.$error }"
-                placeholder="Title here"
-                v-model.lazy="v$.end_date.$model"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.end_date.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
-            </div>
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
+              <!--start field-->
               <div class="form-row">
                 <label class="form-label"
-                  >Extended Date<span class="mandatory">*</span></label
+                  >Project Name<span class="mandatory">*</span></label
                 >
+                <input
+                  type="text"
+                  class="form-input"
+                  :class="{ isInvalid: v$.name.$error }"
+                  placeholder="Title here"
+                  v-model.lazy="v$.name.$model"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.name.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+              <!--end field-->
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label"
+                  >Category Name<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="v$.category_id.$model"
+                  :options="categoryList"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.category_id.$error }"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.category_id.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+              <!--end field-->
+
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Project Lead</label>
+                <Select2
+                  v-model="formState.lead_id"
+                  :options="leadList"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+              <!--end field-->
+
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Project Team/Member</label>
+                <Select2
+                  v-model="formState.team_id"
+                  :options="teamList"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+              <!--end field-->
+
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Add Client</label>
+                <Select2
+                  v-model="formState.client_id"
+                  :options="clientList"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+              <!--end field-->
+
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Project Operation Point</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  v-model.lazy="formState.operation_point"
+                />
+              </div>
+              <!--end field-->
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Project Onboarding Point</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  v-model.lazy="formState.onboarding_point"
+                />
+              </div>
+              <!--end field-->
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Choose File</label>
+                <single-file-uploader
+                  field_name="create_project"
+                ></single-file-uploader>
+                <a target="_blank" v-if="getFiles != null" :href="`${getFiles}`"
+                  >Download File</a
+                >
+              </div>
+              <!--end field-->
+            </div>
+            <!--end column-->
+            <div class="col-md-4 offset-md-2">
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Tags</label>
+                <Select2
+                  v-model="formState.tags"
+                  :options="tagList"
+                  :settings="{ placeholder: 'Choose', multiple: true }"
+                />
+              </div>
+              <!--end field-->
+
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Start Date</label>
                 <input
                   type="date"
                   class="form-input"
-                  :class="{ isInvalid: v$.extended_date.$error }"
-                  placeholder="Title here"
-                  v-model.lazy="v$.extended_date.$model"
+                  v-model.lazy="formState.start_date"
                 />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.extended_date.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
               </div>
-
-              <!--start row-->
-              <div class="row form-row">
-                <label class="form-label"
-                  >Status<span class="mandatory">*</span></label
-                >
+              <!--end field-->
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">End Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  v-model.lazy="formState.end_date"
+                />
+              </div>
+              <!--end field-->
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Extended Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  v-model.lazy="formState.extended_date"
+                />
+              </div>
+              <!--end field-->
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Status</label>
                 <Select2
-                  v-model="v$.status.$model"
+                  v-model="formState.status"
                   :options="StatusList"
                   :settings="{ placeholder: 'Choose' }"
-                  :class="{ isInvalid: v$.status.$error }"
                 />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.status.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
               </div>
-              <!--end row-->
+              <!--end field-->
 
-              <!--start row -->
-              <div class="row form-row">
-                <div class="col-md-12">
-                  <label class="form-label"
-                    >Choose File<span class="mandatory">*</span></label
-                  >
-                  <single-file-uploader
-                    field_name="create_project"
-                  ></single-file-uploader>
-                </div>
+              <!--start field-->
+              <div class="form-row">
+                <label class="form-label">Description</label>
+                <TheCKEditor
+                  @sendContent="setDescription"
+                  :content="formState.description"
+                  v-if="loadCKEditor"
+                />
               </div>
-              <!--end row -->
-            </div>
-
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label">Description</label>
-              <TheCKEditor
-                @sendContent="setDescription"
-                :content="formState.description"
-                v-if="loadCKEditor"
-              />
+              <!--end field-->
             </div>
           </div>
-          <!--end row -->
         </div>
       </div>
     </form>
@@ -322,19 +260,13 @@ const formState = reactive({
   description: "",
   status: "",
   token: store.state.currentUser.token,
+  onboarding_point: "",
+  operation_point: "",
 });
 
 const rules: any = {
   name: { required },
   category_id: { required },
-  team_id: { required },
-  start_date: { required },
-  end_date: { required },
-  extended_date: { required },
-  tags: { required },
-  client_id: { required },
-  lead_id: { required },
-  status: { required },
 };
 
 const emit = defineEmits(["select"]);
@@ -376,23 +308,30 @@ onMounted(() => {
   store.commit("modalModule/LOAD_CKEDITOR_MODAL", false);
 });
 
+//get Files
+const getFiles = ref(null);
+
 //Load Single Data
 async function loadSingleData() {
   loadingSpinner.value = true;
   await Axios.get("/projects/projects/" + route.params.id).then((response) => {
     loadingSpinner.value = false;
     if (response.data.code === 200) {
+      console.log(response);
       formState.name = response.data.data[0].project_name;
       formState.category_id = response.data.data[0].pmm_category_id;
       formState.team_id = response.data.data[0].pmm_team_id;
       formState.lead_id = response.data.data[0].pmm_project_lead_id;
-      formState.start_date = response.data.data[0].start_date;
-      formState.end_date = response.data.data[0].end_date;
-      formState.extended_date = response.data.data[0].extended_date;
       formState.client_id = response.data.data[0].pmm_client_id;
       formState.tags = response.data.data[0].tags;
       formState.description = response.data.data[0].description;
       formState.status = response.data.data[0].status;
+      formState.onboarding_point = response.data.data[0].onboarding_point;
+      formState.operation_point = response.data.data[0].operation_point;
+      getFiles.value = response.data.data[0].files;
+      formState.start_date = response.data.data[0].start_date;
+      formState.end_date = response.data.data[0].end_date;
+      formState.extended_date = response.data.data[0].extended_date;
       store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
     } else {
       toastr.error(response.data.message);
@@ -484,6 +423,7 @@ async function handleSubmit() {
     savingSpinner.value = true;
     await Axios.put("/projects/projects/" + route.params.id, formState)
       .then((response) => {
+        console.log(response);
         if (response.data.code === 200) {
           resetForm();
           //Stop Saving Spinner
@@ -515,6 +455,8 @@ function resetForm() {
   formState.tags = "";
   formState.description = "";
   formState.status = "";
+  formState.onboarding_point = "";
+  formState.operation_point = "";
   v$.value.$reset();
 }
 </script>

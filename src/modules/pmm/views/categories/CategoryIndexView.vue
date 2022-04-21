@@ -17,7 +17,7 @@
                     <router-link
                       to="/pmm/projects"
                       class="rev-underline-subtitle"
-                      >Project
+                      >Projects
                       <i
                         class="fas fa-chevron-right"
                         style="margin-left: 6px; margin-right: 6px"
@@ -26,7 +26,7 @@
                     <router-link
                       to="/pmm/categories"
                       class="rev-underline-subtitle"
-                      >Categories List</router-link
+                      >Category List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -67,7 +67,8 @@
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true)
+                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true),
+                            resetForm()
                         "
                       >
                         <i class="fas fa-plus"></i> Create
@@ -202,10 +203,10 @@
     <!--start Edit Modal -->
     <div>
       <edit-modal>
-        <template v-slot:header>
+        <template v-slot:editheader>
           <i class="fas fa-plus-square"></i> Edit Category
         </template>
-        <template v-slot:body>
+        <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
             <div class="row">
               <div class="col-md-12">
@@ -277,6 +278,7 @@ import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import toastr from "toastr";
 
 //create store
 const store = useStore();
@@ -312,14 +314,23 @@ async function categorySubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
     savingSpinner.value = true;
     await Axios.post("projects/categories", state)
       .then((response) => {
-        fetchData("/projects/categories");
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your category created successfully!", "success");
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
+          fetchData("/projects/categories");
+          resetForm();
+          savingSpinner.value = false;
+          swal(
+            "Success Job!",
+            "Your category created successfully!",
+            "success"
+          );
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);
@@ -471,14 +482,23 @@ async function editSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
     savingSpinner.value = true;
     await Axios.put("projects/categories/" + editableId, state)
       .then((response) => {
-        fetchData("/projects/categories");
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your category created successfully!", "success");
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
+          fetchData("/projects/categories");
+          resetForm();
+          savingSpinner.value = false;
+          swal(
+            "Success Job!",
+            "Your category updated successfully!",
+            "success"
+          );
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);

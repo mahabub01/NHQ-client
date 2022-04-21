@@ -14,7 +14,7 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-lg-0">
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown" v-if="userInfo.role_id == 8">
             <a
               class="nav-link dropdown-toggle"
               href="#"
@@ -52,7 +52,7 @@
             </ul>
           </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown" v-if="userInfo.role_id == 8">
             <router-link class="nav-link" to="/pmm/milestones">
               Milestone
             </router-link>
@@ -66,19 +66,19 @@
             <a class="nav-link dropdown-toggle" href="#"> SubTask </a>
           </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown" v-if="userInfo.role_id == 8">
             <router-link class="nav-link" to="/pmm/employees">
               Employee
             </router-link>
           </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown" v-if="userInfo.role_id == 8">
             <router-link class="nav-link" to="/pmm/clients">
               Client
             </router-link>
           </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown" v-if="userInfo.role_id == 8">
             <a class="nav-link dropdown-toggle" href="#"> Report </a>
           </li>
         </ul>
@@ -87,6 +87,15 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useStore } from "vuex";
+import { computed } from "vue";
+
+const store = useStore();
+
+const userInfo = computed(() => {
+  return store.state.currentUser.userPemissions;
+});
+</script>
 
 <style scoped></style>

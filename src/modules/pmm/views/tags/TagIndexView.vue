@@ -56,7 +56,8 @@
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true)
+                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true),
+                            resetForm()
                         "
                       >
                         <i class="fas fa-plus"></i> Create
@@ -122,6 +123,7 @@
     <the-spinner
       :isdeleting="deletingSpinner"
       :isSaving="savingSpinner"
+      :isLoading="loadingSpinner"
     ></the-spinner>
 
     <!--start Create Modal -->
@@ -190,10 +192,10 @@
     <!--start Edit Modal -->
     <div>
       <edit-modal>
-        <template v-slot:header>
+        <template v-slot:editheader>
           <i class="fas fa-plus-square"></i> Edit Tag
         </template>
-        <template v-slot:body>
+        <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
             <div class="row">
               <div class="col-md-12">
@@ -265,6 +267,7 @@ import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import toastr from "toastr";
 
 //create store
 const store = useStore();
@@ -272,6 +275,7 @@ const store = useStore();
 //use for deleting spenner
 let deletingSpinner = ref(false);
 let savingSpinner = ref(false);
+let loadingSpinner = ref(false);
 
 //use for multiselected
 const multiselected = ref([]);
@@ -300,14 +304,19 @@ async function tagSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
     savingSpinner.value = true;
     await Axios.post("projects/tags", state)
       .then((response) => {
-        fetchData("/projects/tags");
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your tag created successfully!", "success");
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
+          fetchData("/projects/tags");
+          resetForm();
+          savingSpinner.value = false;
+          swal("Success Job!", "Your tag created successfully!", "success");
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);
@@ -448,7 +457,9 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
+  loadingSpinner.value = true;
   await Axios.get("/projects/tags/" + id).then((response) => {
+    loadingSpinner.value = false;
     single_datas.value = response.data.data;
     state.title = single_datas.value.title;
     state.description = single_datas.value.description;
@@ -459,14 +470,19 @@ async function editSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
     savingSpinner.value = true;
     await Axios.put("projects/tags/" + editableId, state)
       .then((response) => {
-        fetchData("/projects/tags");
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your tag created successfully!", "success");
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
+          fetchData("/projects/tags");
+          resetForm();
+          savingSpinner.value = false;
+          swal("Success Job!", "Your tag updated successfully!", "success");
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);

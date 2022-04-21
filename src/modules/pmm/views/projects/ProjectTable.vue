@@ -3,11 +3,9 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th
-            class="action-field"
-            style="width: 20px !important; text-align: center"
-          >
+          <th class="action-field col-serial">
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
+            Serial
           </th>
           <th>Project Name</th>
           <th>Project ID</th>
@@ -17,21 +15,22 @@
           <th>Project Progress</th>
           <th>Status</th>
           <th>Milestone Progress</th>
-          <th class="action-field">Edit</th>
-          <th class="action-field">File</th>
+          <th class="action-field align-center">Edit</th>
+          <th class="action-field align-center">File</th>
 
           <th class="col-serial">Action</th>
         </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
         <tr v-for="(item, index) in $attrs.entries" :key="index">
-          <td class="action-field align-center">
+          <td class="action-field col-serial">
             <input
               type="checkbox"
               v-model="multiselect"
               @change="updateCheckall"
               :value="item.id"
             />
+            {{ index + 1 }}
           </td>
           <td>{{ item.project_name }}</td>
           <td>{{ item.project_ID }}</td>
@@ -75,7 +74,12 @@
             ></router-link>
           </td>
           <td class="action-field" style="text-align: center">
-            <i class="fa fa-paperclip action-icon"></i>
+            <a v-if="item.files != null" :href="`${item.files}`" target="_blank"
+              ><i class="fa fa-paperclip action-icon"></i
+            ></a>
+            <a href="#" onclick="alert('File not uploaded')" v-else
+              ><i class="fa fa-paperclip action-icon" style="opacity: 0.6"></i
+            ></a>
           </td>
           <td class="col-serial">
             <div class="btn-group">
@@ -106,6 +110,12 @@
                     :to="`/pmm/oems/${item.id}`"
                     class="dropdown-item"
                     ><i class="far fa-plus-square"></i> Create OEM</router-link
+                  >
+
+                  <router-link
+                    :to="`/pmm/projects/${item.slug}`"
+                    class="dropdown-item"
+                    ><i class="fas fa-eye"></i> Details</router-link
                   >
 
                   <a

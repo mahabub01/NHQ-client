@@ -90,6 +90,15 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
+        path: "projects/:slug",
+        name: "projects-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "projects" */ "./views/projects/ProjectDetailsView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
         path: "employees",
         name: "employees",
         component: () =>

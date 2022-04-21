@@ -9,13 +9,22 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <a class="rev-underline-subtitle" href="/pmm/projects"
-                      >Projects List</a
+                    <router-link to="#" class="rev-underline-subtitle"
+                      >Projects
+                      <i
+                        class="fas fa-chevron-right"
+                        style="margin-left: 6px; margin-right: 6px"
+                      ></i>
+                    </router-link>
+                    <router-link
+                      to="/pmm/projects"
+                      class="rev-underline-subtitle"
+                      >Project List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -26,7 +35,7 @@
                     </ul>
                   </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-8">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>

@@ -52,10 +52,33 @@
             </ul>
           </li>
 
-          <li class="nav-item dropdown" v-if="userInfo.role_id == 8">
-            <router-link class="nav-link" to="/pmm/milestones">
-              Milestone
-            </router-link>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Milestone <i class="fas fa-chevron-down"></i>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li>
+                <a class="dropdown-item" href="/pmm/milestones"
+                  ><i class="fas fa-table"></i> Milestone list</a
+                >
+              </li>
+
+              <li v-if="userInfo.role_id == 8">
+                <router-link
+                  class="dropdown-item"
+                  to="/pmm/milestones-categories"
+                  ><i class="fas fa-table"></i> Milestone Category
+                  list</router-link
+                >
+              </li>
+            </ul>
           </li>
 
           <li class="nav-item dropdown">

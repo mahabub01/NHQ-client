@@ -27,7 +27,50 @@
       <div class="form-design-body">
         <div class="container">
           <h4 class="form-page-title">Edit Milestone</h4>
-          <!--start row -->
+
+          <!--start row [ project_name, start date ]-->
+          <div class="row form-row">
+            <div class="col-md-4 offset-md-1">
+              <label class="form-label"
+                >Project Name<span class="mandatory">*</span></label
+              >
+              <Select2
+                v-model="v$.project_name.$model"
+                :options="project_names"
+                :settings="{ placeholder: 'Choose' }"
+                :class="{ isInvalid: v$.project_name.$error }"
+              />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.project_name.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
+              </p>
+            </div>
+            <div class="col-md-4 offset-md-2">
+              <label class="form-label"
+                >Start Date<span class="mandatory">*</span></label
+              >
+              <input
+                type="date"
+                class="form-input"
+                :class="{ isInvalid: v$.start_date.$error }"
+                placeholder="Start Date Here"
+                v-model.lazy="v$.start_date.$model"
+              />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.start_date.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
+              </p>
+            </div>
+          </div>
+          <!--end row -->
+
+          <!--start row [milestone_name, end_date]-->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
               <label class="form-label"
@@ -49,106 +92,110 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Start Date</label>
+              <label class="form-label"
+                >End Date<span class="mandatory">*</span></label
+              >
               <input
                 type="date"
                 class="form-input"
-                v-model.lazy="formState.start_date"
+                :class="{ isInvalid: v$.end_date.$error }"
+                placeholder="End Date Here"
+                v-model.lazy="v$.end_date.$model"
               />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.end_date.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
+              </p>
             </div>
           </div>
           <!--end row -->
 
-          <!--start row -->
+          <!--start row [assign_employee, points] -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
               <label class="form-label"
-                >Milestone ID<span class="mandatory">*</span></label
+                >Assign Employee<span class="mandatory">*</span></label
               >
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.milestone_id.$error }"
-                placeholder="Milestone ID here"
-                v-model.lazy="v$.milestone_id.$model"
+
+              <Select2
+                v-model="v$.assign_employee.$model"
+                :options="assign_employees"
+                :settings="{ placeholder: 'Choose' }"
+                :class="{ isInvalid: v$.assign_employee.$error }"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.milestone_id.$errors"
+                v-for="(error, index) in v$.assign_employee.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">End Date</label>
+              <label class="form-label"
+                >Extended Date<span class="mandatory">*</span></label
+              >
               <input
                 type="date"
                 class="form-input"
-                v-model.lazy="formState.end_date"
+                :class="{ isInvalid: v$.extended_date.$error }"
+                placeholder="End Date Here"
+                v-model.lazy="v$.extended_date.$model"
               />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.extended_date.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
+              </p>
             </div>
           </div>
           <!--end row -->
 
-          <!--start row -->
+          <!--start row [follow up, category]-->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Priority</label>
-              <input
-                type="text"
-                class="form-input"
-                placeholder="Priority here"
-                v-model.lazy="formState.priority"
-              />
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label">Extended Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model.lazy="formState.extended_date"
-              />
-            </div>
-          </div>
-          <!--end row -->
+              <label class="form-label"
+                >Follow Up<span class="mandatory">*</span></label
+              >
 
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
-              <label class="form-label">Assign Employee</label>
               <Select2
-                v-model="formState.assign_employee"
-                :options="genderList"
+                v-model="v$.follow_up.$model"
+                :options="assign_employees"
                 :settings="{ placeholder: 'Choose' }"
+                :class="{ isInvalid: v$.assign_employee.$error }"
               />
+
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.follow_up.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
+              </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Project Wise Point</label>
-              <input
-                type="number"
-                class="form-input"
-                placeholder="Project Wise Points here"
-                v-model.lazy="formState.project_wise_point"
-              />
-            </div>
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
-              <label class="form-label">File Name</label>
+              <label class="form-label"
+                >Milestone Points<span class="mandatory">*</span></label
+              >
               <input
                 type="text"
                 class="form-input"
-                placeholder="File Name here"
-                v-model.lazy="formState.file_name"
+                :class="{ isInvalid: v$.points.$error }"
+                placeholder="Project Name Here"
+                v-model.lazy="v$.points.$model"
               />
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label">File Attachment</label>
-              <input type="file" class="form-input" />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.points.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
+              </p>
             </div>
           </div>
           <!--end row -->
@@ -157,10 +204,43 @@
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
               <label class="form-label">Description</label>
-              <textarea
-                placeholder="Present Address here"
-                v-model.lazy="formState.description"
-              ></textarea>
+              <TheCKEditor @sendContent="setDescription" />
+            </div>
+            <div class="col-md-4 offset-md-2">
+              <!--start row -->
+              <div class="form-row">
+                <label class="form-label"
+                  >Milestone Category<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="v$.category.$model"
+                  :options="categories"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.category.$error }"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.extended_date.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+              <!--end row -->
+
+              <!--start row -->
+              <div class="row form-row">
+                <div class="col-md-12">
+                  <label class="form-label"
+                    >Choose File<span class="mandatory">*</span></label
+                  >
+                  <single-file-uploader
+                    field_name="create_sow"
+                  ></single-file-uploader>
+                </div>
+              </div>
+              <!--end row -->
             </div>
           </div>
           <!--end row -->
@@ -171,7 +251,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, defineEmits, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";
@@ -180,6 +260,11 @@ import TheButton from "@/modules/shared/TheButton.vue";
 import { useRoute, useRouter } from "vue-router";
 import DataLoadingSpinner from "@/modules/shared/DataLoadingSpinner.vue";
 import Select2 from "vue3-select2-component";
+import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
+import toastr from "toastr";
+import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import SingleImageUploader from "@/modules/core/shared/SingleImageUploader.vue";
+import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -191,35 +276,95 @@ let buttonLoading = ref(false);
 //Data Loading Spinner
 let loadingSpinner = ref(false);
 
+//categories list for Category Select
+const project_names = ref([]);
+
+//categories list for Category Select
+const categories = ref([]);
+
+//employee list for assain employee Select
+const assign_employees = ref([]);
+
+//Load Data form computed onMounted
+onMounted(() => {
+  getAssignEmployees();
+  getCategories();
+  getProjectNames();
+});
+
+async function getProjectNames() {
+  await Axios.get("/projects-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        project_names.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+async function getCategories() {
+  await Axios.get("/milestone-categories-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        categories.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+async function getAssignEmployees() {
+  await Axios.get("/employees-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        assign_employees.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
 const formState = reactive({
+  project_name: "",
   milestone_name: "",
-  milestone_id: "",
   assign_employee: "",
-  priority: "",
+  points: "",
+  follow_up: "",
+  category: "",
   start_date: "",
   end_date: "",
   extended_date: "",
-  project_wise_point: "",
   file_name: "",
-  file_attachment: "",
   description: "",
 });
 
 const rules: any = {
+  project_name: { required },
   milestone_name: { required },
-  milestone_id: { required },
+  assign_employee: { required },
+  points: { required },
+  follow_up: { required },
+  category: { required },
+  start_date: { required },
+  end_date: { required },
+  extended_date: { required },
 };
 
-// const emit = defineEmits(["select"]);
-
-//Gender list for Gender Select
-const genderList = reactive([
-  { id: 1, text: "Male" },
-  { id: 2, text: "Female" },
-]);
+const emit = defineEmits(["select"]);
 
 const v$ = useVuelidate(rules, formState);
 
+//Updated Data
 async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
@@ -227,9 +372,18 @@ async function handleSubmit() {
     buttonLoading.value = true;
     await Axios.put("milestones/" + route.params.id, formState)
       .then((response) => {
-        swal("Success Job!", "Your milestone created successfully!", "success");
-        reset(); //reset all property
         buttonLoading.value = false;
+        if (response.data.code === 200) {
+          reset();
+          swal(
+            "Success Job!",
+            "Your milestones update successfully!",
+            "success"
+          );
+          router.push("/pmm/milestones");
+        } else {
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);
@@ -242,16 +396,15 @@ onMounted(async () => {
   await Axios.get("/milestones/" + route.params.id).then((response) => {
     singleData = response.data.data;
     if (singleData != "") {
+      formState.project_name = singleData.project_name;
       formState.milestone_name = singleData.milestone_name;
-      formState.milestone_id = singleData.milestone_id;
       formState.assign_employee = singleData.assign_employee;
-      formState.priority = singleData.priority;
+      formState.points = singleData.points;
+      formState.follow_up = singleData.follow_up;
+      formState.category = singleData.category;
       formState.start_date = singleData.start_date;
       formState.end_date = singleData.end_date;
       formState.extended_date = singleData.extended_date;
-      formState.project_wise_point = singleData.project_wise_point;
-      formState.file_name = singleData.file_name;
-      formState.file_attachment = singleData.file_attachment;
       formState.description = singleData.description;
     }
     loadingSpinner.value = false;
@@ -260,8 +413,17 @@ onMounted(async () => {
 
 //reset all property
 function reset() {
-  // state.title = "";
-  // state.description = "";
+  formState.project_name = "";
+  formState.milestone_name = "";
+  formState.assign_employee = "";
+  formState.points = "";
+  formState.follow_up = "";
+  formState.category = "";
+  formState.start_date = "";
+  formState.end_date = "";
+  formState.extended_date = "";
+  formState.file_name = "";
+  formState.description = "";
   v$.value.$reset();
 }
 </script>

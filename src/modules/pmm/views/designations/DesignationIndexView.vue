@@ -9,15 +9,22 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-7">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
+                    <router-link to="/" class="rev-underline-subtitle"
+                      >Admin
+                      <i
+                        class="fas fa-chevron-right"
+                        style="margin-left: 6px; margin-right: 6px"
+                      ></i>
+                    </router-link>
                     <router-link
+                      to="/pmm/designations"
                       class="rev-underline-subtitle"
-                      to="/pmm/clients"
-                      >Clients List</router-link
+                      >Designation List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -28,7 +35,7 @@
                     </ul>
                   </div>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-5">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -48,50 +55,21 @@
 
                       <input
                         type="text"
-                        placeholder="Search by Email"
+                        placeholder="Search Title"
                         style="margin-right: 7px"
-                        v-model.lazy="search"
-                        class="table-search"
+                        v-model.lazy="titleSearch"
                       />
+
                       <button
                         type="button"
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true)
+                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true)
                         "
                       >
-                        <i class="fas fa-filter"></i>
+                        <i class="fas fa-plus"></i> Create
                       </button>
-
-                      <router-link
-                        to="/pmm/clients/create"
-                        class="link_btn"
-                        style="margin-right: 7px"
-                        ><i class="fas fa-plus"></i> Create</router-link
-                      >
-                      <router-link
-                        to="/pmm/designations"
-                        class="link_btn"
-                        style="margin-right: 7px"
-                        >d</router-link
-                      >
-
-                      <router-link
-                        to="#"
-                        class="theme-color-btn"
-                        style="margin-right: 7px"
-                        ><i class="fas fa-cloud-upload-alt"></i>
-                        Import</router-link
-                      >
-
-                      <router-link
-                        to="#"
-                        class="theme-color-btn"
-                        style="margin-right: 7px"
-                        ><i class="fas fa-file-excel"></i> Export</router-link
-                      >
-
                       <div class="btn-group">
                         <button
                           type="button"
@@ -123,13 +101,14 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <client-table
+                    <designation-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
+                      @editId="showEdit($event)"
                       ref="multiselected"
-                    ></client-table>
+                    ></designation-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -155,34 +134,45 @@
       :isSaving="savingSpinner"
     ></the-spinner>
 
-    <!--start Filter Modal -->
+    <!--start Create Modal -->
     <div>
-      <filter-modal>
+      <create-modal>
         <template v-slot:header
-          ><i class="fas fa-filter"></i> Filter Client
+          ><i class="fas fa-plus-square"></i> Create Designation
         </template>
         <template v-slot:body>
-          <form @submit.prevent="filterSubmit" class="form-page">
+          <form @submit.prevent="createSubmit" class="form-page">
             <div class="row">
-              <div class="col-md-4 mb_30">
-                <label class="form-label"> Company Name/Email </label>
-                <input
-                  type="text"
-                  class="form-input"
-                  placeholder="Search here"
-                  v-model="filterState.company_name_email"
-                />
-              </div>
-              <div class="col-md-4 mb_30">
+              <div class="col-md-12">
                 <label class="form-label">
-                  Contact Person Name/Email/Phone
+                  Title
+                  <span class="mandatory">*</span>
                 </label>
                 <input
                   type="text"
                   class="form-input"
-                  placeholder="Search here"
-                  v-model="filterState.contact_person_name_email_phone"
+                  :class="{ isInvalid: v$.title.$error }"
+                  placeholder="Title here"
+                  v-model.lazy="v$.title.$model"
                 />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.title.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label">Description</label>
+                <textarea
+                  class="form-textarea"
+                  placeholder="Discription here"
+                  v-model.lazy="state.description"
+                ></textarea>
               </div>
             </div>
 
@@ -192,33 +182,99 @@
                 class="form-button-danger"
                 data-bs-dismiss="modal"
                 @click.prevent="
-                  store.commit('modalModule/CHNAGE_FILTER_MODAL', false)
+                  store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
                 "
               >
                 <i class="far fa-times-circle"></i> Close
               </button>
               <button type="submit" class="form-button">
-                <i class="fas fa-filter"></i> Filter
+                <i class="fas fa-save"></i> Save
               </button>
             </div>
           </form>
         </template>
-      </filter-modal>
+      </create-modal>
     </div>
-    <!--end Filter Modal -->
+    <!--end Create Modal -->
+
+    <!--start Edit Modal -->
+    <div>
+      <edit-modal>
+        <template v-slot:editheader>
+          <i class="fas fa-plus-square"></i> Edit Designation
+        </template>
+        <template v-slot:editbody>
+          <form @submit.prevent="editSubmit" class="form-page">
+            <div class="row">
+              <div class="col-md-12">
+                <label class="form-label">
+                  Title
+                  <span class="mandatory">*</span>
+                </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  :class="{ isInvalid: v$.title.$error }"
+                  placeholder="Title here"
+                  v-model.lazy="v$.title.$model"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.title.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label">Description</label>
+                <textarea
+                  class="form-textarea"
+                  placeholder="Discription here"
+                  v-model.lazy="state.description"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="form-button-danger"
+                data-bs-dismiss="modal"
+                @click.prevent="
+                  store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
+                "
+              >
+                <i class="far fa-times-circle"></i> Close
+              </button>
+              <button type="submit" class="form-button">
+                <i class="fas fa-save"></i> Save
+              </button>
+            </div>
+          </form>
+        </template>
+      </edit-modal>
+    </div>
+    <!--end Create Modal -->
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch, reactive } from "vue";
 import Axios from "@/http-common";
-import ClientTable from "./ClientTable.vue";
+import DesignationTable from "./DesignationTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import CreateModal from "../../../core/shared/CreateModal.vue";
+import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
-import FilterModal from "../../../core/shared/FilterModal.vue";
+import { useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
 
 //create store
 const store = useStore();
@@ -230,34 +286,93 @@ let savingSpinner = ref(false);
 //use for multiselected
 const multiselected = ref([]);
 
+let singleData = "";
+
 //use datatable composables
 const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
-//Load Data form computed onMounted
-onMounted(() => {
-  fetchData("/clients");
+/**********************
+ * Create Category
+ ***********************/
+const state = reactive({
+  title: "",
+  description: "",
 });
 
-//Search Property
-let search = ref("");
+const rules: any = {
+  title: { required },
+};
 
-//filter by POC ID/ Poc title
-watch([search], async () => {
-  fetchData("/clients", search.value);
+const v$ = useVuelidate(rules, state);
+
+async function createSubmit() {
+  v$.value.$validate();
+  v$.value.$touch();
+  if (!v$.value.$error) {
+    store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
+    savingSpinner.value = true;
+    await Axios.post("client/designations", state)
+      .then((response) => {
+        fetchData("/client/designations");
+        resetForm();
+        savingSpinner.value = false;
+        swal("Success Job!", "Your category created successfully!", "success");
+      })
+      .catch((error) => {
+        console.log("problem Here" + error);
+      });
+  }
+}
+
+//reset all property
+function resetForm() {
+  state.title = "";
+  state.description = "";
+  v$.value.$reset();
+}
+/**********************
+ * End Create Category
+ ***********************/
+
+//Search Property
+let titleSearch = ref("");
+
+watch([titleSearch], async () => {
+  datatables.loadingState = true;
+  await Axios.get(
+    "/client/designations?showEntries=" +
+      currentEntries.value +
+      "&page=" +
+      datatables.currentPage +
+      "&searchTitle=" +
+      titleSearch.value
+  ).then((response) => {
+    entries.value = response.data.data;
+    datatables.totalItems = response.data.meta.total;
+    datatables.currentPage = response.data.meta.current_page;
+    datatables.allPages = response.data.meta.last_page;
+    datatables.pagination = response.data.meta.links;
+    datatables.loadingState = false;
+  });
+});
+
+//Load Data form computed onMounted
+onMounted(() => {
+  fetchData("/client/designations");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/clients");
+  fetchData("/client/designations");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/clients");
+    fetchData("/client/designations");
   }
 }
 
@@ -265,14 +380,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/clients");
+    fetchData("/client/designations");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/clients");
+  fetchData("/client/designations");
 }
 
 //Delete selected Item
@@ -286,7 +401,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/clients/" + id).then((response) => {
+      await Axios.delete("/client/designations/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -315,10 +430,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/clients-multidelete", {
+      await Axios.post("/client/designations-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/clients");
+        fetchData("/client/designations");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -330,39 +445,49 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/clients-status", status).then((response) => {
+  await Axios.post("/client/designations-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("/clients");
+    fetchData("/client/designations");
   });
 }
 
-// Filter Pert
+// edit pert
+const single_datas = ref([]);
+let editableId = "";
 
-// use for filter
-let filteringSpinner = ref(false);
-
-const filterState = reactive({
-  company_name_email: "",
-  contact_person_name_email_phone: "",
-});
-
-async function filterSubmit() {
-  store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
-  datatables.loadingState = true;
-  filteringSpinner.value = true;
-  console.log(filterState);
-
-  await Axios.post("clients-filter", filterState).then((response) => {
-    filteringSpinner.value = false;
-    entries.value = response.data.data;
-    datatables.totalItems = response.data.meta.total;
-    datatables.currentPage = response.data.meta.current_page;
-    datatables.allPages = response.data.meta.last_page;
-    datatables.pagination = response.data.meta.links;
-    datatables.loadingState = false;
+async function getEditData(id: number) {
+  await Axios.get("/client/designations/" + id).then((response) => {
+    single_datas.value = response.data.data;
+    state.title = single_datas.value.title;
+    state.description = single_datas.value.description;
   });
+}
+
+async function editSubmit() {
+  v$.value.$validate();
+  v$.value.$touch();
+  if (!v$.value.$error) {
+    store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
+    savingSpinner.value = true;
+    await Axios.put("client/designations/" + editableId, state)
+      .then((response) => {
+        fetchData("/client/designations");
+        resetForm();
+        savingSpinner.value = false;
+        swal("Success Job!", "Your category created successfully!", "success");
+      })
+      .catch((error) => {
+        console.log("problem Here" + error);
+      });
+  }
+}
+
+function showEdit(id) {
+  editableId = id;
+  getEditData(id);
+  store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
 }
 </script>
 

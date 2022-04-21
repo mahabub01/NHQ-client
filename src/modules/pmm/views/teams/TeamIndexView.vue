@@ -524,9 +524,7 @@ async function getEditData(id: number) {
 }
 
 async function userdata() {
-  // console.log(id);
-
-  await Axios.get("/employees-selectable").then((response) => {
+  await Axios.get("/employees-selectable/").then((response) => {
     employeesSelectable.value = response.data.data;
   });
 }

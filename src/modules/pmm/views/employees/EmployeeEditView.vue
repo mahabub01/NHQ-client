@@ -83,13 +83,23 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Employee ID</label>
+              <label class="form-label"
+                >Depertment <span class="mandatory">*</span></label
+              >
               <input
                 type="text"
                 class="form-input"
-                placeholder="Employee ID here"
-                v-model.lazy="formState.employee_id"
+                :class="{ isInvalid: v$.depertment.$error }"
+                placeholder="Depertment here"
+                v-model.lazy="v$.depertment.$model"
               />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.depertment.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
+              </p>
             </div>
           </div>
           <!--end row -->
@@ -203,13 +213,11 @@
               ></textarea>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Depertment</label>
-              <input
-                type="text"
-                class="form-input"
-                placeholder="Depertment here"
-                v-model.lazy="formState.depertment"
-              />
+              <label class="form-label">About Employee</label>
+              <textarea
+                placeholder="About Employee here"
+                v-model.lazy="formState.about_employee"
+              ></textarea>
             </div>
           </div>
           <!--end row -->
@@ -221,13 +229,6 @@
               <textarea
                 placeholder="Parmanent Address here"
                 v-model.lazy="formState.parmanent_address"
-              ></textarea>
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label">About Employee</label>
-              <textarea
-                placeholder="About Employee here"
-                v-model.lazy="formState.about_employee"
               ></textarea>
             </div>
           </div>
@@ -266,7 +267,6 @@ const formState = reactive({
   designation: "",
   password: "",
   gender: "",
-  employee_id: "",
   date_of_birth: "",
   present_address: "",
   parmanent_address: "",
@@ -281,6 +281,7 @@ const rules: any = {
   email: { required },
   phone: { required },
   designation: { required },
+  depertment: { required },
   password: { required },
 };
 
@@ -316,7 +317,6 @@ onMounted(async () => {
       formState.designation = singleData.designation;
       formState.password = singleData.password;
       formState.gender = singleData.gender;
-      formState.employee_id = singleData.employee_id;
       formState.date_of_birth = singleData.date_of_birth;
       formState.present_address = singleData.present_address;
       formState.parmanent_address = singleData.parmanent_address;

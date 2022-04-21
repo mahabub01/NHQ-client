@@ -6,11 +6,19 @@ import store from "@/store/index";
 
 const routes: Array<RouteRecordRaw> = [
   {
+    path: "/",
+    name: "home",
+    component: () =>
+      import(
+        /* webpackChunkName: "home" */ "../modules/core/views/auth/TheLogin.vue"
+      ),
+  },
+  {
     path: "/login",
     name: "login",
     component: () =>
       import(
-        /* webpackChunkName: "about" */ "../modules/core/views/auth/TheLogin.vue"
+        /* webpackChunkName: "login" */ "../modules/core/views/auth/TheLogin.vue"
       ),
   },
 

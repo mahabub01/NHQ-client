@@ -31,6 +31,15 @@ export const CoreModuleRoute = [
             /* webpackChunkName: "profile-uodate" */ "./views/auth/ProfileUpdate.vue"
           ),
       },
+
+      {
+        path: "modules",
+        name: "modules",
+        component: () =>
+          import(
+            /* webpackChunkName: "modules" */ "./views/modules/ModuleIndexView.vue"
+          ),
+      },
     ],
   },
 ];

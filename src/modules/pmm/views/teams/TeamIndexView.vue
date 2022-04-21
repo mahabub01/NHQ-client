@@ -17,14 +17,14 @@
                     <router-link
                       to="/pmm/projects"
                       class="rev-underline-subtitle"
-                      >Project
+                      >Projects
                       <i
                         class="fas fa-chevron-right"
                         style="margin-left: 6px; margin-right: 6px"
                       ></i>
                     </router-link>
                     <router-link to="/pmm/teams" class="rev-underline-subtitle"
-                      >Teams List</router-link
+                      >Team List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -367,6 +367,7 @@ import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Select2 from "vue3-select2-component";
+import toastr from "toastr";
 
 //create store
 const store = useStore();
@@ -406,14 +407,19 @@ async function teamSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
     savingSpinner.value = true;
     await Axios.post("projects/teams", state)
       .then((response) => {
-        fetchData("/projects/teams");
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your team created successfully!", "success");
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
+          fetchData("/projects/teams");
+          resetForm();
+          savingSpinner.value = false;
+          swal("Success Job!", "Your team created successfully!", "success");
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);
@@ -575,8 +581,6 @@ async function userdata() {
 async function editSubmit() {
   v$.value.$validate();
   v$.value.$touch();
-  console.log(state);
-
   if (!v$.value.$error) {
     store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
     savingSpinner.value = true;
@@ -606,7 +610,7 @@ const employeesSelectable = ref([]);
 // teams data get
 async function openCreateModal() {
   store.commit("modalModule/CHNAGE_CREATE_MODAL", true);
-  await Axios.get("/employees-selectable/").then((response) => {
+  await Axios.get("/employees-selectable").then((response) => {
     employeesSelectable.value = response.data.data;
   });
 }

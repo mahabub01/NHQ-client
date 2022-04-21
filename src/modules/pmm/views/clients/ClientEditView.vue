@@ -1,5 +1,7 @@
 <template>
+  <!--start Spinner -->
   <div class="container-fluid">
+    <the-spinner :is-loading="loadingSpinner"></the-spinner>
     <form @submit.prevent="handleSubmit">
       <div class="form-bootcamp">
         <div class="row">
@@ -38,7 +40,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.company_name.$error }"
-                  placeholder="Company Name here"
                   v-model.lazy="v$.company_name.$model"
                 />
                 <p
@@ -54,186 +55,124 @@
 
               <!--start form-->
               <div class="form-row">
-                <label class="form-label"
-                  >Company Email<span class="mandatory">*</span></label
-                >
+                <label class="form-label">Company Email</label>
                 <input
                   type="text"
                   class="form-input"
-                  :class="{ isInvalid: v$.email.$error }"
-                  placeholder="Email here"
-                  v-model.lazy="v$.email.$model"
+                  v-model.lazy="formState.email"
                 />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.email.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
               </div>
               <!--end form-->
 
               <!--start form-->
               <div class="form-row">
                 <label class="form-label">Address</label>
-                <textarea
-                  placeholder="Parmanent Address here"
-                  v-model.lazy="formState.address"
-                ></textarea>
+                <textarea v-model.lazy="formState.address"></textarea>
               </div>
               <!--end form-->
 
               <!--start form-->
               <div class="form-row">
                 <label class="form-label">Company Description</label>
-                <TheCKEditor @sendContent="setDescription" />
+                <TheCKEditor
+                  @sendContent="setDescription"
+                  :content="formState.company_description"
+                  v-if="loadCKEditor"
+                />
               </div>
               <!--end form-->
 
               <!--start form-->
               <div class="form-row">
-                <single-image-uploader
+                <single-image-uploader-two
                   label="Company Logo"
                   field_name="company_logo"
-                  :mandatory="true"
-                ></single-image-uploader>
+                ></single-image-uploader-two>
               </div>
+              <img
+                v-if="formState.company_logo != null"
+                :src="`${formState.company_logo}`"
+                alt="Logo"
+                height="100"
+              />
               <!--end form-->
             </div>
             <div class="col-md-4 offset-md-2">
               <!--start form-->
               <div class="form-row">
-                <label class="form-label">Company Person Name</label>
+                <label class="form-label">Contact Person Name</label>
                 <input
                   type="text"
                   class="form-input"
-                  placeholder="Company Person Name here"
-                  :class="{ isInvalid: v$.contact_person_name.$error }"
-                  v-model.lazy="v$.contact_person_name.$model"
+                  v-model.lazy="formState.contact_person_name"
                 />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.contact_person_name.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
-              </div>
-              <!--end form-->
-
-              <!--start form-->
-              <div class="form-row">
-                <label class="form-label"
-                  >Number of Projects<span class="mandatory">*</span></label
-                >
-                <input
-                  type="text"
-                  class="form-input"
-                  :class="{ isInvalid: v$.number_of_projects.$error }"
-                  placeholder="Number of Projects here"
-                  v-model.lazy="v$.number_of_projects.$model"
-                />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.number_of_projects.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
               </div>
               <!--end form-->
 
               <!--start-->
               <div class="form-row">
-                <label class="form-label"
-                  >Contact Person Phone<span class="mandatory">*</span></label
-                >
+                <label class="form-label">Contact Person Phone</label>
                 <input
                   type="text"
                   class="form-input"
-                  :class="{ isInvalid: v$.contact_person_phone.$error }"
-                  placeholder="Contact Person Phone here"
-                  v-model.lazy="v$.contact_person_phone.$model"
+                  v-model.lazy="formState.contact_person_phone"
                 />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.contact_person_phone.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
               </div>
               <!--end-->
 
               <!--start form-->
               <div class="form-row">
-                <label class="form-label">Company Person Email</label>
+                <label class="form-label">Contact Person Email</label>
                 <input
                   type="text"
                   class="form-input"
-                  :class="{ isInvalid: v$.contact_person_email.$error }"
-                  placeholder="Company Person Email here"
-                  v-model.lazy="v$.contact_person_email.$model"
+                  v-model.lazy="formState.contact_person_email"
                 />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.contact_person_email.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
               </div>
               <!--end form-->
 
               <!--start-->
               <div class="form-row">
-                <label class="form-label"
-                  >Contact Person Designation<span class="mandatory"
-                    >*</span
-                  ></label
-                >
-                <input
-                  type="text"
-                  class="form-input"
-                  :class="{ isInvalid: v$.contact_person_designation.$error }"
-                  placeholder="Contact Person Designation here"
-                  v-model.lazy="v$.contact_person_designation.$model"
+                <label class="form-label">Contact Person Designation</label>
+                <Select2
+                  v-model="formState.contact_person_designation_id"
+                  :options="selectable_desination"
+                  :settings="{ placeholder: 'Choose' }"
                 />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.contact_person_designation
-                    .$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
               </div>
               <!--end-->
 
               <!--start form-->
               <div class="form-row">
-                <multi-file-uploader-two
+                <!-- <multi-file-uploader-two
                   label="Company Profile"
                   field_name="company_profile"
-                  :mandatory="true"
-                ></multi-file-uploader-two>
+                ></multi-file-uploader-two> -->
+                <label class="form-label">Company Profile</label>
+                <single-file-uploader
+                  field_name="company_profile_attachment"
+                ></single-file-uploader>
+                <a
+                  target="_blank"
+                  v-if="formState.company_profile_attachment != null"
+                  :href="`${formState.company_profile_attachment}`"
+                  >Download Company Profile</a
+                >
               </div>
               <!--end form-->
 
               <!--start form-->
               <div class="form-row">
-                <multifile-uploader
-                  label="V-Card Attchment"
-                  field_name="vcard_attachment"
-                  :mandatory="true"
-                ></multifile-uploader>
+                <label class="form-label">V-Card Attchment</label>
+                <single-file-uploader-two
+                  field_name="v_card_attchment"
+                ></single-file-uploader-two>
+                <a
+                  target="_blank"
+                  v-if="formState.v_card_attchment != null"
+                  :href="`${formState.v_card_attchment}`"
+                  >Download Company Profile</a
+                >
               </div>
               <!--end form-->
             </div>
@@ -245,21 +184,20 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";
 import swal from "sweetalert";
-import TheButton from "@/modules/shared/TheButton.vue";
-import MultifileUploader from "@/modules/core/shared/file-uploader/MultifileUploader.vue";
-import MultiFileUploaderTwo from "@/modules/core/shared/file-uploader/MultiFileUploaderTwo.vue";
-import SingleImageUploader from "@/modules/core/shared/SingleImageUploader.vue";
 import { useRoute, useRouter } from "vue-router";
-import DataLoadingSpinner from "@/modules/shared/DataLoadingSpinner.vue";
 import Select2 from "vue3-select2-component";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import toastr from "toastr";
 import { useStore } from "vuex";
+import SingleFileUploader from "@/modules/core/shared/file-uploader/SingleFileUploader.vue";
+import SingleFileUploaderTwo from "@/modules/core/shared/file-uploader/SingleFileUploaderTwo.vue";
+import SingleImageUploaderTwo from "@/modules/core/shared/SingleImageUploaderTwo.vue";
+import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 
 //create store
 const store = useStore();
@@ -272,11 +210,28 @@ let singleData = "";
 const setDescription = (value: any) => {
   formState.company_description = value;
 };
+
+// Load CkEditor Data
+const loadCKEditor = computed(() => {
+  return store.state.modalModule.loadCKEditor;
+});
+
 //Button Loading
 let buttonLoading = ref(false);
 
 //Data Loading Spinner
 let loadingSpinner = ref(false);
+const selectable_desination = ref([]);
+
+onMounted(() => {
+  designationSelectable();
+});
+
+async function designationSelectable() {
+  await Axios.get("/designation-selectable").then((response) => {
+    selectable_desination.value = response.data.data;
+  });
+}
 
 const formState = reactive({
   company_name: "",
@@ -289,19 +244,13 @@ const formState = reactive({
   address: "",
   company_description: "",
   number_of_projects: "",
-  contact_person_designation: "",
+  contact_person_designation_id: "",
   company_profile_attachment: "",
   token: store.state.currentUser.token,
 });
 
 const rules: any = {
   company_name: { required },
-  contact_person_name: { required },
-  email: { required },
-  contact_person_email: { required },
-  contact_person_phone: { required },
-  number_of_projects: { required },
-  contact_person_designation: { required },
 };
 
 const v$ = useVuelidate(rules, formState);
@@ -333,6 +282,7 @@ onMounted(async () => {
   loadingSpinner.value = true;
   await Axios.get("/clients/" + route.params.id).then((response) => {
     singleData = response.data.data;
+    console.log(singleData);
     if (singleData != "") {
       formState.company_name = singleData.company_name;
       formState.contact_person_name = singleData.contact_person_name;
@@ -344,10 +294,11 @@ onMounted(async () => {
       formState.address = singleData.address;
       formState.company_description = singleData.company_description;
       formState.number_of_projects = singleData.number_of_projects;
-      formState.contact_person_designation =
-        singleData.contact_person_designation;
+      formState.contact_person_designation_id =
+        singleData.contact_person_designation_id;
       formState.company_profile_attachment =
         singleData.company_profile_attachment;
+      store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
     }
     loadingSpinner.value = false;
   });
@@ -363,7 +314,7 @@ function reset() {
   formState.address = "";
   formState.company_description = "";
   formState.number_of_projects = "";
-  formState.contact_person_designation = "";
+  formState.contact_person_designation_id = "";
   formState.company_profile_attachment = "";
   v$.value.$reset();
 }

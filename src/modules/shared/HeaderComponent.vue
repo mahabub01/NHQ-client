@@ -2,7 +2,9 @@
   <!--start nav section-->
   <nav class="navbar navbar-expand-lg nav-bg main-nav">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#"> ImpacTech Solutions </a>
+      <router-link :to="'/core/dashboard'" class="navbar-brand"
+        >ImpacTech ERP</router-link
+      >
       <button
         class="navbar-toggler"
         type="button"
@@ -17,13 +19,13 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" href=""> Projects </a>
+            <a class="nav-link" href="#"> Projects </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href=""> Services </a>
+            <a class="nav-link" href="#"> CRM</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href=""> CRM </a>
+            <a class="nav-link" href="#"> Support </a>
           </li>
         </ul>
 
@@ -87,10 +89,10 @@
                         <img src="@/assets/images/ellipse_1.png" width="48" />
                       </li>
                       <li class="auth_name">
-                        <h3>{{ auth.name }}</h3>
+                        <h3>{{ userInfo.name }}</h3>
                       </li>
                       <li class="auth_email">
-                        <p>{{ auth.email }}</p>
+                        <p>{{ userInfo.email }}</p>
                       </li>
                     </ul>
                     <ul class="pl_0">
@@ -124,7 +126,13 @@
                     </ul>
                     <ul class="auth_card pt_15">
                       <li class="auth_email">
-                        <button class="sign_out_btn">Log Out</button>
+                        <button
+                          type="button"
+                          class="sign_out_btn"
+                          @click="signOut"
+                        >
+                          Sign Out
+                        </button>
                       </li>
                     </ul>
                   </div>
@@ -140,42 +148,75 @@
   <!--end nav section-->
 </template>
 <script setup lang="ts">
-import { reactive, onMounted } from "vue";
+import { computed } from "vue";
 import Axios from "@/http-common";
-import swal from "sweetalert";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
+import toastr from "toastr";
+import { useCookies } from "vue3-cookies";
+import { useStore } from "vuex";
 
-const route = useRoute();
 const router = useRouter();
-let singleData = "";
+//let singleData = "";
 
-const auth = reactive({
-  name: "",
-  email: "",
+// const auth = reactive({
+//   name: "",
+//   email: "",
+// });
+
+const store = useStore();
+const { cookies } = useCookies();
+
+// onMounted(async () => {
+//   await Axios.get("/auth-inforamtion").then((response) => {
+//     singleData = response.data.data[0];
+//     if (singleData != "") {
+//       auth.name = singleData.name;
+//       auth.email = singleData.email;
+//     }
+//   });
+// });
+
+const userInfo = computed(() => {
+  return store.state.currentUser.userPemissions;
 });
 
-onMounted(async () => {
-  await Axios.get("/auth-inforamtion").then((response) => {
-    singleData = response.data.data[0];
-    if (singleData != "") {
-      auth.name = singleData.name;
-      auth.email = singleData.email;
-    }
-  });
-});
-
+console.log(store.state.currentUser.token);
 // sign out code
 
-// async function signOut() {
-//   await Axios.post("signout/")
-//     .then((response) => {
-//       swal("Success Job!", "Your accout logout successfully!", "success");
-//       router.push("/login");
-//     })
-//     .catch((error) => {
-//       console.log("problem Here" + error);
-//     });
-// }
+async function signOut() {
+  const signoutState = {
+    token: store.state.currentUser.token,
+    user_id: userInfo.value.id,
+  };
+
+  await Axios.post("/signout", signoutState)
+    .then((response) => {
+      if (response.data.code == 200) {
+        toastr.success("Logout your account successfully.");
+        cookies.remove("user-token", "/");
+        cookies.remove("user", "/");
+        cookies.remove("user-token", "/core");
+        cookies.remove("user", "/core");
+        cookies.remove("user-token", "/pmm");
+        cookies.remove("user", "/pmm");
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
+        //store.dispatch("currentUser/assignCurrentUser", {});
+
+        // store.dispatch("currentUser/isLogin", {
+        //   isLoggedIn: false,
+        // });
+
+        router.push("/login");
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
 </script>
 
 <style scoped></style>

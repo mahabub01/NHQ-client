@@ -18,7 +18,7 @@ createApp(App)
   .use(router)
   //.use(Vue3ProgressPlugin)
   .use(VueCookies, {
-    expireTimes: "30d",
+    expireTimes: "1d",
     path: "/",
     domain: "",
     secure: true,
@@ -26,6 +26,7 @@ createApp(App)
   })
   .mount("#app");
 
+//with Credential for every request
 axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use(undefined, function (error) {

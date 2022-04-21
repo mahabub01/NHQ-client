@@ -256,6 +256,7 @@ watch([nameSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
+  console.log(fetchData("/milestones"));
   fetchData("/milestones");
 });
 

@@ -5,6 +5,7 @@
         <tr>
           <th class="col-serial">Serial</th>
           <th>Team Name</th>
+          <th>Team Lead</th>
           <th>User</th>
           <th>Description</th>
           <th>Status</th>
@@ -23,6 +24,7 @@
             {{ index + 1 }}
           </td>
           <td>{{ td.team_name }}</td>
+          <td>{{ td.team_lead }}</td>
           <td>
             <span v-for="client in td.clients" :key="client.id"
               >{{ client.member.name }},</span

@@ -167,6 +167,29 @@
             <div class="row form-row">
               <div class="col-md-12">
                 <label class="form-label"
+                  >Team Lead<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="v$.team_lead.$model"
+                  :options="employeesSelectable"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.team_lead.$error }"
+                />
+
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.team_lead.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label"
                   >Add User<span class="mandatory">*</span></label
                 >
                 <Select2
@@ -243,6 +266,28 @@
                 <p
                   class="error-mgs"
                   v-for="(error, index) in v$.team_name.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label"
+                  >Team Lead<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="v$.team_lead.$model"
+                  :options="employeesSelectable"
+                  :settings="{ placeholder: 'Choose', multiple: false }"
+                  :class="{ isInvalid: v$.team_lead.$error }"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.team_lead.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -344,12 +389,14 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
  ***********************/
 const state = reactive({
   team_name: "",
+  team_lead: "",
   description: "",
   clients: "",
 });
 
 const rules: any = {
   team_name: { required },
+  team_lead: { required },
   clients: { required },
 };
 
@@ -377,6 +424,7 @@ async function teamSubmit() {
 //reset all property
 function resetForm() {
   state.team_name = "";
+  state.team_lead = "";
   state.description = "";
   state.clients = "";
   v$.value.$reset();
@@ -511,6 +559,7 @@ async function getEditData(id: number) {
   await Axios.get("/projects/teams/" + id).then((response) => {
     single_datas.value = response.data;
     state.team_name = single_datas.value.team_name;
+    state.team_lead = single_datas.value.team_lead;
     state.clients = single_datas.value.clients[0];
     state.description = single_datas.value.description;
     console.log(state.clients);

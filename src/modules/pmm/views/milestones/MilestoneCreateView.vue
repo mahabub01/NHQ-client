@@ -321,7 +321,7 @@ onMounted(() => {
 });
 
 async function getProjectNames() {
-  await Axios.get("/projects-selectable")
+  await Axios.get("/project-selectable")
     .then((response) => {
       if (response.data.code === 200) {
         project_names.value = response.data.data;

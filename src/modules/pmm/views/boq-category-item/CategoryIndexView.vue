@@ -17,7 +17,7 @@
                     <router-link
                       to="/pmm/boq-category-items"
                       class="rev-underline-subtitle"
-                      >Category List</router-link
+                      >Boq Category Items</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -131,7 +131,7 @@
     <div>
       <create-modal>
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Category
+          ><i class="fas fa-plus-square"></i> Create Boq Category Items
         </template>
         <template v-slot:body>
           <form @submit.prevent="categorySubmit" class="form-page">
@@ -161,7 +161,7 @@
             <div class="row form-row">
               <div class="col-md-12">
                 <label class="form-label"
-                  >Team Lead<span class="mandatory">*</span></label
+                  >Boq Category<span class="mandatory">*</span></label
                 >
                 <Select2
                   v-model="v$.pmm_boq_category_id.$model"
@@ -216,7 +216,7 @@
     <div>
       <edit-modal>
         <template v-slot:editheader>
-          <i class="fas fa-plus-square"></i> Edit Category
+          <i class="fas fa-plus-square"></i> Edit Boq Category Items
         </template>
         <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
@@ -247,7 +247,7 @@
             <div class="row form-row">
               <div class="col-md-12">
                 <label class="form-label"
-                  >Category<span class="mandatory">*</span></label
+                  >Boq Category<span class="mandatory">*</span></label
                 >
                 <Select2
                   v-model="v$.pmm_boq_category_id.$model"

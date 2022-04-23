@@ -71,13 +71,6 @@
                         ><i class="fas fa-plus"></i> Create</router-link
                       >
                       <router-link
-                        to="/pmm/designations"
-                        class="link_btn"
-                        style="margin-right: 7px"
-                        >d</router-link
-                      >
-
-                      <router-link
                         to="#"
                         class="theme-color-btn"
                         style="margin-right: 7px"

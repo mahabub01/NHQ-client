@@ -75,19 +75,19 @@
               </li>
 
               <li>
-                <router-link class="dropdown-item" to="#"
+                <router-link class="dropdown-item" to="/pmm/pocs-categories"
                   ><i class="fas fa-table"></i> POC Category list</router-link
                 >
               </li>
 
               <li>
-                <router-link class="dropdown-item" to="#"
+                <router-link class="dropdown-item" to="/pmm/boq-categories"
                   ><i class="fas fa-table"></i> BOQ Category list</router-link
                 >
               </li>
 
               <li>
-                <router-link class="dropdown-item" to="#"
+                <router-link class="dropdown-item" to="/pmm/boq-category-items"
                   ><i class="fas fa-table"></i> BOQ Category Item
                   list</router-link
                 >
@@ -120,13 +120,13 @@
               </li>
 
               <li>
-                <router-link class="dropdown-item" to="#"
+                <router-link class="dropdown-item" to="/pmm/departments"
                   ><i class="fas fa-table"></i> Department list</router-link
                 >
               </li>
 
               <li>
-                <router-link class="dropdown-item" to="#"
+                <router-link class="dropdown-item" to="/pmm/designations"
                   ><i class="fas fa-table"></i> Designation list</router-link
                 >
               </li>

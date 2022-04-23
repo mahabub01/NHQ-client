@@ -188,6 +188,17 @@ async function handleSubmit() {
           alertMessage.value = response.data.message;
           return;
         }
+        //Remove old Data
+        cookies.remove("user-token", "/");
+        cookies.remove("user", "/");
+        cookies.remove("user-token", "/core");
+        cookies.remove("user", "/core");
+        cookies.remove("user-token", "/pmm");
+        cookies.remove("user", "/pmm");
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
+
         isShowAlert.value = false;
         is_authenticated.value = true;
         localStorage.setItem("token", response.data.data.access_token);
@@ -209,7 +220,7 @@ async function handleSubmit() {
 
         //console.log(response.data.data.id);
         //getAllPermissions(response.data.data.user.id);
-
+        router.go(1);
         router.push("/core/dashboard");
       })
       .catch((error) => {

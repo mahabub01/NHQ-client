@@ -51,7 +51,7 @@
 
                       <input
                         type="text"
-                        placeholder="Search By BOQ ID/Title"
+                        placeholder="Search"
                         style="margin-right: 7px"
                         v-model.lazy="search"
                         class="table-search"
@@ -172,7 +172,7 @@
             <div class="row">
               <div class="col-md-6">
                 <label class="form-label"
-                  >Select Version<span class="mandatory">*</span></label
+                  >Version<span class="mandatory">*</span></label
                 >
                 <Select2
                   v-model="v$.version_id.$model"
@@ -193,14 +193,13 @@
 
               <div class="col-md-6">
                 <label class="form-label">
-                  BOQ Title
+                  Items Name
                   <span class="mandatory">*</span>
                 </label>
                 <input
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="BOQ title"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -215,15 +214,98 @@
             </div>
 
             <div class="row form-row">
-              <div class="col-md-12" style="min-height: 327px">
-                <label class="form-label">Description</label>
-                <!-- :content="" use for set default Data-->
-                <TheCKEditor @sendContent="setDescription" />
+              <div class="col-md-6">
+                <label class="form-label"
+                  >Section Category<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="formState.boq_category_id"
+                  :options="categories"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.boq_category_id.$error }"
+                  @change="myChangeEvent($event)"
+                  @select="myChangeEvent($event)"
+                />
+
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.boq_category_id.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label"
+                  >Items Category<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="v$.boq_category_items_id.$model"
+                  :options="categoryItems"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.boq_category_items_id.$error }"
+                />
+
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.boq_category_items_id.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
               </div>
             </div>
 
             <div class="row form-row">
-              <div class="col-md-12">
+              <div class="col-md-6">
+                <label class="form-label"> Part Number/ Specification </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  v-model.lazy="formState.part_number"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label"> Quantity </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  v-model.lazy="formState.quantity"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.title.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+
+            <div class="row form-row">
+              <div class="col-md-6" style="min-height: 267px">
+                <label class="form-label">Description</label>
+                <!-- :content="" use for set default Data-->
+                <TheCKEditor @sendContent="setDescription" />
+              </div>
+
+              <div class="col-md-6">
+                <div class="row" style="margin-bottom: 20px">
+                  <div class="col-md-12">
+                    <label class="form-label"> Unit of Measurement </label>
+                    <input
+                      type="text"
+                      class="form-input"
+                      v-model.lazy="formState.unit"
+                    />
+                  </div>
+                </div>
+
                 <label class="form-label">Choose File</label>
                 <single-file-uploader
                   field_name="create_boq"
@@ -263,7 +345,7 @@
           <div class="row">
             <div class="col-md-6">
               <label class="form-label"
-                >Select Version<span class="mandatory">*</span></label
+                >Version<span class="mandatory">*</span></label
               >
               <Select2
                 v-model="v$.version_id.$model"
@@ -284,14 +366,13 @@
 
             <div class="col-md-6">
               <label class="form-label">
-                BOQ Title
+                Items Name
                 <span class="mandatory">*</span>
               </label>
               <input
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.title.$error }"
-                placeholder="BOQ title"
                 v-model.lazy="v$.title.$model"
               />
               <p
@@ -306,7 +387,81 @@
           </div>
 
           <div class="row form-row">
-            <div class="col-md-12" style="min-height: 327px">
+            <div class="col-md-6">
+              <label class="form-label"
+                >Section Category<span class="mandatory">*</span></label
+              >
+              <Select2
+                v-model="formState.boq_category_id"
+                :options="categories"
+                :settings="{ placeholder: 'Choose' }"
+                :class="{ isInvalid: v$.boq_category_id.$error }"
+                @change="myChangeEvent($event)"
+                @select="myChangeEvent($event)"
+              />
+
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.boq_category_id.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"
+                >Items Category<span class="mandatory">*</span></label
+              >
+              <Select2
+                v-model="v$.boq_category_items_id.$model"
+                :options="categoryItems"
+                :settings="{ placeholder: 'Choose' }"
+                :class="{ isInvalid: v$.boq_category_items_id.$error }"
+              />
+
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.boq_category_items_id.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col-md-6">
+              <label class="form-label"> Part Number/ Specification </label>
+              <input
+                type="text"
+                class="form-input"
+                v-model.lazy="formState.part_number"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"> Quantity </label>
+              <input
+                type="text"
+                class="form-input"
+                v-model.lazy="formState.quantity"
+              />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.title.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col-md-6" style="min-height: 267px">
               <label class="form-label">Description</label>
               <!-- :content="" use for set default Data-->
               <TheCKEditor
@@ -315,15 +470,31 @@
                 :content="formState.description"
               />
             </div>
-          </div>
 
-          <div class="row form-row">
-            <div class="col-md-12">
+            <div class="col-md-6">
+              <div class="row" style="margin-bottom: 20px">
+                <div class="col-md-12">
+                  <label class="form-label"> Unit of Measurement </label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    v-model.lazy="formState.unit"
+                  />
+                </div>
+              </div>
+
               <label class="form-label">Choose File</label>
               <single-file-uploader
                 field_name="create_boq"
                 :version-id="v$.version_id.$model"
               ></single-file-uploader>
+
+              <a
+                target="_blank"
+                v-if="editable_file != null"
+                :href="`${editable_file}`"
+                >Download File</a
+              >
             </div>
           </div>
 
@@ -453,22 +624,23 @@ const multiselected = ref([]);
 const modalSize = ref("modal-lg");
 
 //use datatable composables
-const {
-  entries,
-  datatables,
-  showEntries,
-  currentEntries,
-  fetchData,
-  filterData,
-} = useDatatable();
+const { entries, datatables, showEntries, currentEntries, filterData } =
+  useDatatable();
 
 /**********************
  * Create BOQ
  ***********************/
+const editable_file = ref(null);
+
 const formState = reactive({
   version_id: "",
   title: "",
   description: "",
+  boq_category_items_id: "",
+  boq_category_id: "",
+  quantity: "",
+  unit: "",
+  part_number: "",
   project_id: route.params.project_id,
   token: store.state.currentUser.token,
 });
@@ -476,6 +648,8 @@ const formState = reactive({
 const rules: any = {
   version_id: { required },
   title: { required },
+  boq_category_items_id: { required },
+  boq_category_id: { required },
 };
 
 const setDescription = (value: any) => {
@@ -489,6 +663,11 @@ function resetForm() {
   formState.version_id = "";
   formState.title = "";
   formState.description = "";
+  formState.boq_category_items_id = "";
+  formState.boq_category_id = "";
+  formState.quantity = "";
+  formState.unit = "";
+  formState.part_number = "";
   v$.value.$reset();
 }
 /**********************
@@ -498,17 +677,29 @@ function resetForm() {
 //Search Property
 let search = ref("");
 const versions = ref([]);
+const categories = ref([]);
+const categoryItems = ref([]);
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/projects/boqs");
+  filterData("/projects/boqs", "&project_id=" + route.params.project_id);
   getVersions();
+  getCategories();
 });
 
 //filter by BOQ ID/ BOQ title
 watch([search], async () => {
-  fetchData("/projects/boqs", search.value);
+  filterData(
+    "/projects/boqs",
+    "&project_id=" + route.params.project_id + "&search=" + search.value
+  );
 });
+
+//Watch Category Id
+// watch([category_id], async () => {
+//   console.log("category Watch");
+//   //getCategoriesItems(category_id);
+// });
 
 //modal setting
 const createModalState = computed(() => {
@@ -535,7 +726,10 @@ async function submitHandler() {
       .then((response) => {
         if (response.data.code === 200) {
           //get Data using api
-          fetchData("/projects/boqs");
+          filterData(
+            "/projects/boqs",
+            "&project_id=" + route.params.project_id
+          );
           //Close Create Modal
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
           //reset form field
@@ -572,10 +766,18 @@ async function editModal(id: number) {
   await Axios.get("/projects/boqs/" + id).then((response) => {
     loadingSpinner.value = false;
     if (response.data.code === 200) {
-      formState.project_id = response.data.data[0].project_id;
-      formState.version_id = response.data.data[0].version_id;
-      formState.title = response.data.data[0].boq_title;
-      formState.description = response.data.data[0].project_description;
+      formState.project_id = response.data.data.project_id;
+      formState.version_id = response.data.data.version_id;
+      formState.title = response.data.data.boq_title;
+      formState.description = response.data.data.project_description;
+      formState.boq_category_items_id =
+        response.data.data.boq_category_items_id;
+      formState.boq_category_id = response.data.data.boq_category_id;
+      formState.quantity = response.data.data.quantity;
+      formState.unit = response.data.data.unit;
+      formState.part_number = response.data.data.part_number;
+      categoryItems.value = response.data.data.category_item;
+      editable_file.value = response.data.data.file;
       store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
     } else {
       toastr.error(response.data.message);
@@ -596,7 +798,10 @@ async function updateHandler() {
       .then((response) => {
         if (response.data.code === 200) {
           //get Data using api
-          fetchData("/projects/boqs");
+          filterData(
+            "/projects/boqs",
+            "&project_id=" + route.params.project_id
+          );
           //Close Create Modal
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
           //reset form field
@@ -620,6 +825,29 @@ async function getVersions() {
   await Axios.get("get-versions")
     .then((response) => {
       versions.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+async function getCategories() {
+  await Axios.get("boq-category-selectable")
+    .then((response) => {
+      categories.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+async function myChangeEvent(val: any) {
+  loadingSpinner.value = true;
+  await Axios.get("boq-categoryitem-selectable/" + val.id)
+    .then((response) => {
+      console.log(response);
+      loadingSpinner.value = false;
+      categoryItems.value = response.data.data;
     })
     .catch((error) => {
       console.log("problem Here" + error);
@@ -652,14 +880,14 @@ function filterHandler() {
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/projects/boqs");
+  filterData("/projects/boqs", "&project_id=" + route.params.project_id);
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/projects/boqs");
+    filterData("/projects/boqs", "&project_id=" + route.params.project_id);
   }
 }
 
@@ -667,14 +895,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/projects/boqs");
+    filterData("/projects/boqs", "&project_id=" + route.params.project_id);
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/projects/boqs");
+  filterData("/projects/boqs", "&project_id=" + route.params.project_id);
 }
 
 //Delete selected Item
@@ -691,8 +919,9 @@ function remove(id: number) {
       await Axios.delete("/projects/boqs/" + id).then((response) => {
         deletingSpinner.value = false;
         if (response.data.code === 200) {
-          entries.value = entries.value.filter(
-            (e: { id: number }) => e.id !== id
+          filterData(
+            "/projects/boqs",
+            "&project_id=" + route.params.project_id
           );
           swal("Poof! Your data has been deleted!", {
             icon: "success",
@@ -727,7 +956,10 @@ function bulkDelete() {
       }).then((response) => {
         deletingSpinner.value = false;
         if (response.data.code === 200) {
-          fetchData("/projects/boqs");
+          filterData(
+            "/projects/boqs",
+            "&project_id=" + route.params.project_id
+          );
           swal("Poof! Your data has been deleted!", {
             icon: "success",
           });
@@ -770,7 +1002,7 @@ async function changeStatus(status: { id: number; status: number }) {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("/projects/categories");
+    filterData("/projects/boqs", "&project_id=" + route.params.project_id);
   });
 }
 </script>

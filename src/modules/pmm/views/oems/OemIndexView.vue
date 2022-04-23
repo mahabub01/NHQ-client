@@ -18,10 +18,10 @@
                       to="/pmm/projects"
                       class="rev-underline-subtitle"
                       style="margin-right: 7px"
-                      >NHQ Project</router-link
+                      >Project</router-link
                     >
                     >
-                    <a class="rev-underline-subtitle" href="">Oem List</a>
+                    <a class="rev-underline-subtitle" href="#">Oem List</a>
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -51,7 +51,7 @@
 
                       <input
                         type="text"
-                        placeholder="Search By OEM ID/Title"
+                        placeholder="Search"
                         style="margin-right: 7px"
                         v-model.lazy="search"
                         class="table-search"
@@ -200,7 +200,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="OEM title"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -215,7 +214,18 @@
             </div>
 
             <div class="row form-row">
-              <div class="col-md-12" style="min-height: 327px">
+              <div class="col-md-6">
+                <label class="form-label"> Points </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  v-model.lazy="formState.point"
+                />
+              </div>
+            </div>
+
+            <div class="row form-row">
+              <div class="col-md-12" style="min-height: 267px">
                 <label class="form-label">Description</label>
                 <!-- :content="" use for set default Data-->
                 <TheCKEditor @sendContent="setDescription" />
@@ -306,7 +316,18 @@
           </div>
 
           <div class="row form-row">
-            <div class="col-md-12" style="min-height: 327px">
+            <div class="col-md-6">
+              <label class="form-label"> Points </label>
+              <input
+                type="text"
+                class="form-input"
+                v-model.lazy="formState.point"
+              />
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col-md-12" style="min-height: 267px">
               <label class="form-label">Description</label>
               <!-- :content="" use for set default Data-->
               <TheCKEditor
@@ -324,6 +345,12 @@
                 field_name="create_oem"
                 :version-id="v$.version_id.$model"
               ></single-file-uploader>
+              <a
+                target="_blank"
+                v-if="Editablefile != null"
+                :href="`${Editablefile}`"
+                >Download File</a
+              >
             </div>
           </div>
 
@@ -333,7 +360,7 @@
               class="btn btn-secondary"
               data-bs-dismiss="modal"
               @click.prevent="
-                store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
+                store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
               "
             >
               <i class="far fa-times-circle"></i> Close
@@ -471,6 +498,7 @@ const formState = reactive({
   description: "",
   project_id: route.params.project_id,
   token: store.state.currentUser.token,
+  point: 0,
 });
 
 const rules: any = {
@@ -489,6 +517,7 @@ function resetForm() {
   formState.version_id = "";
   formState.title = "";
   formState.description = "";
+  formState.point = 0;
   v$.value.$reset();
 }
 /**********************
@@ -501,13 +530,16 @@ const versions = ref([]);
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/projects/oems");
+  filterData("/projects/oems", "&project_id=" + route.params.project_id);
   getVersions();
 });
 
 //filter by OEM ID/ Oem title
 watch([search], async () => {
-  fetchData("/projects/oems", search.value);
+  filterData(
+    "/projects/oems",
+    "&project_id=" + route.params.project_id + "&search=" + search.value
+  );
 });
 
 //modal setting
@@ -535,7 +567,10 @@ async function submitHandler() {
       .then((response) => {
         if (response.data.code === 200) {
           //get Data using api
-          fetchData("/projects/oems");
+          filterData(
+            "/projects/oems",
+            "&project_id=" + route.params.project_id
+          );
           //Close Create Modal
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
           //reset form field
@@ -562,6 +597,7 @@ const loadCKEditor = computed(() => {
 
 //editable Id
 const editable_id = ref();
+const Editablefile = ref(null);
 
 //Load Single data for Edit
 async function editModal(id: number) {
@@ -572,10 +608,12 @@ async function editModal(id: number) {
   await Axios.get("/projects/oems/" + id).then((response) => {
     loadingSpinner.value = false;
     if (response.data.code === 200) {
-      formState.project_id = response.data.data[0].project_id;
-      formState.version_id = response.data.data[0].version_id;
-      formState.title = response.data.data[0].oem_title;
-      formState.description = response.data.data[0].project_description;
+      formState.project_id = response.data.data.project_id;
+      formState.version_id = response.data.data.version_id;
+      formState.title = response.data.data.oem_title;
+      formState.description = response.data.data.project_description;
+      formState.point = response.data.data.point;
+      Editablefile.value = response.data.data.file;
       store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
     } else {
       toastr.error(response.data.message);
@@ -596,7 +634,10 @@ async function updateHandler() {
       .then((response) => {
         if (response.data.code === 200) {
           //get Data using api
-          fetchData("/projects/oems");
+          filterData(
+            "/projects/oems",
+            "&project_id=" + route.params.project_id
+          );
           //Close Create Modal
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
           //reset form field
@@ -619,6 +660,7 @@ async function updateHandler() {
 async function getVersions() {
   await Axios.get("get-versions")
     .then((response) => {
+      console.log(response);
       versions.value = response.data.data;
     })
     .catch((error) => {
@@ -652,14 +694,14 @@ function filterHandler() {
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/projects/oems");
+  filterData("/projects/oems", "&project_id=" + route.params.project_id);
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/projects/oems");
+    filterData("/projects/oems", "&project_id=" + route.params.project_id);
   }
 }
 
@@ -667,14 +709,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/projects/oems");
+    filterData("/projects/oems", "&project_id=" + route.params.project_id);
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/projects/oems");
+  filterData("/projects/oems", "&project_id=" + route.params.project_id);
 }
 
 //Delete selected Item
@@ -726,8 +768,12 @@ function bulkDelete() {
         ids: multiselected.value.multiselect,
       }).then((response) => {
         deletingSpinner.value = false;
+        console.log(response);
         if (response.data.code === 200) {
-          fetchData("/projects/oems");
+          filterData(
+            "/projects/oems",
+            "&project_id=" + route.params.project_id
+          );
           swal("Poof! Your data has been deleted!", {
             icon: "success",
           });

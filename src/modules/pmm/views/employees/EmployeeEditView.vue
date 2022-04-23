@@ -264,14 +264,14 @@ const formState = reactive({
   name: "",
   email: "",
   phone: "",
-  designation: "",
+  designation_id: "",
   password: "",
   gender: "",
   date_of_birth: "",
   present_address: "",
   parmanent_address: "",
   nid_number: "",
-  depertment: "",
+  department_id: "",
   joinning_date: "",
   about_employee: "",
 });
@@ -279,11 +279,39 @@ const formState = reactive({
 const rules: any = {
   name: { required },
   email: { required },
-  phone: { required },
-  designation: { required },
-  depertment: { required },
   password: { required },
 };
+
+const departments = ref([]);
+const designations = ref([]);
+
+//Load Data form computed onMounted
+onMounted(() => {
+  getDepartments();
+  getDesignations();
+});
+
+async function getDepartments() {
+  await Axios.get("department-selectable")
+    .then((response) => {
+      departments.value = response.data.data;
+      console.log(response.data.data);
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+async function getDesignations() {
+  await Axios.get("designation-selectable")
+    .then((response) => {
+      designations.value = response.data.data;
+      console.log(response.data.data);
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
 
 const v$ = useVuelidate(rules, formState);
 
@@ -314,14 +342,14 @@ onMounted(async () => {
       formState.name = singleData.name;
       formState.email = singleData.email;
       formState.phone = singleData.phone;
-      formState.designation = singleData.designation;
+      formState.designation_id = singleData.designation;
       formState.password = singleData.password;
       formState.gender = singleData.gender;
       formState.date_of_birth = singleData.date_of_birth;
       formState.present_address = singleData.present_address;
       formState.parmanent_address = singleData.parmanent_address;
       formState.nid_number = singleData.nid_number;
-      formState.depertment = singleData.depertment;
+      formState.department_id = singleData.department_id;
       formState.joinning_date = singleData.joinning_date;
       formState.about_employee = singleData.about_employee;
     }
@@ -338,7 +366,18 @@ const genderList = reactive([
 //reset all property
 function reset() {
   formState.name = "";
-  // state.description = "";
+  formState.email = "";
+  formState.phone = "";
+  formState.designation_id = "";
+  formState.password = "";
+  formState.gender = "";
+  formState.date_of_birth = "";
+  formState.present_address = "";
+  formState.parmanent_address = "";
+  formState.nid_number = "";
+  formState.department_id = "";
+  formState.joinning_date = "";
+  formState.about_employee = "";
   v$.value.$reset();
 }
 </script>

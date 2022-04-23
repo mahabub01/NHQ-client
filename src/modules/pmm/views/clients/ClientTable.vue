@@ -52,6 +52,14 @@
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
+                  <router-link
+                    :to="`/pmm/clients/${td.id}`"
+                    title="Client Details"
+                    class="dropdown-item"
+                    ><i class="fas fa-eye"></i> Details</router-link
+                  >
+                </li>
+                <li>
                   <a
                     href="#"
                     @click.prevent="removeItem(td.id)"

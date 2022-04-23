@@ -63,6 +63,15 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
+        path: "clients/:id",
+        name: "clients-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "clients-edit" */ "./views/clients/ClientDetailsView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
         path: "projects",
         name: "projects",
         component: () =>

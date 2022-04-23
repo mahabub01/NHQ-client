@@ -27,16 +27,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-4">
-                  <input
-                    type="text"
-                    class="table_search_input"
-                    placeholder="Search Here..."
-                  />
-
-                  <i class="fa fa-search table_search_icon"></i>
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-8">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -53,6 +44,12 @@
                           {{ show_en }}
                         </option>
                       </select>
+
+                      <input
+                        type="text"
+                        v-model.lazy="nameSearch"
+                        placeholder="Search Team"
+                      />
 
                       <button
                         type="button"
@@ -215,8 +212,6 @@ import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import FilterModal from "../../../core/shared/FilterModal.vue";
 import { useStore } from "vuex";
-import { useVuelidate } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
 
 //create store
 const store = useStore();
@@ -233,30 +228,29 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
 //Search Property
-let nameSearch = ref("");
+let nameSearch = ref(null);
 
 watch([nameSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
     "/milestones?showEntries=" +
-      currentEntries +
+      currentEntries.value +
       "&page=" +
       datatables.currentPage +
       "&searchName=" +
       nameSearch.value
   ).then((response) => {
-    entries.value = response.data.data.data;
-    datatables.totalItems = response.data.data.total;
-    datatables.currentPage = response.data.data.current_page;
-    datatables.allPages = response.data.data.last_page;
-    datatables.pagination = response.data.data.links;
+    entries.value = response.data.data;
+    datatables.totalItems = response.data.meta.total;
+    datatables.currentPage = response.data.meta.current_page;
+    datatables.allPages = response.data.meta.last_page;
+    datatables.pagination = response.data.meta.links;
     datatables.loadingState = false;
   });
 });
 
 //Load Data form computed onMounted
 onMounted(() => {
-  console.log(fetchData("/milestones"));
   fetchData("/milestones");
 });
 

@@ -3,7 +3,10 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial">Serial</th>
+          <th class="col-serial">
+            <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
+            Serial
+          </th>
           <th>Name</th>
           <th>Email</th>
           <th>Phone Number</th>
@@ -27,14 +30,10 @@
           </td>
           <td>{{ td.name }}</td>
           <td>{{ td.email }}</td>
-          <td v-if="td.phone">{{ td.phone }}</td>
-          <td v-else>N/A</td>
-          <td v-if="td.depertment">{{ td.depertment }}</td>
-          <td v-else>N/A</td>
-          <td v-if="td.designation">{{ td.designation }}</td>
-          <td v-else>N/A</td>
-          <td v-if="td.employee_id">{{ td.employee_id }}</td>
-          <td v-else>N/A</td>
+          <td>{{ td.phone }}</td>
+          <td>{{ td.department }}</td>
+          <td>{{ td.designation }}</td>
+          <td>{{ td.employee_id }}</td>
 
           <td>
             <span v-if="td.is_active == 1" class="activeStatus"
@@ -58,7 +57,7 @@
               >
                 <i class="fas fa-sort-down"></i>
               </button>
-              <ul class="dropdown-menu table-dropdown">
+              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
                   <a
                     href="#"

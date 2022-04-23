@@ -62,7 +62,7 @@ ol {
 }
 
 .btn-design {
-  background-color: #6437a3;
+  background-color: #BC201E;
   color: white;
 }
 
@@ -1261,6 +1261,9 @@ a:hover {
   color: #fff;
   border: none;
 }
+.form-button:hover{
+  opacity: 0.8;
+}
 
 .form-button-danger {
   border-radius: 3px;
@@ -1273,6 +1276,10 @@ a:hover {
   width: auto;
   color: #fff !important;
   border: none;
+}
+
+.form-button-danger:hover{
+  opacity: 0.8;
 }
 
 .pro-button {

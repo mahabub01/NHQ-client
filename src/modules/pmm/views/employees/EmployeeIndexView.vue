@@ -137,25 +137,15 @@
           <form @submit.prevent="filterSubmit" class="form-page">
             <div class="row">
               <div class="col-md-4">
-                <label class="form-label"> Name/Emil/Phone/Nid </label>
+                <label class="form-label"> Search </label>
                 <input
                   type="text"
                   class="form-input"
                   placeholder="Search here"
-                  v-model="filterState.name_email_phone_nid"
+                  v-model="filterState.search"
                 />
               </div>
-              <div class="col-md-4">
-                <label class="form-label">
-                  Designation/Depertment/Employee ID
-                </label>
-                <input
-                  type="text"
-                  class="form-input"
-                  placeholder="Search here"
-                  v-model="filterState.designation_depertMent_employee_id"
-                />
-              </div>
+
               <div class="col-md-4">
                 <label class="form-label"> Date of Birth </label>
                 <input
@@ -172,6 +162,23 @@
                   class="form-input"
                   placeholder="Search here"
                   v-model="filterState.joinning_date"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Designation</label>
+                <Select2
+                  v-model="filterState.designation_id"
+                  :options="designations"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Department</label>
+                <Select2
+                  v-model="filterState.department_id"
+                  :options="departments"
+                  :settings="{ placeholder: 'Choose' }"
                 />
               </div>
             </div>
@@ -210,8 +217,7 @@ import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import FilterModal from "../../../core/shared/FilterModal.vue";
 import { useStore } from "vuex";
-import { useVuelidate } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
+import Select2 from "vue3-select2-component";
 
 //create store
 const store = useStore();
@@ -227,8 +233,14 @@ let filteringSpinner = ref(false);
 const multiselected = ref([]);
 
 //use datatable composables
-const { entries, datatables, showEntries, currentEntries, fetchData } =
-  useDatatable();
+const {
+  entries,
+  datatables,
+  showEntries,
+  currentEntries,
+  fetchData,
+  filterData,
+} = useDatatable();
 
 //Search Property
 let nameSearch = ref("");
@@ -252,10 +264,36 @@ watch([nameSearch], async () => {
   });
 });
 
+//
+const departments = ref([]);
+const designations = ref([]);
+
 //Load Data form computed onMounted
 onMounted(() => {
   fetchData("/employees");
+  getDepartments();
+  getDesignations();
 });
+
+async function getDepartments() {
+  await Axios.get("department-selectable")
+    .then((response) => {
+      departments.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+async function getDesignations() {
+  await Axios.get("designation-selectable")
+    .then((response) => {
+      designations.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
 
 //show data using show Menu
 function paginateEntries(e: any) {
@@ -350,25 +388,28 @@ async function changeStatus(status: { id: number; status: number }) {
 
 // Filter Pert
 const filterState = reactive({
-  name_email_phone_nid: "",
-  designation_depertMent_employee_id: "",
+  search: "",
+  department_id: "",
+  designation_id: "",
   date_of_birth: "",
   joinning_date: "",
 });
 
 async function filterSubmit() {
+  let path =
+    "&search=" +
+    filterState.search +
+    "&department_id=" +
+    filterState.department_id +
+    "&designation_id =" +
+    filterState.designation_id +
+    "&date_of_birth=" +
+    filterState.date_of_birth +
+    "&joinning_date=" +
+    filterState.joinning_date;
+
+  filterData("employees-filter", path);
   store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
-  datatables.loadingState = true;
-  filteringSpinner.value = true;
-  await Axios.post("employees-filter", filterState).then((response) => {
-    filteringSpinner.value = false;
-    entries.value = response.data.data;
-    datatables.totalItems = response.data.meta.total;
-    datatables.currentPage = response.data.meta.current_page;
-    datatables.allPages = response.data.meta.last_page;
-    datatables.pagination = response.data.meta.links;
-    datatables.loadingState = false;
-  });
 }
 </script>
 

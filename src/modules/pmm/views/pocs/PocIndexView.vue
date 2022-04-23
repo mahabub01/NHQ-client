@@ -88,12 +88,14 @@
                         Import</router-link
                       >
 
-                      <router-link
-                        to=""
+                      <button
+                        type="button"
+                        @click="exportPoc()"
                         class="theme-color-btn"
                         style="margin-right: 7px"
-                        ><i class="fas fa-file-excel"></i> Export</router-link
                       >
+                        <i class="fas fa-file-excel"></i> Export
+                      </button>
 
                       <div class="btn-group">
                         <button
@@ -172,18 +174,18 @@
             <div class="row">
               <div class="col-md-6">
                 <label class="form-label"
-                  >Select Version<span class="mandatory">*</span></label
+                  >Service Category<span class="mandatory">*</span></label
                 >
                 <Select2
-                  v-model="v$.version_id.$model"
-                  :options="versions"
+                  v-model="v$.category_id.$model"
+                  :options="categories"
                   :settings="{ placeholder: 'Choose' }"
-                  :class="{ isInvalid: v$.version_id.$error }"
+                  :class="{ isInvalid: v$.category_id.$error }"
                 />
 
                 <p
                   class="error-mgs"
-                  v-for="(error, index) in v$.version_id.$errors"
+                  v-for="(error, index) in v$.category_id.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -215,7 +217,7 @@
             </div>
 
             <div class="row form-row">
-              <div class="col-md-12" style="min-height: 327px">
+              <div class="col-md-12" style="min-height: 267px">
                 <label class="form-label">Description</label>
                 <!-- :content="" use for set default Data-->
                 <TheCKEditor @sendContent="setDescription" />
@@ -227,7 +229,7 @@
                 <label class="form-label">Choose File</label>
                 <single-file-uploader
                   field_name="create_poc"
-                  :version-id="v$.version_id.$model"
+                  :version-id="v$.category_id.$model"
                 ></single-file-uploader>
               </div>
             </div>
@@ -263,18 +265,18 @@
           <div class="row">
             <div class="col-md-6">
               <label class="form-label"
-                >Select Version<span class="mandatory">*</span></label
+                >Service Category<span class="mandatory">*</span></label
               >
               <Select2
-                v-model="v$.version_id.$model"
-                :options="versions"
+                v-model="v$.category_id.$model"
+                :options="categories"
                 :settings="{ placeholder: 'Choose' }"
-                :class="{ isInvalid: v$.version_id.$error }"
+                :class="{ isInvalid: v$.category_id.$error }"
               />
 
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.version_id.$errors"
+                v-for="(error, index) in v$.category_id.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i>
@@ -306,7 +308,7 @@
           </div>
 
           <div class="row form-row">
-            <div class="col-md-12" style="min-height: 327px">
+            <div class="col-md-12" style="min-height: 267px">
               <label class="form-label">Description</label>
               <!-- :content="" use for set default Data-->
               <TheCKEditor
@@ -322,8 +324,15 @@
               <label class="form-label">Choose File</label>
               <single-file-uploader
                 field_name="create_poc"
-                :version-id="v$.version_id.$model"
+                :version-id="v$.category_id.$model"
               ></single-file-uploader>
+
+              <a
+                target="_blank"
+                v-if="editable_file != null"
+                :href="`${editable_file}`"
+                >Download File</a
+              >
             </div>
           </div>
 
@@ -333,7 +342,7 @@
               class="btn btn-secondary"
               data-bs-dismiss="modal"
               @click.prevent="
-                store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
+                store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
               "
             >
               <i class="far fa-times-circle"></i> Close
@@ -384,10 +393,10 @@
 
           <div class="row form-row">
             <div class="col-md-4">
-              <label class="form-label"> Version </label>
+              <label class="form-label"> Category </label>
               <Select2
-                v-model="filterState.version"
-                :options="versions"
+                v-model="filterState.category_id"
+                :options="categories"
                 :settings="{ placeholder: 'Choose' }"
               />
             </div>
@@ -435,6 +444,62 @@ import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import { useRoute } from "vue-router";
 import toastr from "toastr";
 
+//Start Export
+const titles = reactive([
+  {
+    label: "Title",
+    field: "serial",
+  },
+  {
+    label: null,
+    field: "requirement",
+  },
+  {
+    label: null,
+    field: "remarks",
+  },
+]);
+
+const columns = reactive([
+  {
+    label: "SL",
+    field: "serial",
+  },
+  {
+    label: "List of Client Requirement ",
+    field: "requirement",
+  },
+  {
+    label: "Remarks (If Any)",
+    field: "remarks",
+  },
+]);
+
+const data = reactive([
+  {
+    serial: "1",
+    requirement: "<b>Access control Requirement</b>",
+    remarks: null,
+  },
+  {
+    serial: "1.1",
+    requirement: "Preventing Installing Unauthorized Software",
+    remarks: "Application control",
+  },
+  {
+    serial: "1.2",
+    requirement: "Preventing Installing Unauthorized Software",
+    remarks: "Application control",
+  },
+
+  {
+    serial: "1.3",
+    requirement: "Preventing Installing Unauthorized Software",
+    remarks: "Application control",
+  },
+]);
+//End Export
+
 //get route information using route
 const route = useRoute();
 
@@ -466,7 +531,7 @@ const {
  * Create POC
  ***********************/
 const formState = reactive({
-  version_id: "",
+  category_id: "",
   title: "",
   description: "",
   project_id: route.params.project_id,
@@ -474,7 +539,7 @@ const formState = reactive({
 });
 
 const rules: any = {
-  version_id: { required },
+  category_id: { required },
   title: { required },
 };
 
@@ -486,7 +551,7 @@ const v$ = useVuelidate(rules, formState);
 
 //reset all property
 function resetForm() {
-  formState.version_id = "";
+  formState.category_id = "";
   formState.title = "";
   formState.description = "";
   v$.value.$reset();
@@ -498,16 +563,20 @@ function resetForm() {
 //Search Property
 let search = ref("");
 const versions = ref([]);
+const categories = ref([]);
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/projects/pocs");
-  getVersions();
+  filterData("/projects/pocs", "&project_id=" + route.params.project_id);
+  getCategories();
 });
 
 //filter by POC ID/ Poc title
 watch([search], async () => {
-  fetchData("/projects/pocs", search.value);
+  filterData(
+    "/projects/pocs",
+    "&project_id=" + route.params.project_id + "&search=" + search.value
+  );
 });
 
 //modal setting
@@ -535,7 +604,10 @@ async function submitHandler() {
       .then((response) => {
         if (response.data.code === 200) {
           //get Data using api
-          fetchData("/projects/pocs");
+          filterData(
+            "/projects/pocs",
+            "&project_id=" + route.params.project_id
+          );
           //Close Create Modal
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
           //reset form field
@@ -562,6 +634,7 @@ const loadCKEditor = computed(() => {
 
 //editable Id
 const editable_id = ref();
+const editable_file = ref(null);
 
 //Load Single data for Edit
 async function editModal(id: number) {
@@ -572,10 +645,11 @@ async function editModal(id: number) {
   await Axios.get("/projects/pocs/" + id).then((response) => {
     loadingSpinner.value = false;
     if (response.data.code === 200) {
-      formState.project_id = response.data.data[0].project_id;
-      formState.version_id = response.data.data[0].version_id;
-      formState.title = response.data.data[0].poc_title;
-      formState.description = response.data.data[0].project_description;
+      formState.project_id = response.data.data.project_id;
+      formState.category_id = response.data.data.category_id;
+      formState.title = response.data.data.poc_title;
+      formState.description = response.data.data.project_description;
+      editable_file.value = response.data.data.file;
       store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
     } else {
       toastr.error(response.data.message);
@@ -596,7 +670,10 @@ async function updateHandler() {
       .then((response) => {
         if (response.data.code === 200) {
           //get Data using api
-          fetchData("/projects/pocs");
+          filterData(
+            "/projects/pocs",
+            "&project_id=" + route.params.project_id
+          );
           //Close Create Modal
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
           //reset form field
@@ -616,10 +693,10 @@ async function updateHandler() {
   }
 }
 
-async function getVersions() {
-  await Axios.get("get-versions")
+async function getCategories() {
+  await Axios.get("pocs-categories-selectable")
     .then((response) => {
-      versions.value = response.data.data;
+      categories.value = response.data.data;
     })
     .catch((error) => {
       console.log("problem Here" + error);
@@ -631,7 +708,7 @@ const filterState = reactive({
   search: "",
   created_date: "",
   updated_date: "",
-  version: "",
+  category_id: "",
 });
 
 //filter Handler
@@ -643,8 +720,8 @@ function filterHandler() {
     filterState.created_date +
     "&updated_at=" +
     filterState.updated_date +
-    "&version_id=" +
-    filterState.version;
+    "&category_id=" +
+    filterState.category_id;
   filterData("/projects/pocs", path);
   store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
 }
@@ -652,14 +729,14 @@ function filterHandler() {
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/projects/pocs");
+  filterData("/projects/pocs", "&project_id=" + route.params.project_id);
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/projects/pocs");
+    filterData("/projects/pocs", "&project_id=" + route.params.project_id);
   }
 }
 
@@ -667,14 +744,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/projects/pocs");
+    filterData("/projects/pocs", "&project_id=" + route.params.project_id);
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/projects/pocs");
+  filterData("/projects/pocs", "&project_id=" + route.params.project_id);
 }
 
 //Delete selected Item
@@ -727,7 +804,10 @@ function bulkDelete() {
       }).then((response) => {
         deletingSpinner.value = false;
         if (response.data.code === 200) {
-          fetchData("/projects/pocs");
+          filterData(
+            "/projects/pocs",
+            "&project_id=" + route.params.project_id
+          );
           swal("Poof! Your data has been deleted!", {
             icon: "success",
           });
@@ -770,7 +850,7 @@ async function changeStatus(status: { id: number; status: number }) {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("/projects/categories");
+    filterData("/projects/pocs", "&project_id=" + route.params.project_id);
   });
 }
 </script>

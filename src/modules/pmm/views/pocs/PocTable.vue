@@ -3,45 +3,47 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th
-            class="action-field"
-            style="width: 20px !important; text-align: center"
-          >
+          <th class="col-serial">
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
+            Serial
           </th>
-          <th>POC ID</th>
+          <th>Project ID</th>
           <th>Created Date</th>
           <th>Updated Date</th>
-          <th>Scope of Work List</th>
-          <th>Latest Version</th>
-          <th class="action-field">Edit</th>
-          <th class="action-field">File</th>
+          <th style="width: 40% !important">List of Requirement</th>
+          <th>POC Category</th>
+          <th class="action-field align-center">Edit</th>
+          <th class="action-field align-center">File</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
         <tr v-for="(item, index) in $attrs.entries" :key="index">
-          <td class="action-field align-center">
+          <td class="col-serial">
             <input
               type="checkbox"
               v-model="multiselect"
               :value="item.id"
               @change="updateCheckall"
             />
+            {{ index + 1 }}
           </td>
           <td>{{ item.poc_id }}</td>
           <td>{{ item.created_at }}</td>
           <td>{{ item.updated_at }}</td>
-          <td>{{ item.poc_title }}</td>
-          <td>{{ item.version }}</td>
+          <td style="width: 40% !important">{{ item.poc_title }}</td>
+          <td>{{ item.category }}</td>
           <td class="action-field" style="text-align: center">
             <a href="#" @click.prevent="getEdit(item.id)" title="Edit POC"
               ><i class="fa fa-pen action-icon"></i
             ></a>
           </td>
           <td class="action-field" style="text-align: center">
-            <a href="#" @click.prevent="getFile(item.id)" title="Download File"
+            <a v-if="item.file != null" :href="`${item.file}`" target="_blank"
               ><i class="fa fa-paperclip action-icon"></i
+            ></a>
+            <a href="#" onclick="alert('File not uploaded')" v-else
+              ><i class="fa fa-paperclip action-icon" style="opacity: 0.6"></i
             ></a>
           </td>
           <td class="col-serial">
@@ -183,6 +185,6 @@ function changeStatus(id: number, status: number) {
   color: red;
 }
 .action-field {
-  width: 20px !important;
+  width: 30px !important;
 }
 </style>

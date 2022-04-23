@@ -3,17 +3,20 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial">Serial</th>
+          <th class="col-serial">
+            <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
+            Serial
+          </th>
           <th>Milestone Name</th>
           <th>Milestone ID</th>
           <th>Project Id</th>
           <th>Start Date</th>
           <th>End Date</th>
           <th>Extended</th>
-          <th>Status</th>
+          <!-- <th>Status</th> -->
           <th>Milestone Progress</th>
-          <th class="col-icon">Edit</th>
-          <th class="col-icon">File</th>
+          <th class="col-icon align-center">Edit</th>
+          <th class="col-icon align-center">File</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -30,11 +33,11 @@
           </td>
           <td>{{ td.milestone_name }}</td>
           <td>{{ td.milestone_id }}</td>
-          <td>{{ td.project_id }}</td>
+          <td>{{ td.project_name }}</td>
           <td>{{ td.start_date }}</td>
           <td>{{ td.end_date }}</td>
           <td>{{ td.extended_date }}</td>
-          <td>
+          <!-- <td>
             <span v-if="td.is_active == 1" class="activeStatus"
               ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
             </span>
@@ -42,11 +45,11 @@
               ><i class="far fa-times-circle"></i>
               {{ isActive(td.is_active) }}</span
             >
-          </td>
+          </td> -->
           <td>
             <div class="progress" style="height: 14px">
               <div
-                class="progress-bar bg-danger"
+                class="progress-bar bg-info"
                 role="progressbar"
                 style="width: 75%"
                 aria-valuenow="75"
@@ -67,7 +70,15 @@
           </td>
 
           <td class="action-field" style="text-align: center">
-            <i class="fa fa-paperclip action-icon"></i>
+            <a
+              v-if="td.file_name != null"
+              :href="`${td.file_name}`"
+              target="_blank"
+              ><i class="fa fa-paperclip action-icon"></i
+            ></a>
+            <a href="#" onclick="alert('File not uploaded')" v-else
+              ><i class="fa fa-paperclip action-icon" style="opacity: 0.6"></i
+            ></a>
           </td>
 
           <td class="col-serial">

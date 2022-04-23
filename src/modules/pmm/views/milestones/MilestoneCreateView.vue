@@ -48,23 +48,13 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label"
-                >Start Date<span class="mandatory">*</span></label
-              >
+              <label class="form-label">Start Date</label>
               <input
                 type="date"
                 class="form-input"
-                :class="{ isInvalid: v$.start_date.$error }"
                 placeholder="Start Date Here"
-                v-model.lazy="v$.start_date.$model"
+                v-model.lazy="formState.start_date"
               />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.start_date.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
             </div>
           </div>
           <!--end row -->
@@ -79,7 +69,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.milestone_name.$error }"
-                placeholder="Milestone Name here"
                 v-model.lazy="v$.milestone_name.$model"
               />
               <p
@@ -91,23 +80,12 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label"
-                >End Date<span class="mandatory">*</span></label
-              >
+              <label class="form-label">End Date</label>
               <input
                 type="date"
                 class="form-input"
-                :class="{ isInvalid: v$.end_date.$error }"
-                placeholder="End Date Here"
-                v-model.lazy="v$.end_date.$model"
+                v-model.lazy="formState.end_date"
               />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.end_date.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
             </div>
           </div>
           <!--end row -->
@@ -115,42 +93,22 @@
           <!--start row [assign_employee, points] -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label"
-                >Assign Employee<span class="mandatory">*</span></label
-              >
+              <label class="form-label">Assign Employee</label>
 
               <Select2
-                v-model="v$.assign_employee.$model"
+                v-model="formState.assign_employee"
                 :options="assign_employees"
                 :settings="{ placeholder: 'Choose' }"
-                :class="{ isInvalid: v$.assign_employee.$error }"
               />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.assign_employee.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label"
-                >Extended Date<span class="mandatory">*</span></label
-              >
+              <label class="form-label">Extended Date</label>
               <input
                 type="date"
                 class="form-input"
-                :class="{ isInvalid: v$.extended_date.$error }"
                 placeholder="End Date Here"
-                v-model.lazy="v$.extended_date.$model"
+                v-model.lazy="formState.extended_date"
               />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.extended_date.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
             </div>
           </div>
           <!--end row -->
@@ -158,43 +116,21 @@
           <!--start row [follow up, category]-->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label"
-                >Follow Up<span class="mandatory">*</span></label
-              >
+              <label class="form-label">Follow Up</label>
 
               <Select2
-                v-model="v$.follow_up.$model"
+                v-model="formState.follow_up"
                 :options="assign_employees"
                 :settings="{ placeholder: 'Choose' }"
-                :class="{ isInvalid: v$.assign_employee.$error }"
               />
-
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.follow_up.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label"
-                >Milestone Points<span class="mandatory">*</span></label
-              >
+              <label class="form-label">Milestone Points</label>
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.points.$error }"
-                placeholder="Project Name Here"
-                v-model.lazy="v$.points.$model"
+                v-model.lazy="formState.points"
               />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.points.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
             </div>
           </div>
           <!--end row -->
@@ -208,34 +144,21 @@
             <div class="col-md-4 offset-md-2">
               <!--start row -->
               <div class="form-row">
-                <label class="form-label"
-                  >Milestone Category<span class="mandatory">*</span></label
-                >
+                <label class="form-label">Milestone Category</label>
                 <Select2
-                  v-model="v$.category.$model"
+                  v-model="formState.category"
                   :options="categories"
                   :settings="{ placeholder: 'Choose' }"
-                  :class="{ isInvalid: v$.category.$error }"
                 />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.extended_date.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
               </div>
               <!--end row -->
 
               <!--start row -->
               <div class="row form-row">
                 <div class="col-md-12">
-                  <label class="form-label"
-                    >Choose File<span class="mandatory">*</span></label
-                  >
+                  <label class="form-label">Choose File</label>
                   <single-file-uploader
-                    field_name="create_sow"
+                    field_name="create_milestone"
                   ></single-file-uploader>
                 </div>
               </div>
@@ -255,16 +178,16 @@ import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";
 import swal from "sweetalert";
-import TheButton from "@/modules/shared/TheButton.vue";
 import Select2 from "vue3-select2-component";
 import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
 import toastr from "toastr";
-import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
+import { useStore } from "vuex";
 
 const router = useRouter();
+
+const store = useStore();
 
 let buttonLoading = ref(false);
 
@@ -279,22 +202,16 @@ const formState = reactive({
   assign_employee: "",
   extended_date: "",
   follow_up: "",
-  points: "",
+  points: 0,
   category: "",
   file_name: "",
   description: "",
+  token: store.state.currentUser.token,
 });
 
 const rules: any = {
   project_name: { required },
-  start_date: { required },
   milestone_name: { required },
-  end_date: { required },
-  assign_employee: { required },
-  extended_date: { required },
-  follow_up: { required },
-  points: { required },
-  category: { required },
 };
 
 //set CKEditor Data
@@ -321,7 +238,7 @@ onMounted(() => {
 });
 
 async function getProjectNames() {
-  await Axios.get("/projects-selectable")
+  await Axios.get("/project-selectable")
     .then((response) => {
       if (response.data.code === 200) {
         project_names.value = response.data.data;
@@ -369,10 +286,10 @@ async function handleSubmit() {
   v$.value.$touch();
 
   if (!v$.value.$error) {
-    console.log(formState);
     buttonLoading.value = true;
     await Axios.post("/milestones", formState)
       .then((response) => {
+        console.log(response);
         buttonLoading.value = false;
         if (response.data.code === 200) {
           reset();

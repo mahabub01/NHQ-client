@@ -48,7 +48,6 @@
         <div class="card">
           <div class="card-body">
             <h1>OME</h1>
-            <button type="button" @click="exportData">Download</button>
           </div>
         </div>
       </div>
@@ -59,7 +58,6 @@
         <div class="card">
           <div class="card-body">
             <h1>Task</h1>
-            <!-- <button type="button" @click="exportData()">Export</button> -->
           </div>
         </div>
       </div>

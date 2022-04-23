@@ -218,6 +218,24 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
+        path: "boq-categories",
+        name: "boq-categories",
+        component: () =>
+          import(
+            /* webpackChunkName: "boq-category" */ "./views/boq-categories/CategoryIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "boq-category-items",
+        name: "boq-category-items",
+        component: () =>
+          import(
+            /* webpackChunkName: "boq-category-item" */ "./views/boq-category-item/CategoryIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
         path: "oems/:project_id",
         name: "oems",
         component: () =>

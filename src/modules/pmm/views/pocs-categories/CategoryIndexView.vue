@@ -22,7 +22,7 @@
                       ></i>
                     </router-link>
                     <router-link
-                      to="/pmm/categories"
+                      to="/pmm/pocs-categories"
                       class="rev-underline-subtitle"
                       >Category List</router-link
                     >
@@ -275,6 +275,7 @@ import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import toastr from "toastr";
 
 //create store
 const store = useStore();
@@ -314,10 +315,20 @@ async function categorySubmit() {
     savingSpinner.value = true;
     await Axios.post("pocs/categories", state)
       .then((response) => {
-        fetchData("/pocs/categories");
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your category created successfully!", "success");
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
+          fetchData("/pocs/categories");
+          resetForm();
+          savingSpinner.value = false;
+          swal(
+            "Success Job!",
+            "Your poc category created successfully!",
+            "success"
+          );
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);
@@ -473,10 +484,20 @@ async function editSubmit() {
     savingSpinner.value = true;
     await Axios.put("pocs/categories/" + editableId, state)
       .then((response) => {
-        fetchData("/pocs/categories");
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your category created successfully!", "success");
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
+          fetchData("/pocs/categories");
+          resetForm();
+          savingSpinner.value = false;
+          swal(
+            "Success Job!",
+            "Your category updated successfully!",
+            "success"
+          );
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);

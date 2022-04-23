@@ -80,12 +80,18 @@
                         <i class="fas fa-plus"></i> Create
                       </button>
 
-                      <router-link
-                        to=""
+                      <input
+                        id="importId"
+                        type="file"
+                        ref="excelImporter"
+                        @change="importExcel()"
+                        style="display: none"
+                      />
+                      <label
+                        for="importId"
                         class="theme-color-btn"
-                        style="margin-right: 7px"
-                        ><i class="fas fa-cloud-upload-alt"></i>
-                        Import</router-link
+                        style="margin-right: 7px; cursor: pointer"
+                        ><i class="fas fa-cloud-upload-alt"></i> Import</label
                       >
 
                       <button
@@ -161,6 +167,8 @@
       :isdeleting="deletingSpinner"
       :isSaving="savingSpinner"
       :isLoading="loadingSpinner"
+      :isExporting="exportSpinner"
+      :isImporting="importSpinner"
     ></the-spinner>
 
     <!--start Create Modal -->
@@ -443,62 +451,8 @@ import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUpl
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import { useRoute } from "vue-router";
 import toastr from "toastr";
-
-//Start Export
-const titles = reactive([
-  {
-    label: "Title",
-    field: "serial",
-  },
-  {
-    label: null,
-    field: "requirement",
-  },
-  {
-    label: null,
-    field: "remarks",
-  },
-]);
-
-const columns = reactive([
-  {
-    label: "SL",
-    field: "serial",
-  },
-  {
-    label: "List of Client Requirement ",
-    field: "requirement",
-  },
-  {
-    label: "Remarks (If Any)",
-    field: "remarks",
-  },
-]);
-
-const data = reactive([
-  {
-    serial: "1",
-    requirement: "<b>Access control Requirement</b>",
-    remarks: null,
-  },
-  {
-    serial: "1.1",
-    requirement: "Preventing Installing Unauthorized Software",
-    remarks: "Application control",
-  },
-  {
-    serial: "1.2",
-    requirement: "Preventing Installing Unauthorized Software",
-    remarks: "Application control",
-  },
-
-  {
-    serial: "1.3",
-    requirement: "Preventing Installing Unauthorized Software",
-    remarks: "Application control",
-  },
-]);
-//End Export
+import { useExcelExport } from "@/composables/export-excel";
+import { useExcelImport } from "@/composables/excel-import";
 
 //get route information using route
 const route = useRoute();
@@ -819,31 +773,6 @@ function bulkDelete() {
   });
 }
 
-//download files
-async function downloadFile(poc_id: number) {
-  await Axios.post(
-    "/projects/pocs-file-download",
-    {
-      id: poc_id,
-    },
-    {
-      responseType: "blob",
-    }
-  ).then((response) => {
-    var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-    var fileLink = document.createElement("a");
-    fileLink.href = fileURL;
-    fileLink.setAttribute("download", "file.xlsx");
-    document.body.appendChild(fileLink);
-    fileLink.click();
-    // if (response.data.code === 200) {
-    //   console.log("downloaded successfully");
-    // } else {
-    //   toastr.error("Some problem here...");
-    // }
-  });
-}
-
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
   await Axios.post("/projects/pocs-change-status", status).then((response) => {
@@ -853,6 +782,59 @@ async function changeStatus(status: { id: number; status: number }) {
     filterData("/projects/pocs", "&project_id=" + route.params.project_id);
   });
 }
+
+//Start Export
+const { excelExport } = useExcelExport(true, true); //Have title and Subtitle in excel file
+const exportTitle = "Detail Requerment";
+const exportSubtitle =
+  "Lorem Ipsum is simply dummy text of the printing and typesetting industry";
+const exportHeader: any = [
+  "SL",
+  "List of Client Requirement",
+  "Remarks (If Any)",
+];
+const exportColumn: any = [
+  { key: "id" },
+  { key: "requirement" },
+  { key: "remarks" },
+];
+
+const exportSpinner = ref(false);
+
+async function exportPoc() {
+  exportSpinner.value = true;
+  await Axios.post("/projects/poc-export", {
+    project_id: route.params.project_id,
+  }).then((response) => {
+    exportSpinner.value = false;
+    if (response.data.code == 200) {
+      excelExport(
+        response.data.data,
+        exportHeader,
+        exportColumn,
+        exportTitle,
+        exportSubtitle
+      );
+    } else {
+      toastr.error(response.data.message);
+    }
+  });
+}
+
+//const excelImporter = ref()
+//Import Excel File //excelImporter
+const { excelImport, importSpinner } = useExcelImport();
+const excelImporter = ref();
+function importExcel() {
+  //fileUploader.value.files[0]
+  excelImport(
+    "projects/poc-import",
+    excelImporter.value.files[0],
+    route.params.project_id
+  );
+}
+
+//End Export
 </script>
 
 <style scoped></style>

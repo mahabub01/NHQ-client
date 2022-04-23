@@ -64,6 +64,22 @@
       </div>
     </div>
     <!--end saving -->
+
+    <!--start saving -->
+    <div v-if="isExporting" class="data-deleting-container">
+      <div class="data-deleting-indicator">
+        <span>Exporting</span> <span class="loading"></span>
+      </div>
+    </div>
+    <!--end saving -->
+
+    <!--start saving -->
+    <div v-if="isImporting" class="data-deleting-container">
+      <div class="data-deleting-indicator">
+        <span>Importing</span> <span class="loading"></span>
+      </div>
+    </div>
+    <!--end saving -->
   </div>
 </template>
 
@@ -101,6 +117,16 @@ const props = defineProps({
   },
 
   isSaving: {
+    type: Boolean,
+    default: false,
+  },
+
+  isExporting: {
+    type: Boolean,
+    default: false,
+  },
+
+  isImporting: {
     type: Boolean,
     default: false,
   },

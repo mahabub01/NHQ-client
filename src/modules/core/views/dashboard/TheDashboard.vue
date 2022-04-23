@@ -48,6 +48,7 @@
         <div class="card">
           <div class="card-body">
             <h1>OME</h1>
+            <button type="button" @click="exportData">Download</button>
           </div>
         </div>
       </div>
@@ -82,47 +83,61 @@ import { saveAs } from "file-saver";
 async function exportData() {
   // Create workbook & add worksheet
   const workbook = new Excel.Workbook();
-  // const worksheet = workbook.addWorksheet("ExampleSheet", {
-  //   views: [{ showGridLines: false }],
-  // });
-
-  //worksheet.headerFooter.firstHeader = "Hello Exceljs";
   const worksheet = workbook.addWorksheet("ExampleSheet", {
-    pageSetup: {
-      fitToPage: true,
-      paperSize: 9,
-      horizontalCentered: true,
-      margins: {
-        left: 0.1,
-        right: 0.1,
-        top: 1,
-        bottom: 1,
-        header: 1,
-        footer: 0.3,
-      },
-    },
     views: [{ showGridLines: true }],
-    headerFooter: {
-      firstHeader: "Title from here.",
-      firstFooter: "Footer from here.",
-    },
   });
 
-  // add column headers
-  worksheet.addRow([3, "Sam"]);
+  //worksheet.headerFooter.firstHeader = "Hello Exceljs";
+
+  worksheet.mergeCells("A3", "C3");
+  worksheet.getCell("A3").value = "Detail Requerment";
+  worksheet.getCell("A3").font = {
+    bold: true,
+    size: 18,
+  };
+  worksheet.getCell("A3").alignment = {
+    vertical: "middle",
+    horizontal: "center",
+  };
+
+  worksheet.mergeCells("A4", "C4");
+  worksheet.getCell("A4").value =
+    "  The supplier shall have to do the entire work or job for the implementation of the Secure Proxy Capacity expansion HW & SW including  supply, delivery, installation and commissioning of all necessary Hardware of the system with all features, designing & planning, integration, deployment, customization, testing, commissioning for the end to end Solution, and UAT.	";
+
+  /*Column headers*/
+  worksheet.getRow(6).values = [
+    "SL",
+    "List of Client Requirement",
+    "Remarks (If Any)",
+  ];
+  worksheet.getRow(6).font = {
+    bold: true,
+    size: 12,
+  };
 
   worksheet.columns = [
-    { header: "Package", key: "package_name" },
-    { header: "Author", key: "author_name" },
+    { key: "sl" },
+    { key: "requirement" },
+    { key: "remarks" },
   ];
 
-  worksheet.addRow([3, "Sam", new Date()]);
-
   // Add row using key mapping to columns
-  worksheet.addRow(
-    { package_name: "ABC", author_name: "Author 1" },
-    { package_name: "XYZ", author_name: "Author 2" }
-  );
+  let arrData = [
+    { sl: "1", requirement: "Access control Requirement	", remarks: "" },
+    {
+      sl: "1.1",
+      requirement: "Preventing Installing Unauthorized Software",
+      remarks: "Application control",
+    },
+  ];
+
+  arrData.forEach(function (item, index) {
+    worksheet.addRow({
+      sl: item.sl,
+      requirement: item.requirement,
+      remarks: item.remarks,
+    });
+  });
 
   // Add rows as Array values
   //worksheet.addRow(["BCD", "Author Name 3"]);

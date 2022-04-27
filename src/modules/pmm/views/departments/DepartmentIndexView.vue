@@ -275,6 +275,7 @@ import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import toastr from "toastr";
 
 //create store
 const store = useStore();
@@ -310,14 +311,23 @@ async function createSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
     savingSpinner.value = true;
     await Axios.post("employee/departments", state)
       .then((response) => {
-        fetchData("/employee/departments");
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your category created successfully!", "success");
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
+          fetchData("/employee/departments");
+          resetForm();
+          savingSpinner.value = false;
+          swal(
+            "Success Job!",
+            "Your department created successfully!",
+            "success"
+          );
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);
@@ -401,7 +411,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/client/designations/" + id).then((response) => {
+      await Axios.delete("/employee/departments/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -430,10 +440,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/client/designations-multidelete", {
+      await Axios.post("/employee/departments-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/client/designations");
+        fetchData("/employee/departments");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -445,11 +455,11 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/client/designations-status", status).then((response) => {
+  await Axios.post("/employee/departments-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("/client/designations");
+    fetchData("/employee/departments");
   });
 }
 
@@ -458,7 +468,7 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
-  await Axios.get("/client/designations/" + id).then((response) => {
+  await Axios.get("/employee/departments/" + id).then((response) => {
     single_datas.value = response.data.data;
     state.title = single_datas.value.title;
     state.description = single_datas.value.description;
@@ -471,12 +481,22 @@ async function editSubmit() {
   if (!v$.value.$error) {
     store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
     savingSpinner.value = true;
-    await Axios.put("client/designations/" + editableId, state)
+    await Axios.put("/employee/departments/" + editableId, state)
       .then((response) => {
-        fetchData("/client/designations");
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your category created successfully!", "success");
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
+          fetchData("/employee/departments");
+          resetForm();
+          savingSpinner.value = false;
+          swal(
+            "Success Job!",
+            "Your department updated successfully!",
+            "success"
+          );
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);

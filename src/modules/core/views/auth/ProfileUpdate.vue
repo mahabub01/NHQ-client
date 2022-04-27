@@ -83,12 +83,12 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Employee ID</label>
+              <label class="form-label">Nid Number</label>
               <input
-                type="text"
+                type="number"
                 class="form-input"
-                placeholder="Employee ID here"
-                v-model.lazy="formState.employee_id"
+                placeholder="Nid Number here"
+                v-model.lazy="formState.nid_number"
               />
             </div>
           </div>
@@ -147,12 +147,11 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Nid Number</label>
-              <input
-                type="number"
-                class="form-input"
-                placeholder="Nid Number here"
-                v-model.lazy="formState.nid_number"
+              <label class="form-label">Department</label>
+              <Select2
+                v-model="formState.department_id"
+                :options="selectable_department"
+                :settings="{ placeholder: 'Choose' }"
               />
             </div>
           </div>
@@ -161,12 +160,11 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Department</label>
-              <Select2
-                v-model="formState.department_id"
-                :options="selectable_department"
-                :settings="{ placeholder: 'Choose' }"
-              />
+              <label class="form-label">About Employee</label>
+              <textarea
+                placeholder="About Employee here"
+                v-model.lazy="formState.about_employee"
+              ></textarea>
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Joinning Date</label>
@@ -190,18 +188,6 @@
               ></textarea>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">About Employee</label>
-              <textarea
-                placeholder="About Employee here"
-                v-model.lazy="formState.about_employee"
-              ></textarea>
-            </div>
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
               <label class="form-label">Parmanent Address</label>
               <textarea
                 placeholder="Parmanent Address here"
@@ -243,7 +229,6 @@ const formState = reactive({
   phone: "",
   designation_id: "",
   gender: "",
-  employee_id: "",
   date_of_birth: "",
   present_address: "",
   parmanent_address: "",
@@ -318,7 +303,6 @@ onMounted(async () => {
       formState.phone = singleData.phone;
       formState.designation_id = singleData.designation_id;
       formState.gender = singleData.gender;
-      formState.employee_id = singleData.employee_id;
       formState.date_of_birth = singleData.date_of_birth;
       formState.present_address = singleData.present_address;
       formState.parmanent_address = singleData.parmanent_address;

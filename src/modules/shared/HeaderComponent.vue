@@ -119,9 +119,12 @@
                         </router-link>
                       </li>
                       <li class="auth_option">
-                        <a class="auth_option_item" href="#"
-                          ><i class="fas fa-user"></i> Profile Information</a
+                        <router-link
+                          class="auth_option_item"
+                          to="/core/profile-details"
                         >
+                          <i class="fas fa-user"></i> Profile Information
+                        </router-link>
                       </li>
                     </ul>
                     <ul class="auth_card pt_15">

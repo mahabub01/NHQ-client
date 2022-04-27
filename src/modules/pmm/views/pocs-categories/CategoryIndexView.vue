@@ -17,12 +17,7 @@
                     <router-link
                       to="/pmm/pocs-categories"
                       class="rev-underline-subtitle"
-                      >Admin
-                    </router-link>
-                    <router-link
-                      to="/pmm/pocs-categories"
-                      class="rev-underline-subtitle"
-                      >Category List</router-link
+                      >Poc Category List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -136,7 +131,7 @@
     <div>
       <create-modal>
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Category
+          ><i class="fas fa-plus-square"></i> Create Poc Category
         </template>
         <template v-slot:body>
           <form @submit.prevent="categorySubmit" class="form-page">
@@ -199,7 +194,7 @@
     <div>
       <edit-modal>
         <template v-slot:editheader>
-          <i class="fas fa-plus-square"></i> Edit Category
+          <i class="fas fa-plus-square"></i> Edit Poc Category
         </template>
         <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
@@ -489,7 +484,7 @@ async function editSubmit() {
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your category updated successfully!",
+            "Your poc category updated successfully!",
             "success"
           );
         } else {

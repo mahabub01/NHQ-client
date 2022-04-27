@@ -26,7 +26,7 @@
                     <router-link
                       to="/pmm/categories"
                       class="rev-underline-subtitle"
-                      >Category List</router-link
+                      >Milestone Category List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -324,7 +324,7 @@ async function categorySubmit() {
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your poc category created successfully!",
+            "Your milestone category created successfully!",
             "success"
           );
         } else {
@@ -493,7 +493,7 @@ async function editSubmit() {
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your category updated successfully!",
+            "Your milestone category updated successfully!",
             "success"
           );
         } else {

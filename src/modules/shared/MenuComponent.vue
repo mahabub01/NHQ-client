@@ -130,6 +130,21 @@
                   ><i class="fas fa-table"></i> Designation list</router-link
                 >
               </li>
+              <li>
+                <router-link class="dropdown-item" to="/pmm/task-categories"
+                  ><i class="fas fa-table"></i> Task Category list</router-link
+                >
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/pmm/versions"
+                  ><i class="fas fa-table"></i> Version list</router-link
+                >
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/pmm/priorities"
+                  ><i class="fas fa-table"></i> Priority list</router-link
+                >
+              </li>
             </ul>
           </li>
 

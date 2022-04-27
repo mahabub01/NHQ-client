@@ -189,6 +189,35 @@ export const PmmModuleRoute = [
           ),
         meta: { middleware: "auth" },
       },
+      {
+        path: "task-categories",
+        name: "task-categories",
+        component: () =>
+          import(
+            /* webpackChunkName: "task-category" */ "./views/task-categories/CategoryIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "versions",
+        name: "versions",
+        component: () =>
+          import(
+            /* webpackChunkName: "version" */ "./views/versions/VersionIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "priorities",
+        name: "priorities",
+        component: () =>
+          import(
+            /* webpackChunkName: "priority" */ "./views/priorities/PriorityIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
 
       {
         path: "pocs/:project_id",

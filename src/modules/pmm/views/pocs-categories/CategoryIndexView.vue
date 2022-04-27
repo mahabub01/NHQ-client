@@ -14,12 +14,10 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link to="/" class="rev-underline-subtitle"
+                    <router-link
+                      to="/pmm/pocs-categories"
+                      class="rev-underline-subtitle"
                       >Admin
-                      <i
-                        class="fas fa-chevron-right"
-                        style="margin-left: 6px; margin-right: 6px"
-                      ></i>
                     </router-link>
                     <router-link
                       to="/pmm/pocs-categories"

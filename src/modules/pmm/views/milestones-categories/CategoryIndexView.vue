@@ -140,7 +140,7 @@
     <div>
       <create-modal>
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Category
+          ><i class="fas fa-plus-square"></i> Create Milestone Category
         </template>
         <template v-slot:body>
           <form @submit.prevent="categorySubmit" class="form-page">
@@ -203,7 +203,7 @@
     <div>
       <edit-modal>
         <template v-slot:editheader>
-          <i class="fas fa-plus-square"></i> Edit Category
+          <i class="fas fa-plus-square"></i> Edit Milestone Category
         </template>
         <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">

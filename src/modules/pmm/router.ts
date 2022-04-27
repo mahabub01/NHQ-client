@@ -231,7 +231,7 @@ export const PmmModuleRoute = [
         name: "boq-category-items",
         component: () =>
           import(
-            /* webpackChunkName: "boq-category-item" */ "./views/boq-category-item/CategoryIndexView.vue"
+            /* webpackChunkName: "boq-category-item" */ "./views/boq-category-items/CategoryIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },

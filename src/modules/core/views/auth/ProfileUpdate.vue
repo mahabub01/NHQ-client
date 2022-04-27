@@ -4,7 +4,7 @@
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
-            <router-link to="/pmm/employees"
+            <router-link to="#"
               >Profile <i class="fas fa-chevron-right"></i
             ></router-link>
             <router-link to="#">Edit</router-link>
@@ -17,7 +17,7 @@
               <router-link
                 class="form-button-danger"
                 style="color: white"
-                to="/pmm/employees"
+                to="/pmm/clients"
                 ><i class="far fa-times-circle"></i> Discard
               </router-link>
             </div>
@@ -133,16 +133,14 @@
               <label class="form-label"
                 >Designation<span class="mandatory">*</span></label
               >
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.designation.$error }"
-                placeholder="Designation here"
-                v-model.lazy="v$.designation.$model"
+              <Select2
+                v-model="formState.designation_id"
+                :options="selectable_desination"
+                :settings="{ placeholder: 'Choose' }"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.designation.$errors"
+                v-for="(error, index) in v$.designation_id.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
@@ -163,12 +161,11 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Depertment</label>
-              <input
-                type="text"
-                class="form-input"
-                placeholder="Depertment here"
-                v-model.lazy="formState.depertment"
+              <label class="form-label">Department</label>
+              <Select2
+                v-model="formState.department_id"
+                :options="selectable_department"
+                :settings="{ placeholder: 'Choose' }"
               />
             </div>
             <div class="col-md-4 offset-md-2">
@@ -244,14 +241,14 @@ const formState = reactive({
   name: "",
   email: "",
   phone: "",
-  designation: "",
+  designation_id: "",
   gender: "",
   employee_id: "",
   date_of_birth: "",
   present_address: "",
   parmanent_address: "",
   nid_number: "",
-  depertment: "",
+  department_id: "",
   joinning_date: "",
   about_employee: "",
 });
@@ -260,7 +257,7 @@ const rules: any = {
   name: { required },
   email: { required },
   phone: { required },
-  designation: { required },
+  designation_id: { required },
 };
 
 const v$ = useVuelidate(rules, formState);
@@ -271,10 +268,13 @@ async function handleSubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     buttonLoading.value = true;
-    await Axios.post("auth-inforamtion", formState)
+    await Axios.post("/auth-information", formState)
       .then((response) => {
-        swal("Success Job!", "Your employee update successfully!", "success");
-        reset(); //reset all property
+        swal(
+          "Success Job!",
+          "Your information updated successfully!",
+          "success"
+        );
         buttonLoading.value = false;
         console.log(formState);
       })
@@ -283,23 +283,47 @@ async function handleSubmit() {
       });
   }
 }
+//const selectable_project = ref([]);
+const selectable_department = ref([]);
+
+//const selectable_project = ref([]);
+const selectable_desination = ref([]);
+
+onMounted(() => {
+  designationSelectable();
+  departmentSelectable();
+});
+
+// selectable designation
+async function designationSelectable() {
+  await Axios.get("/designation-selectable").then((response) => {
+    selectable_desination.value = response.data.data;
+  });
+}
+
+// selectable department
+async function departmentSelectable() {
+  await Axios.get("/department-selectable").then((response) => {
+    selectable_department.value = response.data.data;
+  });
+}
 
 onMounted(async () => {
   loadingSpinner.value = true;
-  await Axios.get("/auth-inforamtion").then((response) => {
+  await Axios.get("/auth-information-data").then((response) => {
     singleData = response.data.data[0];
     if (singleData != "") {
       formState.name = singleData.name;
       formState.email = singleData.email;
       formState.phone = singleData.phone;
-      formState.designation = singleData.designation;
+      formState.designation_id = singleData.designation_id;
       formState.gender = singleData.gender;
       formState.employee_id = singleData.employee_id;
       formState.date_of_birth = singleData.date_of_birth;
       formState.present_address = singleData.present_address;
       formState.parmanent_address = singleData.parmanent_address;
       formState.nid_number = singleData.nid_number;
-      formState.depertment = singleData.depertment;
+      formState.department_id = singleData.department_id;
       formState.joinning_date = singleData.joinning_date;
       formState.about_employee = singleData.about_employee;
     }
@@ -312,13 +336,6 @@ const genderList = reactive([
   { id: 1, text: "Male" },
   { id: 2, text: "Female" },
 ]);
-
-//reset all property
-function reset() {
-  formState.name = "";
-  // state.description = "";
-  v$.value.$reset();
-}
 </script>
 
 <style scoped></style>

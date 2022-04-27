@@ -156,25 +156,9 @@ import { useCookies } from "vue3-cookies";
 import { useStore } from "vuex";
 
 const router = useRouter();
-//let singleData = "";
-
-// const auth = reactive({
-//   name: "",
-//   email: "",
-// });
 
 const store = useStore();
 const { cookies } = useCookies();
-
-// onMounted(async () => {
-//   await Axios.get("/auth-inforamtion").then((response) => {
-//     singleData = response.data.data[0];
-//     if (singleData != "") {
-//       auth.name = singleData.name;
-//       auth.email = singleData.email;
-//     }
-//   });
-// });
 
 const userInfo = computed(() => {
   return store.state.currentUser.userPemissions;

@@ -15,10 +15,10 @@
                   </button>
                   <div class="page-bootcamp-left">
                     <router-link
-                      to="/pmm/boq-categories"
+                      to="/pmm/boq-category-items"
                       class="rev-underline-subtitle"
-                      >Boq Category
-                    </router-link>
+                      >Category List</router-link
+                    >
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -131,7 +131,7 @@
     <div>
       <create-modal>
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Boq Category
+          ><i class="fas fa-plus-square"></i> Create Category
         </template>
         <template v-slot:body>
           <form @submit.prevent="categorySubmit" class="form-page">
@@ -151,6 +151,28 @@
                 <p
                   class="error-mgs"
                   v-for="(error, index) in v$.title.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label"
+                  >Team Lead<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="v$.pmm_boq_category_id.$model"
+                  :options="boqCategoryID"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.pmm_boq_category_id.$error }"
+                />
+
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.pmm_boq_category_id.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -194,7 +216,7 @@
     <div>
       <edit-modal>
         <template v-slot:editheader>
-          <i class="fas fa-plus-square"></i> Edit Boq Category
+          <i class="fas fa-plus-square"></i> Edit Category
         </template>
         <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
@@ -214,6 +236,28 @@
                 <p
                   class="error-mgs"
                   v-for="(error, index) in v$.title.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label"
+                  >Category<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="v$.pmm_boq_category_id.$model"
+                  :options="boqCategoryID"
+                  :settings="{ placeholder: 'Choose', multiple: false }"
+                  :class="{ isInvalid: v$.pmm_boq_category_id.$error }"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.pmm_boq_category_id.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -269,6 +313,7 @@ import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import toastr from "toastr";
+import Select2 from "vue3-select2-component";
 
 //create store
 const store = useStore();
@@ -291,14 +336,24 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
  ***********************/
 const state = reactive({
   title: "",
+  pmm_boq_category_id: "",
   description: "",
 });
 
 const rules: any = {
   title: { required },
+  pmm_boq_category_id: { required },
 };
 
 const v$ = useVuelidate(rules, state);
+//Category list for Category Select
+const boqCategoryID = ref([]);
+
+async function categoryId() {
+  await Axios.get("/boq-category-selectable/").then((response) => {
+    boqCategoryID.value = response.data.data;
+  });
+}
 
 async function categorySubmit() {
   v$.value.$validate();
@@ -306,16 +361,16 @@ async function categorySubmit() {
   if (!v$.value.$error) {
     store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
     savingSpinner.value = true;
-    await Axios.post("boq-categories", state)
+    await Axios.post("boq-category-items", state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
-          fetchData("/boq-categories");
+          fetchData("/boq-category-items");
           resetForm();
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your poc category created successfully!",
+            "Your category created successfully!",
             "success"
           );
         } else {
@@ -332,6 +387,7 @@ async function categorySubmit() {
 //reset all property
 function resetForm() {
   state.title = "";
+  state.pmm_boq_category_id = "";
   state.description = "";
   v$.value.$reset();
 }
@@ -345,7 +401,7 @@ let titleSearch = ref("");
 watch([titleSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
-    "/boq-categories?showEntries=" +
+    "/boq-category-items?showEntries=" +
       currentEntries.value +
       "&page=" +
       datatables.currentPage +
@@ -363,20 +419,21 @@ watch([titleSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/boq-categories");
+  fetchData("/boq-category-items");
+  categoryId();
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/boq-categories");
+  fetchData("/boq-category-items");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/boq-categories");
+    fetchData("/boq-category-items");
   }
 }
 
@@ -384,14 +441,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/boq-categories");
+    fetchData("/boq-category-items");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/boq-categories");
+  fetchData("/boq-category-items");
 }
 
 //Delete selected Item
@@ -405,7 +462,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/boq-categories/" + id).then((response) => {
+      await Axios.delete("/boq-category-items/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -434,10 +491,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/boq-categories-multidelete", {
+      await Axios.post("/boq-category-items-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/boq/categories");
+        fetchData("/boq-category-items");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -449,11 +506,11 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/boq-categories-status", status).then((response) => {
+  await Axios.post("/boq-category-items-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("/boq-categories");
+    fetchData("/boq-category-items");
   });
 }
 
@@ -462,9 +519,10 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
-  await Axios.get("/boq-categories/" + id).then((response) => {
+  await Axios.get("/boq-category-items/" + id).then((response) => {
     single_datas.value = response.data.data;
     state.title = single_datas.value.title;
+    state.pmm_boq_category_id = single_datas.value.pmm_boq_category_id;
     state.description = single_datas.value.description;
   });
 }
@@ -475,11 +533,11 @@ async function editSubmit() {
   if (!v$.value.$error) {
     store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
     savingSpinner.value = true;
-    await Axios.put("boq-categories/" + editableId, state)
+    await Axios.put("boq-category-items/" + editableId, state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-          fetchData("/boq-categories");
+          fetchData("/boq-category-items");
           resetForm();
           savingSpinner.value = false;
           swal(
@@ -501,6 +559,7 @@ async function editSubmit() {
 function showEdit(id) {
   editableId = id;
   getEditData(id);
+  categoryId();
   store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
 }
 </script>

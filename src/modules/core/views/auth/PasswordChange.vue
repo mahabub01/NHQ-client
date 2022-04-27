@@ -82,6 +82,7 @@ import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";
 import swal from "sweetalert";
 import TheButton from "@/modules/shared/TheButton.vue";
+import toastr from "toastr";
 
 let buttonLoading = ref(false);
 const formState = reactive({
@@ -94,7 +95,7 @@ const rules: any = {
   new_password: { required },
 };
 
-const emit = defineEmits(["select"]);
+// const emit = defineEmits(["select"]);
 
 const v$ = useVuelidate(rules, formState);
 
@@ -106,11 +107,18 @@ async function handleSubmit() {
     buttonLoading.value = true;
     await Axios.post("password-change", formState)
       .then((response) => {
-        console.log(response);
-
-        swal("Success Job!", "Your password updated successfully!", "success");
-        reset(); //reset all property
-        buttonLoading.value = false;
+        if (response.data.code == 200) {
+          reset();
+          buttonLoading.value = false;
+          swal(
+            "Success Job!",
+            "Your password updated successfully!",
+            "success"
+          );
+        } else {
+          buttonLoading.value = false;
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);

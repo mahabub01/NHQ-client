@@ -84,18 +84,18 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label"
-                >Depertment <span class="mandatory">*</span></label
+                >Department <span class="mandatory">*</span></label
               >
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.depertment.$error }"
-                placeholder="Depertment here"
-                v-model.lazy="v$.depertment.$model"
+                :class="{ isInvalid: v$.department_id.$error }"
+                placeholder="Department here"
+                v-model.lazy="v$.department_id.$model"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.depertment.$errors"
+                v-for="(error, index) in v$.department_id.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
@@ -146,13 +146,13 @@
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.designation.$error }"
+                :class="{ isInvalid: v$.designation_id.$error }"
                 placeholder="Designation here"
-                v-model.lazy="v$.designation.$model"
+                v-model.lazy="v$.designation_id.$model"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.designation.$errors"
+                v-for="(error, index) in v$.designation_id.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
@@ -342,7 +342,7 @@ onMounted(async () => {
       formState.name = singleData.name;
       formState.email = singleData.email;
       formState.phone = singleData.phone;
-      formState.designation_id = singleData.designation;
+      formState.designation_id = singleData.designation_id;
       formState.password = singleData.password;
       formState.gender = singleData.gender;
       formState.date_of_birth = singleData.date_of_birth;

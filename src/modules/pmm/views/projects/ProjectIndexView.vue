@@ -14,13 +14,6 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link to="#" class="rev-underline-subtitle"
-                      >Projects
-                      <i
-                        class="fas fa-chevron-right"
-                        style="margin-left: 6px; margin-right: 6px"
-                      ></i>
-                    </router-link>
                     <router-link
                       to="/pmm/projects"
                       class="rev-underline-subtitle"

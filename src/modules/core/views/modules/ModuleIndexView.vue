@@ -65,7 +65,8 @@
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true)
+                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true),
+                            resetForm()
                         "
                       >
                         <i class="fas fa-plus"></i> Create
@@ -193,7 +194,7 @@
                 <input
                   type="text"
                   class="form-input"
-                  :class="{ isInvalid: v$.title.$error }"
+                  :class="{ isInvalid: v$.slug.$error }"
                   placeholder="Enter Your Slug"
                   v-model.lazy="v$.slug.$model"
                 />
@@ -250,7 +251,7 @@
     <!--start Edit Modal -->
     <EditModal :modalsize="modalSize" v-if="editModalState">
       <template v-slot:editheader
-        ><i class="fas fa-plus-square"></i> Edit POC
+        ><i class="fas fa-plus-square"></i> Edit Module
       </template>
       <template v-slot:editbody>
         <form @submit.prevent="updateHandler" class="form-page">
@@ -295,7 +296,7 @@
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.title.$error }"
+                :class="{ isInvalid: v$.slug.$error }"
                 placeholder="Enter Your Slug"
                 v-model.lazy="v$.slug.$model"
               />
@@ -324,7 +325,12 @@
             <div class="col-md-12" style="min-height: 267px">
               <label class="form-label">Comments</label>
               <!-- :content="" use for set default Data-->
-              <TheCKEditor @sendContent="setComments" />
+              <!-- :content="" use for set default Data-->
+              <TheCKEditor
+                v-if="loadCKEditor"
+                @sendContent="setComments"
+                :content="state.comments"
+              />
             </div>
           </div>
 
@@ -370,12 +376,18 @@ import toastr from "toastr";
 const modalSize = ref("modal-lg");
 
 //modal setting
+
 const createModalState = computed(() => {
   return store.state.modalModule.creatModal;
 });
 
 const editModalState = computed(() => {
   return store.state.modalModule.editModal;
+});
+
+// Load CkEditor Data
+const loadCKEditor = computed(() => {
+  return store.state.modalModule.loadCKEditor;
 });
 
 const setComments = (value: any) => {
@@ -585,6 +597,7 @@ async function getEditData(id: number) {
     state.action = single_datas.value.action;
     state.icons = single_datas.value.icons;
     state.comments = single_datas.value.comments;
+    store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
   });
 }
 

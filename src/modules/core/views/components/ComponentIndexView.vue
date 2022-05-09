@@ -24,7 +24,7 @@
                     <router-link
                       to="/core/components"
                       class="rev-underline-subtitle"
-                      >Component</router-link
+                      >Components</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -65,10 +65,8 @@
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit(
-                            'modalComponent/CHNAGE_CREATE_MODAL',
-                            true
-                          )
+                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true),
+                            reset
                         "
                       >
                         <i class="fas fa-plus"></i> Create
@@ -187,7 +185,8 @@
                 </p>
               </div>
             </div>
-            <div class="row">
+
+            <div class="row mb-3">
               <div class="col-md-6">
                 <label class="form-label">
                   Slug
@@ -196,7 +195,7 @@
                 <input
                   type="text"
                   class="form-input"
-                  :class="{ isInvalid: v$.title.$error }"
+                  :class="{ isInvalid: v$.slug.$error }"
                   placeholder="Enter Your Slug"
                   v-model.lazy="v$.slug.$model"
                 />
@@ -220,6 +219,29 @@
                 />
               </div>
             </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="form-label">
+                  Module
+                  <span class="mandatory">*</span>
+                </label>
+                <Select2
+                  v-model="v$.module_id.$model"
+                  :options="modules"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.module_id.$error }"
+                />
+
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.module_id.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
 
             <div class="row form-row">
               <div class="col-md-12" style="min-height: 267px">
@@ -235,7 +257,7 @@
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
                 @click.prevent="
-                  store.commit('modalComponent/CHNAGE_CREATE_MODAL', false)
+                  store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
                 "
               >
                 <i class="far fa-times-circle"></i> Close
@@ -253,7 +275,7 @@
     <!--start Edit Modal -->
     <EditModal :modalsize="modalSize" v-if="editModalState">
       <template v-slot:editheader
-        ><i class="fas fa-plus-square"></i> Edit POC
+        ><i class="fas fa-plus-square"></i> Edit Component
       </template>
       <template v-slot:editbody>
         <form @submit.prevent="updateHandler" class="form-page">
@@ -289,7 +311,7 @@
               />
             </div>
           </div>
-          <div class="row">
+          <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">
                 Slug
@@ -298,7 +320,7 @@
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.title.$error }"
+                :class="{ isInvalid: v$.slug.$error }"
                 placeholder="Enter Your Slug"
                 v-model.lazy="v$.slug.$model"
               />
@@ -322,12 +344,39 @@
               />
             </div>
           </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="form-label">
+                Module
+                <span class="mandatory">*</span>
+              </label>
+              <Select2
+                v-model="v$.module_id.$model"
+                :options="modules"
+                :settings="{ placeholder: 'Choose' }"
+                :class="{ isInvalid: v$.module_id.$error }"
+              />
+
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.module_id.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+          </div>
 
           <div class="row form-row">
             <div class="col-md-12" style="min-height: 267px">
               <label class="form-label">Comments</label>
               <!-- :content="" use for set default Data-->
-              <TheCKEditor @sendContent="setComments" />
+              <TheCKEditor
+                v-if="loadCKEditor"
+                @sendContent="setComments"
+                :content="state.comments"
+              />
             </div>
           </div>
 
@@ -337,7 +386,7 @@
               class="btn btn-secondary"
               data-bs-dismiss="modal"
               @click.prevent="
-                store.commit('modalComponent/CHNAGE_EDIT_MODAL', false)
+                store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
               "
             >
               <i class="far fa-times-circle"></i> Close
@@ -367,18 +416,23 @@ import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
+import Select2 from "vue3-select2-component";
 import toastr from "toastr";
 
+// Load CkEditor Data
+const loadCKEditor = computed(() => {
+  return store.state.modalModule.loadCKEditor;
+});
 //modal size
 const modalSize = ref("modal-lg");
 
 //modal setting
 const createModalState = computed(() => {
-  return store.state.modalComponent.creatModal;
+  return store.state.modalModule.creatModal;
 });
 
 const editModalState = computed(() => {
-  return store.state.modalComponent.editModal;
+  return store.state.modalModule.editModal;
 });
 
 const setComments = (value: any) => {
@@ -410,12 +464,14 @@ const state = reactive({
   action: "",
   icons: "",
   comments: "",
+  module_id: "",
 });
 
 const rules: any = {
   title: { required },
   slug: { required },
   action: { required },
+  module_id: { required },
 };
 
 const v$ = useVuelidate(rules, state);
@@ -428,8 +484,8 @@ async function createSubmit() {
     await Axios.post("components", state)
       .then((response) => {
         if (response.data.code == 200) {
-          store.commit("modalComponent/CHNAGE_CREATE_MODAL", false);
-          fetchData("cmponents");
+          store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
+          fetchData("components");
           resetForm();
           savingSpinner.value = false;
           swal(
@@ -447,6 +503,17 @@ async function createSubmit() {
       });
   }
 }
+const modules = ref([]);
+
+async function getModules() {
+  await Axios.get("modules-selectable")
+    .then((response) => {
+      modules.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
 
 //reset all property
 function resetForm() {
@@ -455,6 +522,7 @@ function resetForm() {
   state.action = "";
   state.icons = "";
   state.comments = "";
+  state.module_id = "";
   v$.value.$reset();
 }
 
@@ -487,6 +555,7 @@ watch([titleSearch], async () => {
 //Load Data form computed onMounted
 onMounted(() => {
   fetchData("/components");
+  getModules();
 });
 
 //show data using show Menu
@@ -592,6 +661,8 @@ async function getEditData(id: number) {
     state.action = single_datas.value.action;
     state.icons = single_datas.value.icons;
     state.comments = single_datas.value.comments;
+    state.module_id = single_datas.value.module_id;
+    store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
   });
 }
 
@@ -603,7 +674,7 @@ async function updateHandler() {
     await Axios.put("components/" + editableId, state)
       .then((response) => {
         if (response.data.code == 200) {
-          store.commit("modalComponent/CHNAGE_EDIT_MODAL", false);
+          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
           fetchData("/components");
           resetForm();
           savingSpinner.value = false;
@@ -626,7 +697,7 @@ async function updateHandler() {
 function showEdit(id) {
   editableId = id;
   getEditData(id);
-  store.commit("modalComponent/CHNAGE_EDIT_MODAL", true);
+  store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
 }
 </script>
 

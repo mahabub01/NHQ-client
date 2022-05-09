@@ -22,9 +22,9 @@
                       ></i>
                     </router-link>
                     <router-link
-                      to="/core/modules"
+                      to="/core/components"
                       class="rev-underline-subtitle"
-                      >Modules</router-link
+                      >Component</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -65,7 +65,10 @@
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true)
+                          store.commit(
+                            'modalComponent/CHNAGE_CREATE_MODAL',
+                            true
+                          )
                         "
                       >
                         <i class="fas fa-plus"></i> Create
@@ -101,14 +104,14 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <module-table
+                    <component-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       @editId="showEdit($event)"
                       ref="multiselected"
-                    ></module-table>
+                    ></component-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -138,7 +141,7 @@
     <div>
       <create-modal :modalsize="modalSize" v-if="createModalState">
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Module
+          ><i class="fas fa-plus-square"></i> Create Component
         </template>
         <template v-slot:body>
           <form @submit.prevent="createSubmit" class="form-page">
@@ -232,7 +235,7 @@
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
                 @click.prevent="
-                  store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
+                  store.commit('modalComponent/CHNAGE_CREATE_MODAL', false)
                 "
               >
                 <i class="far fa-times-circle"></i> Close
@@ -334,7 +337,7 @@
               class="btn btn-secondary"
               data-bs-dismiss="modal"
               @click.prevent="
-                store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
+                store.commit('modalComponent/CHNAGE_EDIT_MODAL', false)
               "
             >
               <i class="far fa-times-circle"></i> Close
@@ -353,7 +356,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed, reactive } from "vue";
 import Axios from "@/http-common";
-import ModuleTable from "./ModuleTable.vue";
+import ComponentTable from "./ComponentTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
@@ -371,11 +374,11 @@ const modalSize = ref("modal-lg");
 
 //modal setting
 const createModalState = computed(() => {
-  return store.state.modalModule.creatModal;
+  return store.state.modalComponent.creatModal;
 });
 
 const editModalState = computed(() => {
-  return store.state.modalModule.editModal;
+  return store.state.modalComponent.editModal;
 });
 
 const setComments = (value: any) => {
@@ -399,7 +402,7 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
 /**********************
- * Create Modules
+ * Create Components
  ***********************/
 const state = reactive({
   title: "",
@@ -422,14 +425,18 @@ async function createSubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     savingSpinner.value = true;
-    await Axios.post("modules", state)
+    await Axios.post("components", state)
       .then((response) => {
         if (response.data.code == 200) {
-          store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
-          fetchData("modules");
+          store.commit("modalComponent/CHNAGE_CREATE_MODAL", false);
+          fetchData("cmponents");
           resetForm();
           savingSpinner.value = false;
-          swal("Success Job!", "Your modules created successfully!", "success");
+          swal(
+            "Success Job!",
+            "Your components created successfully!",
+            "success"
+          );
         } else {
           savingSpinner.value = false;
           toastr.error(response.data.message);
@@ -452,7 +459,7 @@ function resetForm() {
 }
 
 /**********************
- * End Create Module
+ * End Create Component
  ***********************/
 
 //Search Property
@@ -461,7 +468,7 @@ let titleSearch = ref("");
 watch([titleSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
-    "/modules?showEntries=" +
+    "/components?showEntries=" +
       currentEntries.value +
       "&page=" +
       datatables.currentPage +
@@ -479,20 +486,20 @@ watch([titleSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/modules");
+  fetchData("/components");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/modules");
+  fetchData("/components");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/modules");
+    fetchData("/components");
   }
 }
 
@@ -500,14 +507,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/modules");
+    fetchData("/components");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("modules");
+  fetchData("components");
 }
 
 //Delete selected Item
@@ -521,7 +528,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/modules/" + id).then((response) => {
+      await Axios.delete("/components/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -550,10 +557,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/modules-multidelete", {
+      await Axios.post("/components-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/modules");
+        fetchData("/components");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -565,11 +572,11 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/modules-change-status", status).then((response) => {
+  await Axios.post("/components-change-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("modules");
+    fetchData("components");
   });
 }
 
@@ -578,7 +585,7 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
-  await Axios.get("/modules/" + id).then((response) => {
+  await Axios.get("/components/" + id).then((response) => {
     single_datas.value = response.data.data;
     state.title = single_datas.value.title;
     state.slug = single_datas.value.slug;
@@ -593,14 +600,18 @@ async function updateHandler() {
   v$.value.$touch();
   if (!v$.value.$error) {
     savingSpinner.value = true;
-    await Axios.put("modules/" + editableId, state)
+    await Axios.put("components/" + editableId, state)
       .then((response) => {
         if (response.data.code == 200) {
-          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-          fetchData("/modules");
+          store.commit("modalComponent/CHNAGE_EDIT_MODAL", false);
+          fetchData("/components");
           resetForm();
           savingSpinner.value = false;
-          swal("Success Job!", "Your module updated successfully!", "success");
+          swal(
+            "Success Job!",
+            "Your component updated successfully!",
+            "success"
+          );
         } else {
           savingSpinner.value = false;
           toastr.error(response.data.message);
@@ -615,7 +626,7 @@ async function updateHandler() {
 function showEdit(id) {
   editableId = id;
   getEditData(id);
-  store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
+  store.commit("modalComponent/CHNAGE_EDIT_MODAL", true);
 }
 </script>
 

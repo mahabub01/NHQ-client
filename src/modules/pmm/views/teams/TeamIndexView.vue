@@ -510,6 +510,8 @@ function remove(id: number) {
           (e: { id: number }) => e.id !== id
         );
         deletingSpinner.value = false;
+        fetchData("/projects/teams");
+
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });
@@ -568,7 +570,6 @@ async function getEditData(id: number) {
     state.team_lead = single_datas.value.team_lead;
     state.clients = single_datas.value.clients[0];
     state.description = single_datas.value.description;
-    console.log(state.clients);
   });
 }
 

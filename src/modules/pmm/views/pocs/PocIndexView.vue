@@ -725,6 +725,10 @@ function remove(id: number) {
           entries.value = entries.value.filter(
             (e: { id: number }) => e.id !== id
           );
+          filterData(
+            "/projects/pocs",
+            "&project_id=" + route.params.project_id
+          );
           swal("Poof! Your data has been deleted!", {
             icon: "success",
           });
@@ -770,16 +774,6 @@ function bulkDelete() {
         }
       });
     }
-  });
-}
-
-//Change selected data status
-async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/projects/pocs-change-status", status).then((response) => {
-    swal("Your data status changed", {
-      icon: "success",
-    });
-    filterData("/projects/pocs", "&project_id=" + route.params.project_id);
   });
 }
 

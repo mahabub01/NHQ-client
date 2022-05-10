@@ -163,7 +163,6 @@ let nameSearch = ref("");
 let isActiveSearch = ref("");
 
 watch([nameSearch, isActiveSearch], async () => {
-  console.log("hey");
   datatables.loadingState = true;
   await Axios.get(
     "/employees?showEntries=" +
@@ -233,6 +232,7 @@ function remove(id: number) {
           (e: { id: number }) => e.id !== id
         );
         deletingSpinner.value = false;
+        fetchData("/employees");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });

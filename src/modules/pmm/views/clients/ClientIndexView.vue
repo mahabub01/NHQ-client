@@ -283,6 +283,7 @@ function remove(id: number) {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
+        fetchData("/clients");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",

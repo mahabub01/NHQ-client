@@ -602,6 +602,7 @@ function remove(id: number) {
           (e: { id: number }) => e.id !== id
         );
         deletingSpinner.value = false;
+        fetchData("/components");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });

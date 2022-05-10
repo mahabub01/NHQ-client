@@ -134,7 +134,7 @@
           ><i class="fas fa-plus-square"></i> Create Poc Category
         </template>
         <template v-slot:body>
-          <form @submit.prevent="categorySubmit" class="form-page">
+          <form @submit.prevent="createSubmit" class="form-page">
             <div class="row">
               <div class="col-md-12">
                 <label class="form-label">
@@ -300,7 +300,7 @@ const rules: any = {
 
 const v$ = useVuelidate(rules, state);
 
-async function categorySubmit() {
+async function createSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
@@ -410,6 +410,7 @@ function remove(id: number) {
           (e: { id: number }) => e.id !== id
         );
         deletingSpinner.value = false;
+        fetchData("/pocs/categories");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });

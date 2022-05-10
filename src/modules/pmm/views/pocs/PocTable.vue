@@ -59,29 +59,6 @@
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
-                  <!-- <a
-                    href="#"
-                    v-if="td.is_active == 1"
-                    class="dropdown-item inactiveStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-times-circle"></i> In-Active</a
-                  >
-
-                  <a
-                    href="#"
-                    v-else
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item activeStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-check-circle"></i> Active</a
-                  >
-
-                  <router-link
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item"
-                    ><i class="fas fa-edit"></i> Edit</router-link
-                  >
-                  -->
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
@@ -143,15 +120,6 @@ function updateCheckall() {
   }
 }
 
-//isActive Data
-function isActive(val: number) {
-  if (val == 1) {
-    return "Active";
-  } else {
-    return "In-Active";
-  }
-}
-
 //Delete Emit use for Delete
 function removeItem(id: number) {
   emit("delete", id);
@@ -166,24 +134,9 @@ function getFile(pid: number) {
 function getEdit(id: number) {
   emit("edit", id);
 }
-
-//Change Status
-function changeStatus(id: number, status: number) {
-  let full_status = {
-    id: id,
-    status: status,
-  };
-  emit("activation", full_status);
-}
 </script>
 
 <style scoped>
-.activeStatus {
-  color: green;
-}
-.inactiveStatus {
-  color: red;
-}
 .action-field {
   width: 30px !important;
 }

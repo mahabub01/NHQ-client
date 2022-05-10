@@ -133,8 +133,8 @@
           ><i class="fas fa-plus-square"></i> Create Version
         </template>
         <template v-slot:body>
-          <form @submit.prevent="categorySubmit" class="form-page">
-            <div class="row">
+          <form @submit.prevent="createSubmit" class="form-page">
+            <div class="row form-row">
               <div class="col-md-12">
                 <label class="form-label">
                   Title
@@ -187,7 +187,7 @@
         </template>
         <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
-            <div class="row">
+            <div class="row form-row">
               <div class="col-md-12">
                 <label class="form-label">
                   Title
@@ -278,7 +278,7 @@ const rules: any = {
 
 const v$ = useVuelidate(rules, state);
 
-async function categorySubmit() {
+async function createSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
@@ -382,6 +382,7 @@ function remove(id: number) {
           (e: { id: number }) => e.id !== id
         );
         deletingSpinner.value = false;
+        fetchData("/versions");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });

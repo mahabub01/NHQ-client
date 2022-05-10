@@ -736,6 +736,10 @@ function remove(id: number) {
           entries.value = entries.value.filter(
             (e: { id: number }) => e.id !== id
           );
+          filterData(
+            "/projects/oems",
+            "&project_id=" + route.params.project_id
+          );
           swal("Poof! Your data has been deleted!", {
             icon: "success",
           });

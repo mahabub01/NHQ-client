@@ -275,7 +275,6 @@ const store = useStore();
 //use for deleting spenner
 let deletingSpinner = ref(false);
 let savingSpinner = ref(false);
-let loadingSpinner = ref(false);
 
 //use for multiselected
 const multiselected = ref([]);
@@ -331,7 +330,7 @@ function resetForm() {
   v$.value.$reset();
 }
 /**********************
- * End Create tag
+ * End Create Tag
  ***********************/
 
 //Search Property
@@ -404,6 +403,7 @@ function remove(id: number) {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
+        fetchData("/projects/tags");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -457,9 +457,7 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
-  loadingSpinner.value = true;
   await Axios.get("/projects/tags/" + id).then((response) => {
-    loadingSpinner.value = false;
     single_datas.value = response.data.data;
     state.title = single_datas.value.title;
     state.description = single_datas.value.description;

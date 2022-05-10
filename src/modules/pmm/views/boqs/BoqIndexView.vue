@@ -350,7 +350,7 @@
               <Select2
                 v-model="v$.version_id.$model"
                 :options="versions"
-                :settings="{ placeholder: 'Choose' }"
+                :settings="{ placeholder: 'Choose', multiple: false }"
                 :class="{ isInvalid: v$.version_id.$error }"
               />
 
@@ -694,12 +694,6 @@ watch([search], async () => {
     "&project_id=" + route.params.project_id + "&search=" + search.value
   );
 });
-
-//Watch Category Id
-// watch([category_id], async () => {
-//   console.log("category Watch");
-//   //getCategoriesItems(category_id);
-// });
 
 //modal setting
 const createModalState = computed(() => {

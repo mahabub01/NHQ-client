@@ -143,7 +143,6 @@
                 <input
                   type="text"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.milestone_name_id"
                 />
               </div>
@@ -153,7 +152,6 @@
                 <input
                   type="date"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.extended_date"
                 />
               </div>
@@ -162,7 +160,6 @@
                 <input
                   type="date"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.start_date"
                 />
               </div>
@@ -171,7 +168,6 @@
                 <input
                   type="date"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.end_date"
                 />
               </div>

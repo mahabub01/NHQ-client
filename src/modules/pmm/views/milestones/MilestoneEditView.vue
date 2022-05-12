@@ -72,7 +72,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.milestone_name.$error }"
-                placeholder="Milestone Name here"
                 v-model.lazy="v$.milestone_name.$model"
               />
               <p
@@ -88,7 +87,6 @@
               <input
                 type="date"
                 class="form-input"
-                placeholder="End Date Here"
                 v-model.lazy="formState.end_date"
               />
             </div>

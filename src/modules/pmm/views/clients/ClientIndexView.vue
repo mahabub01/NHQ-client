@@ -162,7 +162,6 @@
                 <input
                   type="text"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.company_name_email"
                 />
               </div>
@@ -173,7 +172,6 @@
                 <input
                   type="text"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.contact_person_name_email_phone"
                 />
               </div>

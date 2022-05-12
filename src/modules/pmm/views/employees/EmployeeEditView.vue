@@ -37,7 +37,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.name.$error }"
-                placeholder="Name here"
                 v-model.lazy="v$.name.$model"
               />
               <p
@@ -71,7 +70,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.email.$error }"
-                placeholder="Email here"
                 v-model.lazy="v$.email.$model"
               />
               <p
@@ -90,7 +88,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.department_id.$error }"
-                placeholder="Department here"
                 v-model.lazy="v$.department_id.$model"
               />
               <p
@@ -114,7 +111,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.phone.$error }"
-                placeholder="Phone here"
                 v-model.lazy="v$.phone.$model"
               />
               <p
@@ -130,7 +126,6 @@
               <input
                 type="date"
                 class="form-input"
-                placeholder="Date of Birth here"
                 v-model.lazy="formState.date_of_birth"
               />
             </div>
@@ -147,7 +142,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.designation_id.$error }"
-                placeholder="Designation here"
                 v-model.lazy="v$.designation_id.$model"
               />
               <p
@@ -163,7 +157,6 @@
               <input
                 type="number"
                 class="form-input"
-                placeholder="Nid Number here"
                 v-model.lazy="formState.nid_number"
               />
             </div>
@@ -180,7 +173,6 @@
                 type="password"
                 class="form-input"
                 :class="{ isInvalid: v$.password.$error }"
-                placeholder="Password here"
                 v-model.lazy="v$.password.$model"
               />
               <p
@@ -196,7 +188,6 @@
               <input
                 type="date"
                 class="form-input"
-                placeholder="Title here"
                 v-model.lazy="formState.joinning_date"
               />
             </div>
@@ -207,17 +198,11 @@
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
               <label class="form-label">Present Address</label>
-              <textarea
-                placeholder="Present Address here"
-                v-model.lazy="formState.present_address"
-              ></textarea>
+              <textarea v-model.lazy="formState.present_address"></textarea>
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">About Employee</label>
-              <textarea
-                placeholder="About Employee here"
-                v-model.lazy="formState.about_employee"
-              ></textarea>
+              <textarea v-model.lazy="formState.about_employee"></textarea>
             </div>
           </div>
           <!--end row -->
@@ -226,10 +211,7 @@
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
               <label class="form-label">Parmanent Address</label>
-              <textarea
-                placeholder="Parmanent Address here"
-                v-model.lazy="formState.parmanent_address"
-              ></textarea>
+              <textarea v-model.lazy="formState.parmanent_address"></textarea>
             </div>
           </div>
           <!--end row -->

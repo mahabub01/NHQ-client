@@ -150,7 +150,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.team_name.$error }"
-                  placeholder="Team Name here"
                   v-model.lazy="v$.team_name.$model"
                 />
                 <p
@@ -215,7 +214,6 @@
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -260,7 +258,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.team_name.$error }"
-                  placeholder="Team Name here"
                   v-model.lazy="v$.team_name.$model"
                 />
                 <p
@@ -324,7 +321,6 @@
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>

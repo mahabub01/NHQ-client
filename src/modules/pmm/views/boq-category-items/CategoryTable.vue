@@ -3,7 +3,10 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial">Serial</th>
+          <th class="col-serial">
+            <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
+            Serial
+          </th>
           <th>Title</th>
           <th>Category</th>
           <th>Description</th>
@@ -23,9 +26,9 @@
             {{ index + 1 }}
           </td>
           <td>{{ td.title }}</td>
+          <td>{{ td.pmm_boq_category_id }}</td>
           <td>{{ td.description }}</td>
 
-          <td>{{ td.pmm_boq_category_id }}</td>
           <td>
             <span v-if="td.is_active == 1" class="activeStatus"
               ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}

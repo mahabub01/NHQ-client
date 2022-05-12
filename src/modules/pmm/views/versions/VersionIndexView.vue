@@ -144,7 +144,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -197,7 +196,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.title.$model"
                 />
                 <p

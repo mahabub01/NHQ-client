@@ -41,7 +41,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.name.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.name.$model"
                 />
                 <p

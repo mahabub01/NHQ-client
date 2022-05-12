@@ -141,7 +141,6 @@
                 <input
                   type="text"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.search"
                 />
               </div>
@@ -151,7 +150,6 @@
                 <input
                   type="date"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.date_of_birth"
                 />
               </div>
@@ -160,7 +158,6 @@
                 <input
                   type="date"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.joinning_date"
                 />
               </div>

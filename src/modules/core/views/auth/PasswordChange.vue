@@ -37,7 +37,6 @@
                 type="password"
                 class="form-input"
                 :class="{ isInvalid: v$.old_password.$error }"
-                placeholder="Old Password here"
                 v-model.lazy="v$.old_password.$model"
               />
               <p
@@ -56,7 +55,6 @@
                 type="password"
                 class="form-input"
                 :class="{ isInvalid: v$.new_password.$error }"
-                placeholder="New  here"
                 v-model.lazy="v$.new_password.$model"
               />
               <p

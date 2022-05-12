@@ -301,7 +301,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.title.$error }"
-                placeholder="OEM title"
                 v-model.lazy="v$.title.$model"
               />
               <p
@@ -388,7 +387,6 @@
                 type="text"
                 class="form-input"
                 v-model="filterState.search"
-                placeholder="Search here"
               />
             </div>
             <div class="col-md-4">

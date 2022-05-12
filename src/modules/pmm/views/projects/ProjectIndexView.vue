@@ -136,68 +136,6 @@
       :isdeleting="deletingSpinner"
       :isSaving="savingSpinner"
     ></the-spinner>
-
-    <!--start Create Modal -->
-    <div>
-      <create-modal>
-        <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Category
-        </template>
-        <template v-slot:body>
-          <form @submit.prevent="createSubmit" class="form-page">
-            <div class="row">
-              <div class="col-md-12">
-                <label class="form-label"
-                  >Title<span class="mandatory">*</span></label
-                >
-                <input
-                  type="text"
-                  class="form-page-input"
-                  :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
-                  v-model.lazy="v$.title.$model"
-                />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.title.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
-              </div>
-            </div>
-            <div class="row form-row">
-              <div class="col-md-12">
-                <label class="form-label">Description</label>
-                <textarea
-                  class="form-page-textarea"
-                  placeholder="Discription here"
-                  v-model.lazy="state.description"
-                ></textarea>
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-                @click.prevent="
-                  store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
-                "
-              >
-                <i class="far fa-times-circle"></i> Close
-              </button>
-              <button type="submit" class="btn pro-button">
-                <i class="fas fa-save"></i> Save
-              </button>
-            </div>
-          </form>
-        </template>
-      </create-modal>
-    </div>
-    <!--end Create Modal -->
   </div>
 </template>
 
@@ -209,7 +147,6 @@ import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
-import CreateModal from "../../../core/shared/CreateModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";

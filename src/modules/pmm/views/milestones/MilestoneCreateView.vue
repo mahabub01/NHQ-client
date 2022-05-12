@@ -52,7 +52,6 @@
               <input
                 type="date"
                 class="form-input"
-                placeholder="Start Date Here"
                 v-model.lazy="formState.start_date"
               />
             </div>
@@ -106,7 +105,6 @@
               <input
                 type="date"
                 class="form-input"
-                placeholder="End Date Here"
                 v-model.lazy="formState.extended_date"
               />
             </div>
@@ -127,7 +125,7 @@
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Milestone Points</label>
               <input
-                type="text"
+                type="number"
                 class="form-input"
                 v-model.lazy="formState.points"
               />

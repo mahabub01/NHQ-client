@@ -837,7 +837,7 @@ async function getCategories() {
 
 async function myChangeEvent(val: any) {
   loadingSpinner.value = true;
-  await Axios.get("boq-categoryitem-selectable/" + val.id)
+  await Axios.get("boq-category-item-selectable/" + val.id)
     .then((response) => {
       console.log(response);
       loadingSpinner.value = false;

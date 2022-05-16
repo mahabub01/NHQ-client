@@ -92,7 +92,7 @@
               >
                 <i class="fas fa-sort-down"></i>
               </button>
-              <ul class="dropdown-menu table-dropdown">
+              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
                   <a
                     href="#"
@@ -116,6 +116,11 @@
                     @click.prevent="removeItem(td.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
+                  >
+                  <router-link
+                    :to="`/pmm/milestones/details/${td.slug}`"
+                    class="dropdown-item"
+                    ><i class="fas fa-eye"></i> Details</router-link
                   >
                 </li>
               </ul>

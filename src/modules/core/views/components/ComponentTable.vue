@@ -3,7 +3,10 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial">Serial</th>
+          <th class="col-serial">
+            <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
+            Serial
+          </th>
           <th>Title</th>
           <th>Slug</th>
           <th>Module</th>

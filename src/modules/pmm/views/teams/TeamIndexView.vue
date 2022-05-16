@@ -606,6 +606,7 @@ const employeesSelectable = ref([]);
 
 // teams data get
 async function openCreateModal() {
+  resetForm();
   store.commit("modalModule/CHNAGE_CREATE_MODAL", true);
   await Axios.get("/employees-selectable").then((response) => {
     employeesSelectable.value = response.data.data;

@@ -88,6 +88,11 @@
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
                   >
+                  <router-link
+                    :to="`/pmm/boqs/details/${item.slug}`"
+                    class="dropdown-item"
+                    ><i class="fas fa-eye"></i> Details</router-link
+                  >
                 </li>
               </ul>
             </div>

@@ -162,6 +162,16 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
+        path: "milestones/details/:slug",
+        name: "milestones-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/milestones/MilestoneDetailsView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
         path: "milestones-categories",
         name: "milestones-categories",
         component: () =>
@@ -229,6 +239,15 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
+        path: "pocs/details/:slug",
+        name: "pocs-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/pocs/PocDetailsView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
         path: "pocs-categories",
         name: "pocs-categories",
         component: () =>
@@ -243,6 +262,15 @@ export const PmmModuleRoute = [
         component: () =>
           import(
             /* webpackChunkName: "pmm-module" */ "./views/boqs/BoqIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "boqs/details/:slug",
+        name: "boqs-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/boqs/BoqDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -270,6 +298,15 @@ export const PmmModuleRoute = [
         component: () =>
           import(
             /* webpackChunkName: "pmm-module" */ "./views/oems/OemIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "oems/details/:slug",
+        name: "oems-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/oems/OemDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },

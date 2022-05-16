@@ -135,7 +135,7 @@
         </template>
         <template v-slot:body>
           <form @submit.prevent="filterSubmit" class="form-page">
-            <div class="row">
+            <div class="row form-row">
               <div class="col-md-4">
                 <label class="form-label"> Search </label>
                 <input

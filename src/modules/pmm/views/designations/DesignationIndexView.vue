@@ -65,7 +65,8 @@
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true)
+                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true),
+                            resetForm()
                         "
                       >
                         <i class="fas fa-plus"></i> Create

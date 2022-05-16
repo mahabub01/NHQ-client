@@ -62,7 +62,8 @@
                         class="theme-color-btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true)
+                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true),
+                            resetForm()
                         "
                       >
                         <i class="fas fa-filter"></i>

@@ -66,7 +66,7 @@
                         style="margin-right: 7px"
                         @click="
                           store.commit('modalModule/CHNAGE_CREATE_MODAL', true),
-                            reset
+                            resetForm()
                         "
                       >
                         <i class="fas fa-plus"></i> Create

@@ -173,7 +173,8 @@
                 class="form-button-danger"
                 data-bs-dismiss="modal"
                 @click.prevent="
-                  store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
+                  store.commit('modalModule/CHNAGE_CREATE_MODAL', false),
+                    resetForm()
                 "
               >
                 <i class="far fa-times-circle"></i> Close

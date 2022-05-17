@@ -105,9 +105,9 @@
                       <li class="auth_option">
                         <router-link
                           class="auth_option_item"
-                          to="/core/password-change"
+                          to="/core/profile-details"
                         >
-                          <i class="fas fa-key"></i> Change password
+                          <i class="fas fa-user"></i> Profile Information
                         </router-link>
                       </li>
                       <li class="auth_option">
@@ -121,13 +121,13 @@
                       <li class="auth_option">
                         <router-link
                           class="auth_option_item"
-                          to="/core/profile-details"
+                          to="/core/password-change"
                         >
-                          <i class="fas fa-user"></i> Profile Information
+                          <i class="fas fa-key"></i> Change password
                         </router-link>
                       </li>
                     </ul>
-                    <ul class="auth_card pt_15">
+                    <ul class="auth_card pt_15 mb-2">
                       <li class="auth_email">
                         <button
                           type="button"

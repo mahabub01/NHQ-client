@@ -4,8 +4,8 @@
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
-            <router-link to="#"
-              >Auth <i class="fas fa-chevron-right"></i
+            <router-link to="/core/profile-details"
+              >Profile <i class="fas fa-chevron-right"></i
             ></router-link>
             <router-link to="#">Change Password</router-link>
           </div>
@@ -17,19 +17,19 @@
               <router-link
                 class="form-button-danger"
                 style="color: white"
-                to="#"
+                to="/core/profile-details"
                 ><i class="far fa-times-circle"></i> Discard
               </router-link>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-design-body">
+      <div class="form-design-body m-auto">
         <div class="container">
           <h4 class="form-page-title">Change Password</h4>
           <!--start row -->
           <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
+            <div class="col-md-4 m-auto">
               <label class="form-label"
                 >Old Password<span class="mandatory">*</span></label
               >
@@ -47,7 +47,9 @@
                 <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
               </p>
             </div>
-            <div class="col-md-4 offset-md-2">
+          </div>
+          <div class="row form-row">
+            <div class="col-md-4 m-auto">
               <label class="form-label"
                 >New Password<span class="mandatory">*</span></label
               >

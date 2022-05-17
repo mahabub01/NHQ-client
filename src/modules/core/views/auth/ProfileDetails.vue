@@ -52,7 +52,7 @@
                 <div>
                   <h5 class="data-label">Designation</h5>
                   <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.designation_id }}
+                    {{ getInformation.designation }}
                   </p>
                 </div>
                 <!--end-->
@@ -60,7 +60,7 @@
                 <div>
                   <h5 class="data-label">Department</h5>
                   <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.department_id }}
+                    {{ getInformation.department }}
                   </p>
                 </div>
                 <!--end-->
@@ -89,9 +89,18 @@
               <div class="col-md-6">
                 <!--start-->
                 <div>
+                  <h5 class="data-label">Employee ID</h5>
+                  <p class="data-text" v-if="getInformation != null">
+                    {{ getInformation.employee_id }}
+                  </p>
+                </div>
+                <!--end-->
+
+                <!--start-->
+                <div>
                   <h5 class="data-label">Gender</h5>
                   <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.gender == 1 ? "Male" : "Female" }}
+                    {{ getInformation.gender }}
                   </p>
                 </div>
                 <!--end-->
@@ -127,6 +136,17 @@
                     class="des"
                     v-if="getInformation != null"
                     v-html="getInformation.about_employee"
+                  ></div>
+                </div>
+                <!--end-->
+
+                <!--start-->
+                <div>
+                  <h5 class="data-label">Status</h5>
+                  <div
+                    class="des"
+                    v-if="getInformation != null"
+                    v-html="getInformation.is_active"
                   ></div>
                 </div>
                 <!--end-->

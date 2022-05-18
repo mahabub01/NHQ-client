@@ -7,10 +7,6 @@
             class="form_section d-flex flex-column justify-content-center align-items-center"
           >
             <div class="card-signup bg-transparent">
-              <the-spinner
-                :is-authenticating="is_authenticating"
-                :is-authenticated="is_authenticated"
-              ></the-spinner>
               <!--start alert section-->
               <div
                 v-if="isShowAlert"
@@ -19,6 +15,20 @@
               >
                 <div>
                   <i class="fas fa-exclamation-triangle"></i> {{ alertMessage }}
+                </div>
+              </div>
+              <!--end alert section-->
+            </div>
+
+            <div class="card-signup bg-transparent">
+              <!--start alert section-->
+              <div
+                v-if="isShowSuccess"
+                class="alert alert-success d-flex align-items-center"
+                role="alert"
+              >
+                <div>
+                  <i class="fas fa-check-circle"></i> {{ alertMessage }}
                 </div>
               </div>
               <!--end alert section-->
@@ -59,12 +69,12 @@
                       type="password"
                       class="form-control"
                       name="password"
-                      :class="{ isInvalid: v$.password.$error }"
-                      v-model.lazy="v$.password.$model"
+                      :class="{ isInvalid: v$.password_confirmation.$error }"
+                      v-model.lazy="v$.password_confirmation.$model"
                     />
                     <p
                       class="error-mgs"
-                      v-for="(error, index) in v$.password.$errors"
+                      v-for="(error, index) in v$.password_confirmation.$errors"
                       :key="index"
                     >
                       <i class="fas fa-exclamation-triangle"></i>
@@ -74,7 +84,7 @@
 
                   <div class="d-grid gap-2">
                     <button class="btn btn-design" type="submit">
-                      Sign In
+                      Send Reset Link
                     </button>
                   </div>
                 </form>
@@ -127,87 +137,48 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { useCookies } from "vue3-cookies";
 import Axios from "@/http-common";
+import toastr from "toastr";
 
 const isShowAlert = ref(false);
+const isShowSuccess = ref(false);
 const alertMessage = ref("");
-const is_authenticating = ref(false);
-const is_authenticated = ref(false);
 const router = useRouter();
 
 const store = useStore();
 
-const { cookies } = useCookies();
-
 const formState = reactive({
-  email: "",
   password: "",
+  password_confirmation: "",
 });
 
 const rules = {
-  email: { required },
   password: { required, minLength: minLength(4), maxLength: maxLength(20) },
+  password_confirmation: {
+    required,
+    minLength: minLength(4),
+    maxLength: maxLength(20),
+  },
 };
 
 const v$ = useVuelidate(rules, formState);
 
 async function handleSubmit() {
   v$.value.$validate();
-
   v$.value.$touch();
-
   if (!v$.value.$error) {
-    is_authenticating.value = true;
     isShowAlert.value = false;
-    await axios.get(process.env.VUE_APP_DOMAIN_URL + "/sanctum/csrf-cookie");
-    await axios
-      .post("login", formState, {
-        baseURL: process.env.VUE_APP_API_URL,
-        headers: {
-          "Private-Key": process.env.VUE_APP_PRIVATE_KEY,
-        },
-      })
+    isShowSuccess.value = false;
+
+    await Axios.post("set-password", formState)
       .then((response) => {
-        is_authenticating.value = false;
-        console.log(response);
-        if (response.data.code == 400) {
-          isShowAlert.value = true;
-          alertMessage.value = response.data.message;
-          return;
+        if (response.data.code == 200) {
+          isShowSuccess.value = true;
+          alertMessage.value = "Password Change Successfully & Login Now ";
+          //   resetForm();
+        } else {
+          isShowAlert.value = false;
+          toastr.error(response.data.message);
         }
-        //Remove old Data
-        cookies.remove("user-token", "/");
-        cookies.remove("user", "/");
-        cookies.remove("user-token", "/core");
-        cookies.remove("user", "/core");
-        cookies.remove("user-token", "/pmm");
-        cookies.remove("user", "/pmm");
-
-        localStorage.removeItem("token");
-        localStorage.removeItem("user_id");
-
-        isShowAlert.value = false;
-        is_authenticated.value = true;
-        localStorage.setItem("token", response.data.data.access_token);
-        localStorage.setItem("user_id", response.data.data.user.id);
-        cookies.set("user-token", response.data.data.access_token, "/");
-        cookies.set("user", response.data.data.user, "/");
-
-        // store.dispatch(
-        //   "currentUser/assignCurrentUser",
-        //   response.data.data.user
-        // );
-
-        store.dispatch("currentUser/isLogin", {
-          isLoggedIn: true,
-          token: response.data.data.access_token,
-        });
-
-        //store.dispatch("currentUser/assignAllPermission", response.data.data);
-
-        //console.log(response.data.data.id);
-        //getAllPermissions(response.data.data.user.id);
-        router.go(1);
-        router.push("/core/dashboard");
       })
       .catch((error) => {
         console.log("problem Here" + error);

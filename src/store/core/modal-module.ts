@@ -6,6 +6,7 @@ export default {
     filterModal: false,
     fileViewModal: false,
     loadCKEditor: false,
+    importModal: false,
   },
   getters: {},
   mutations: {
@@ -21,6 +22,10 @@ export default {
     CHNAGE_FILE_VIEW_MODAL(state: any, data: boolean) {
       state.fileViewModal = data;
     },
+    CHNAGE_IMPORT_MODAL(state: any, data: boolean) {
+      state.importModal = data;
+    },
+
     LOAD_CKEDITOR_MODAL(state: any, data: boolean) {
       state.loadCKEditor = data;
     },
@@ -34,6 +39,9 @@ export default {
     },
     change_filter_modal(context: any, data: boolean) {
       context.commit("CHNAGE_FILTER_MODAL", data);
+    },
+    change_import_modal(context: any, data: boolean) {
+      context.commit("CHNAGE_IMPORT_MODAL", data);
     },
     change_file_view_modal(context: any, data: boolean) {
       context.commit("CHNAGE_FILE_VIEW_MODAL", data);

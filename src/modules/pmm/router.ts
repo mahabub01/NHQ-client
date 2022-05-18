@@ -190,6 +190,7 @@ export const PmmModuleRoute = [
           ),
         meta: { middleware: "auth" },
       },
+
       {
         path: "tasks/create",
         name: "tasks-create",
@@ -225,6 +226,36 @@ export const PmmModuleRoute = [
         component: () =>
           import(
             /* webpackChunkName: "pmm-module" */ "./views/priorities/PriorityIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "tasks/details/:id",
+        name: "tasksdetails",
+        component: () =>
+          import(
+            /* webpackChunkName: "tasks" */ "./views/tasks/TaskDetailsView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "tasks-by-milestone/:id",
+        name: "taskbymilestone",
+        component: () =>
+          import(
+            /* webpackChunkName: "tasks" */ "./views/tasks/TaskByMilestoneView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "tasks/time-tracker/:task_id",
+        name: "tasks-time-tracker",
+        component: () =>
+          import(
+            /* webpackChunkName: "time-tracker" */ "./views/tasks/TimeTrackerView.vue"
           ),
         meta: { middleware: "auth" },
       },

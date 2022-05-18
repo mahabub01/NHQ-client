@@ -27,7 +27,6 @@ export function useDatatable() {
         "&search=" +
         search
     ).then((response) => {
-      console.log(response);
       entries.value = response.data.data;
       datatables.totalItems = response.data.meta.total;
       datatables.currentPage = response.data.meta.current_page;

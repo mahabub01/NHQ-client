@@ -347,7 +347,7 @@ const v$ = useVuelidate(rules, state);
 const boqCategoryID = ref([]);
 
 async function categoryId() {
-  await Axios.get("/boq-category-selectable/").then((response) => {
+  await Axios.get("/boq-category-selectable").then((response) => {
     boqCategoryID.value = response.data.data;
   });
 }

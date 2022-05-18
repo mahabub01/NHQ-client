@@ -157,6 +157,15 @@
               </div>
               <!--end row -->
 
+              <div class="form-row">
+                <label class="form-label">Duration</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  v-model.lazy="formState.duration"
+                />
+              </div>
+
               <!--start row -->
               <div class="row form-row">
                 <div class="col-md-12">
@@ -289,6 +298,7 @@ const formState = reactive({
   file_name: "",
   description: "",
   token: store.state.currentUser.token,
+  duration: "",
 });
 
 const rules: any = {
@@ -340,6 +350,7 @@ onMounted(async () => {
       formState.end_date = singleData.end_date;
       formState.extended_date = singleData.extended_date;
       formState.description = singleData.description;
+      formState.duration = singleData.duration;
       getFiles.value = singleData.file_name;
       store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
     }

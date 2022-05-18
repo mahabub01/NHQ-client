@@ -151,6 +151,15 @@
               </div>
               <!--end row -->
 
+              <div class="form-row">
+                <label class="form-label">Duration</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  v-model.lazy="formState.duration"
+                />
+              </div>
+
               <!--start row -->
               <div class="row form-row">
                 <div class="col-md-12">
@@ -204,6 +213,7 @@ const formState = reactive({
   category: "",
   file_name: "",
   description: "",
+  duration: "",
   token: store.state.currentUser.token,
 });
 
@@ -311,7 +321,7 @@ function reset() {
   formState.end_date = "";
   formState.assign_employee = "";
   formState.extended_date = "";
-  formState.points = "";
+  formState.points = 0;
   formState.file_name = "";
   formState.description = "";
   v$.value.$reset();

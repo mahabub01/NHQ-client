@@ -52,46 +52,12 @@
                     </p>
                   </div>
 
-                  <div class="mb-3">
-                    <label class="form-label">Password</label>
-                    <input
-                      type="password"
-                      class="form-control"
-                      name="password"
-                      :class="{ isInvalid: v$.password.$error }"
-                      v-model.lazy="v$.password.$model"
-                    />
-                    <p
-                      class="error-mgs"
-                      v-for="(error, index) in v$.password.$errors"
-                      :key="index"
-                    >
-                      <i class="fas fa-exclamation-triangle"></i>
-                      {{ error.$message }}
-                    </p>
-                  </div>
-
                   <div class="d-grid gap-2">
                     <button class="btn btn-design" type="submit">
-                      Sign In
+                      Send Reset Link
                     </button>
                   </div>
                 </form>
-
-                <div class="mb-3 mt-2 form-check">
-                  <input
-                    type="checkbox"
-                    class="form-check-input"
-                    name="remember"
-                    id="exampleCheck1"
-                  />
-                  <label class="form-check-label" for="exampleCheck1"
-                    >Remember me</label
-                  >
-                </div>
-                <router-link class="text-decoration-none" to="/reset-password"
-                  >Forget Your Password?</router-link
-                >
               </div>
             </div>
           </div>
@@ -141,6 +107,8 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { useCookies } from "vue3-cookies";
 import Axios from "@/http-common";
+import toastr from "toastr";
+import swal from "sweetalert";
 
 const isShowAlert = ref(false);
 const alertMessage = ref("");
@@ -154,74 +122,35 @@ const { cookies } = useCookies();
 
 const formState = reactive({
   email: "",
-  password: "",
 });
 
 const rules = {
   email: { required },
-  password: { required, minLength: minLength(4), maxLength: maxLength(20) },
 };
 
 const v$ = useVuelidate(rules, formState);
 
 async function handleSubmit() {
   v$.value.$validate();
-
   v$.value.$touch();
-
   if (!v$.value.$error) {
-    is_authenticating.value = true;
     isShowAlert.value = false;
-    await axios.get(process.env.VUE_APP_DOMAIN_URL + "/sanctum/csrf-cookie");
-    await axios
-      .post("login", formState, {
-        baseURL: process.env.VUE_APP_API_URL,
-        headers: {
-          "Private-Key": process.env.VUE_APP_PRIVATE_KEY,
-        },
-      })
+
+    await Axios.post("reset-password", formState)
       .then((response) => {
-        is_authenticating.value = false;
-        console.log(response);
-        if (response.data.code == 400) {
+        if (response.data.code == 200) {
+          alert(response.data.message);
+
           isShowAlert.value = true;
           alertMessage.value = response.data.message;
-          return;
+
+          //   resetForm();
+          swal("Success Job!", "Your modules created successfully!", "success");
+        } else {
+          isShowAlert.value = false;
+          toastr.error(response.data.message);
+          console.log(response.data.message);
         }
-        //Remove old Data
-        cookies.remove("user-token", "/");
-        cookies.remove("user", "/");
-        cookies.remove("user-token", "/core");
-        cookies.remove("user", "/core");
-        cookies.remove("user-token", "/pmm");
-        cookies.remove("user", "/pmm");
-
-        localStorage.removeItem("token");
-        localStorage.removeItem("user_id");
-
-        isShowAlert.value = false;
-        is_authenticated.value = true;
-        localStorage.setItem("token", response.data.data.access_token);
-        localStorage.setItem("user_id", response.data.data.user.id);
-        cookies.set("user-token", response.data.data.access_token, "/");
-        cookies.set("user", response.data.data.user, "/");
-
-        // store.dispatch(
-        //   "currentUser/assignCurrentUser",
-        //   response.data.data.user
-        // );
-
-        store.dispatch("currentUser/isLogin", {
-          isLoggedIn: true,
-          token: response.data.data.access_token,
-        });
-
-        //store.dispatch("currentUser/assignAllPermission", response.data.data);
-
-        //console.log(response.data.data.id);
-        //getAllPermissions(response.data.data.user.id);
-        router.go(1);
-        router.push("/core/dashboard");
       })
       .catch((error) => {
         console.log("problem Here" + error);

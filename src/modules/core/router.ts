@@ -23,6 +23,7 @@ export const CoreModuleRoute = [
             /* webpackChunkName: "password-change" */ "./views/auth/PasswordChange.vue"
           ),
       },
+
       {
         path: "profile-update",
         name: "profile-update",

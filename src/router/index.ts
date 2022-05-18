@@ -22,6 +22,24 @@ const routes: Array<RouteRecordRaw> = [
       ),
   },
 
+  {
+    path: "/reset-password",
+    name: "reset-password",
+    component: () =>
+      import(
+        /* webpackChunkName: "login" */ "../modules/core/views/auth/ResetPassword.vue"
+      ),
+  },
+
+  {
+    path: "/confirmation-password",
+    name: "confirmation-password",
+    component: () =>
+      import(
+        /* webpackChunkName: "login" */ "../modules/core/views/auth/ConfirmationPassword.vue"
+      ),
+  },
+
   //module route
   ...PmmModuleRoute,
 

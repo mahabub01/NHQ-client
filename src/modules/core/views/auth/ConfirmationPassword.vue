@@ -35,16 +35,17 @@
               <div class="card-body mb-2">
                 <form @submit.prevent="handleSubmit" class="form-page">
                   <div class="mb-3">
-                    <label class="form-label">Email</label>
+                    <label class="form-label">New Password</label>
                     <input
-                      type="email"
+                      type="password"
                       class="form-control"
-                      :class="{ isInvalid: v$.email.$error }"
-                      v-model="v$.email.$model"
+                      name="password"
+                      :class="{ isInvalid: v$.password.$error }"
+                      v-model.lazy="v$.password.$model"
                     />
                     <p
                       class="error-mgs"
-                      v-for="(error, index) in v$.email.$errors"
+                      v-for="(error, index) in v$.password.$errors"
                       :key="index"
                     >
                       <i class="fas fa-exclamation-triangle"></i>
@@ -53,7 +54,7 @@
                   </div>
 
                   <div class="mb-3">
-                    <label class="form-label">Password</label>
+                    <label class="form-label">Confirmation Password</label>
                     <input
                       type="password"
                       class="form-control"
@@ -77,21 +78,6 @@
                     </button>
                   </div>
                 </form>
-
-                <div class="mb-3 mt-2 form-check">
-                  <input
-                    type="checkbox"
-                    class="form-check-input"
-                    name="remember"
-                    id="exampleCheck1"
-                  />
-                  <label class="form-check-label" for="exampleCheck1"
-                    >Remember me</label
-                  >
-                </div>
-                <router-link class="text-decoration-none" to="/reset-password"
-                  >Forget Your Password?</router-link
-                >
               </div>
             </div>
           </div>

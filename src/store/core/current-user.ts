@@ -1,5 +1,4 @@
 import { useCookies } from "vue3-cookies";
-import axios from "axios";
 
 const { cookies } = useCookies();
 

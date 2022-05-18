@@ -92,38 +92,56 @@
               >
                 <i class="fas fa-sort-down"></i>
               </button>
-              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
+              <ul
+                class="dropdown-menu table-dropdown dropdown-menu-lg-end"
+                style="width: 165px"
+              >
                 <li>
                   <router-link
                     :to="`/pmm/pocs/${item.id}`"
                     class="dropdown-item"
                     ><i class="far fa-plus-square"></i> Create POC</router-link
                   >
-
+                </li>
+                <li>
                   <router-link
                     :to="`/pmm/boqs/${item.id}`"
                     class="dropdown-item"
                     ><i class="far fa-plus-square"></i> Create BOQ</router-link
                   >
+                </li>
 
+                <li>
                   <router-link
                     :to="`/pmm/oems/${item.id}`"
                     class="dropdown-item"
                     ><i class="far fa-plus-square"></i> Create OEM</router-link
                   >
-
+                </li>
+                <li>
                   <router-link
                     :to="`/pmm/projects/${item.slug}`"
                     class="dropdown-item"
                     ><i class="fas fa-eye"></i> Details</router-link
                   >
-
+                </li>
+                <li>
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
                   >
+                </li>
+
+                <li style="text-align: center; margin-top: 10px">
+                  <button
+                    @click="exportMileStone(item.id, item.project_name)"
+                    class="btn btn-info icon_btn"
+                    style="width: 80%"
+                  >
+                    <i class="fas fa-file-excel"></i> Export Milestone
+                  </button>
                 </li>
               </ul>
             </div>
@@ -132,10 +150,15 @@
       </tbody>
     </table>
   </div>
+  <the-spinner :isExporting="exportSpinner"></the-spinner>
 </template>
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import { useExcelExport } from "@/composables/export-excel";
+import Axios from "@/http-common";
+import toastr from "toastr";
 
 const attrs = useAttrs();
 
@@ -198,6 +221,38 @@ function changeStatus(id: number, status: number) {
     status: status,
   };
   emit("activation", full_status);
+}
+
+//Start Export
+const { excelExport } = useExcelExport(true, true); //Have title and Subtitle in excel file
+
+const exportSubtitle =
+  "Lorem Ipsum is simply dummy text of the printing and typesetting industry";
+const exportHeader: any = ["SL", "Work Description", "Duration"];
+const exportColumn: any = [{ key: "id" }, { key: "work" }, { key: "duration" }];
+
+const exportSpinner = ref(false);
+
+async function exportMileStone(project_id: any, project_name: string) {
+  const exportTitle = project_name;
+  exportSpinner.value = true;
+  await Axios.post("/milestone-export", {
+    project_id: project_id,
+  }).then((response) => {
+    console.log(response);
+    exportSpinner.value = false;
+    if (response.data.code == 200) {
+      excelExport(
+        response.data.data,
+        exportHeader,
+        exportColumn,
+        exportTitle,
+        exportSubtitle
+      );
+    } else {
+      toastr.error(response.data.message);
+    }
+  });
 }
 </script>
 

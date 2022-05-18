@@ -14,10 +14,8 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link
-                      class="rev-underline-subtitle"
-                      to="/pmm/milestones"
-                      >Milestones List</router-link
+                    <router-link to="/pmm/tasks" class="rev-underline-subtitle"
+                      >Sub Milestone List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -49,28 +47,43 @@
 
                       <input
                         type="text"
-                        v-model.lazy="nameSearch"
-                        placeholder="Search Team"
+                        placeholder="Search By ID"
+                        style="margin-right: 7px"
+                        v-model.lazy="search"
+                        class="table-search"
                       />
 
-                      <button
-                        type="button"
+                      <!-- <router-link
+                        to="/pmm/tasks/create"
                         class="link_btn"
                         style="margin-right: 7px"
-                        @click="
-                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true)
-                        "
                       >
-                        <i class="fas fa-filter"></i>
-                      </button>
+                        <i class="fas fa-filter"></i
+                      ></router-link> -->
 
                       <router-link
                         v-if="userInfo.role_id != 9"
-                        to="/pmm/milestones/create"
+                        to="/pmm/tasks/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
                       >
+
+                      <input
+                        id="importId"
+                        type="file"
+                        ref="excelImporter"
+                        @change="importExcel()"
+                        style="display: none"
+                      />
+                      <label
+                        v-if="userInfo.role_id != 9"
+                        for="importId"
+                        class="theme-color-btn"
+                        style="margin-right: 7px; cursor: pointer"
+                        ><i class="fas fa-cloud-upload-alt"></i> Import</label
+                      >
+
                       <div class="btn-group">
                         <button
                           type="button"
@@ -101,14 +114,15 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <milestone-table
+                    <task-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       v-model:nameSearch.lazy="nameSearch"
+                      v-model:isActiveSearch.lazy="isActiveSearch"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       ref="multiselected"
-                    ></milestone-table>
+                    ></task-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -132,90 +146,24 @@
     <the-spinner
       :isdeleting="deletingSpinner"
       :isSaving="savingSpinner"
+      :isImporting="importSpinner"
     ></the-spinner>
-
-    <!--start Filter Modal -->
-    <div>
-      <filter-modal>
-        <template v-slot:header
-          ><i class="fas fa-filter"></i> Filter Milestone
-        </template>
-        <template v-slot:body>
-          <form @submit.prevent="filterSubmit" class="form-page">
-            <div class="row">
-              <div class="col-md-4 mb_30">
-                <label class="form-label"> Name/ID </label>
-                <input
-                  type="text"
-                  class="form-input"
-                  placeholder="Search here"
-                  v-model="filterState.milestone_name_id"
-                />
-              </div>
-
-              <div class="col-md-4 mb_30">
-                <label class="form-label"> Extend Date </label>
-                <input
-                  type="date"
-                  class="form-input"
-                  placeholder="Search here"
-                  v-model="filterState.extended_date"
-                />
-              </div>
-              <div class="col-md-4 mb_30">
-                <label class="form-label"> Start Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  placeholder="Search here"
-                  v-model="filterState.start_date"
-                />
-              </div>
-              <div class="col-md-4 mb_30">
-                <label class="form-label"> End Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  placeholder="Search here"
-                  v-model="filterState.end_date"
-                />
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="form-button-danger"
-                data-bs-dismiss="modal"
-                @click.prevent="
-                  store.commit('modalModule/CHNAGE_FILTER_MODAL', false)
-                "
-              >
-                <i class="far fa-times-circle"></i> Close
-              </button>
-              <button type="submit" class="form-button">
-                <i class="fas fa-filter"></i> Filter
-              </button>
-            </div>
-          </form>
-        </template>
-      </filter-modal>
-    </div>
-    <!--end Filter Modal -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, reactive, computed } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import Axios from "@/http-common";
-import MilestoneTable from "./MilestoneTable.vue";
+import TaskTable from "./TaskTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
-import FilterModal from "../../../core/shared/FilterModal.vue";
 import { useStore } from "vuex";
+import { useExcelImport } from "@/composables/excel-import";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 //create store
 const store = useStore();
 
@@ -231,59 +179,57 @@ let savingSpinner = ref(false);
 const multiselected = ref([]);
 
 //use datatable composables
-const {
-  entries,
-  datatables,
-  showEntries,
-  currentEntries,
-  fetchData,
-  filterData,
-} = useDatatable();
+const { entries, datatables, showEntries, currentEntries, filterData } =
+  useDatatable();
 
 //Search Property
-let nameSearch = ref(null);
+let nameSearch = ref("");
+let isActiveSearch = ref("");
 
-watch([nameSearch], async () => {
-  datatables.loadingState = true;
-  await Axios.get(
-    "/milestones?showEntries=" +
-      currentEntries.value +
-      "&page=" +
-      datatables.currentPage +
-      "&searchName=" +
-      nameSearch.value +
-      "&user_id=" +
+//search field
+let search = ref("");
+
+//filter by POC ID/ Poc title
+watch([search], async () => {
+  //fetchData("/tasks", search.value);
+  filterData(
+    "/tasks",
+    "&user_id=" +
       userInfo.value.id +
       "&role_id=" +
-      userInfo.value.role_id
-  ).then((response) => {
-    entries.value = response.data.data;
-    datatables.totalItems = response.data.meta.total;
-    datatables.currentPage = response.data.meta.current_page;
-    datatables.allPages = response.data.meta.last_page;
-    datatables.pagination = response.data.meta.links;
-    datatables.loadingState = false;
-  });
+      userInfo.value.role_id +
+      "&search=" +
+      search.value +
+      "&milestone_id =" +
+      route.params.id
+  );
 });
 
 //Load Data form computed onMounted
 onMounted(() => {
+  // fetchData("/tasks");
   filterData(
-    "/milestones",
+    "/tasks",
     "&user_id=" +
-      store.state.currentUser.userPemissions.id +
+      userInfo.value.id +
       "&role_id=" +
-      store.state.currentUser.userPemissions.role_id
+      userInfo.value.role_id +
+      "&milestone_id=" +
+      route.params.id
   );
-  console.log(store.state.currentUser.userPemissions.id);
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
   filterData(
-    "/milestones",
-    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+    "/tasks",
+    "&user_id=" +
+      userInfo.value.id +
+      "&role_id=" +
+      userInfo.value.role_id +
+      "&milestone_id=" +
+      route.params.id
   );
 }
 
@@ -292,8 +238,13 @@ function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
     filterData(
-      "/milestones",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+      "/tasks",
+      "&user_id=" +
+        userInfo.value.id +
+        "&role_id=" +
+        userInfo.value.role_id +
+        "&milestone_id=" +
+        route.params.id
     );
   }
 }
@@ -303,8 +254,13 @@ function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
     filterData(
-      "/milestones",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+      "/tasks",
+      "&user_id=" +
+        userInfo.value.id +
+        "&role_id=" +
+        userInfo.value.role_id +
+        "&milestone_id=" +
+        route.params.id
     );
   }
 }
@@ -313,8 +269,13 @@ function next() {
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
   filterData(
-    "/milestones",
-    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+    "/tasks",
+    "&user_id=" +
+      userInfo.value.id +
+      "&role_id=" +
+      userInfo.value.role_id +
+      "&milestone_id=" +
+      route.params.id
   );
 }
 
@@ -329,7 +290,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/milestones/" + id).then((response) => {
+      await Axios.delete("/tasks/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -358,12 +319,17 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/milestones-multidelete", {
+      await Axios.post("/tasks/tasks-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
         filterData(
-          "/milestones",
-          "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+          "/tasks",
+          "&user_id=" +
+            userInfo.value.id +
+            "&role_id=" +
+            userInfo.value.role_id +
+            "&milestone_id=" +
+            route.params.id
         );
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
@@ -374,47 +340,32 @@ function bulkDelete() {
   });
 }
 
+//Import Task
+const { excelImport, importSpinner } = useExcelImport();
+const excelImporter = ref();
+function importExcel() {
+  //fileUploader.value.files[0]
+  excelImport("tasks-import", excelImporter.value.files[0]);
+  filterData(
+    "/tasks",
+    "&user_id=" +
+      userInfo.value.id +
+      "&role_id=" +
+      userInfo.value.role_id +
+      "&milestone_id=" +
+      route.params.id
+  );
+}
+
 //Change selected data status
-async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/milestones-status", status).then((response) => {
-    swal("Your data status changed", {
-      icon: "success",
-    });
-    filterData(
-      "/milestones",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
-    );
-  });
-}
-
-// Filter Pert
-
-// use for filter
-let filteringSpinner = ref(false);
-
-const filterState = reactive({
-  milestone_name_id: "",
-  extended_date: "",
-  start_date: "",
-  end_date: "",
-  user_id: userInfo.value.id,
-});
-
-async function filterSubmit() {
-  store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
-  datatables.loadingState = true;
-  filteringSpinner.value = true;
-
-  await Axios.post("milestones-filter", filterState).then((response) => {
-    filteringSpinner.value = false;
-    entries.value = response.data.data;
-    datatables.totalItems = response.data.meta.total;
-    datatables.currentPage = response.data.meta.current_page;
-    datatables.allPages = response.data.meta.last_page;
-    datatables.pagination = response.data.meta.links;
-    datatables.loadingState = false;
-  });
-}
+// async function changeStatus(status: { id: number; status: number }) {
+//   await Axios.post("/tasks-status", status).then((response) => {
+//     swal("Your data status changed", {
+//       icon: "success",
+//     });
+//     fetchData("/tasks");
+//   });
+// }
 </script>
 
 <style scoped></style>

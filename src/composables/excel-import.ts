@@ -42,6 +42,7 @@ export function useExcelImport() {
     })
       .then((response) => {
         importSpinner.value = false;
+        console.log(response);
         if (response.data.code === 200) {
           swal("Poc data imported successfully.", {
             icon: "success",

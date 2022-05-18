@@ -402,9 +402,7 @@ function remove(id: number) {
     if (willDelete) {
       deletingSpinner.value = true;
       await Axios.delete("/client/designations/" + id).then((response) => {
-        entries.value = entries.value.filter(
-          (e: { id: number }) => e.id !== id
-        );
+        fetchData("/client/designations");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",

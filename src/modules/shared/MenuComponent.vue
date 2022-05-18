@@ -27,12 +27,16 @@
             </router-link>
           </li>
 
+          <!-- Sub Milestone ar poriborte hobe Task  -->
           <li class="nav-item dropdown">
-            <router-link class="nav-link" to="/pmm/tasks"> Task </router-link>
+            <router-link class="nav-link" to="/pmm/tasks">
+              Sub Milestone
+            </router-link>
           </li>
 
+          <!-- SubTask ar poriborte hobe Task  -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#"> SubTask </a>
+            <a class="nav-link dropdown-toggle" href="#"> Task </a>
           </li>
 
           <li class="nav-item dropdown">
@@ -130,6 +134,12 @@
                   ><i class="fas fa-table"></i> Designation list</router-link
                 >
               </li>
+
+              <li>
+                <router-link class="dropdown-item" to="/pmm/clients"
+                  ><i class="fas fa-table"></i> Client list</router-link
+                >
+              </li>
             </ul>
           </li>
 
@@ -156,11 +166,10 @@
             </ul>
           </li>
           <li class="nav-item dropdown">
-            <router-link class="nav-link" to="/pmm/clients">
-              Client
+            <router-link class="nav-link" to="/pmm/employees">
+              Employee
             </router-link>
           </li>
-
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#"> Report </a>
           </li>
@@ -211,11 +220,19 @@
         <!--start for Employee role-->
         <ul class="navbar-nav me-auto mb-lg-0" v-if="userInfo.role_id == 9">
           <li class="nav-item dropdown">
-            <router-link class="nav-link" to="/pmm/tasks"> Task </router-link>
+            <router-link class="nav-link" to="/pmm/milestones">
+              Milestone
+            </router-link>
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#"> SubTask </a>
+            <router-link class="nav-link" to="/pmm/tasks">
+              Sub Milestone
+            </router-link>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#"> Task </a>
           </li>
         </ul>
         <!--start for Employee role-->

@@ -3,13 +3,13 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial">
+          <th class="col-serial" style="width: 70px !important">
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
             Serial
           </th>
-          <th>Milestone Name</th>
-          <th>Milestone ID</th>
-          <th>Project Id</th>
+          <th style="width: 220px">Milestone Name</th>
+          <th style="width: 90px !important">Milestone ID</th>
+          <th style="width: 80px !important">Project ID</th>
           <th>Start Date</th>
           <th>End Date</th>
           <th>Extended</th>
@@ -22,7 +22,7 @@
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
         <tr v-for="(td, index) in $attrs.entries" :key="td">
-          <td class="col-serial">
+          <td class="col-serial" style="width: 70px !important">
             <input
               type="checkbox"
               v-model="multiselect"
@@ -31,9 +31,13 @@
             />
             {{ index + 1 }}
           </td>
-          <td>{{ td.milestone_name }}</td>
-          <td>{{ td.milestone_id }}</td>
-          <td>{{ td.project_name }}</td>
+          <td style="width: 220px">
+            <router-link :to="`/pmm/tasks-by-milestone/${td.id}`">{{
+              td.milestone_name
+            }}</router-link>
+          </td>
+          <td style="width: 90px !important">{{ td.milestone_id }}</td>
+          <td style="width: 80px !important">{{ td.project_name }}</td>
           <td>{{ td.start_date }}</td>
           <td>{{ td.end_date }}</td>
           <td>{{ td.extended_date }}</td>
@@ -92,7 +96,7 @@
               >
                 <i class="fas fa-sort-down"></i>
               </button>
-              <ul class="dropdown-menu table-dropdown">
+              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
                   <a
                     href="#"

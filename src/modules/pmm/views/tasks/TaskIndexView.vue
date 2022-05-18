@@ -14,7 +14,9 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <a class="rev-underline-subtitle" href="">Task List</a>
+                    <router-link to="/pmm/tasks" class="rev-underline-subtitle"
+                      >Sub Milestone List</router-link
+                    >
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -25,16 +27,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-4">
-                  <input
-                    type="text"
-                    class="table_search_input"
-                    placeholder="Search Here..."
-                  />
-
-                  <i class="fa fa-search table_search_icon"></i>
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-8">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -52,20 +45,45 @@
                         </option>
                       </select>
 
-                      <router-link
+                      <input
+                        type="text"
+                        placeholder="Search By ID"
+                        style="margin-right: 7px"
+                        v-model.lazy="search"
+                        class="table-search"
+                      />
+
+                      <!-- <router-link
                         to="/pmm/tasks/create"
                         class="link_btn"
                         style="margin-right: 7px"
                       >
                         <i class="fas fa-filter"></i
-                      ></router-link>
+                      ></router-link> -->
 
                       <router-link
+                        v-if="userInfo.role_id != 9"
                         to="/pmm/tasks/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
                       >
+
+                      <input
+                        id="importId"
+                        type="file"
+                        ref="excelImporter"
+                        @change="importExcel()"
+                        style="display: none"
+                      />
+                      <label
+                        v-if="userInfo.role_id != 9"
+                        for="importId"
+                        class="theme-color-btn"
+                        style="margin-right: 7px; cursor: pointer"
+                        ><i class="fas fa-cloud-upload-alt"></i> Import</label
+                      >
+
                       <div class="btn-group">
                         <button
                           type="button"
@@ -128,12 +146,13 @@
     <the-spinner
       :isdeleting="deletingSpinner"
       :isSaving="savingSpinner"
+      :isImporting="importSpinner"
     ></the-spinner>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, reactive } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import Axios from "@/http-common";
 import TaskTable from "./TaskTable.vue";
 import swal from "sweetalert";
@@ -141,11 +160,14 @@ import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
-import { useVuelidate } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
+import { useExcelImport } from "@/composables/excel-import";
 
 //create store
 const store = useStore();
+
+const userInfo = computed(() => {
+  return store.state.currentUser.userPemissions;
+});
 
 //use for deleting spenner
 let deletingSpinner = ref(false);
@@ -155,51 +177,62 @@ let savingSpinner = ref(false);
 const multiselected = ref([]);
 
 //use datatable composables
-const { entries, datatables, showEntries, currentEntries, fetchData } =
-  useDatatable();
+const {
+  entries,
+  datatables,
+  showEntries,
+  currentEntries,
+  fetchData,
+  filterData,
+} = useDatatable();
 
 //Search Property
 let nameSearch = ref("");
 let isActiveSearch = ref("");
 
-watch([nameSearch, isActiveSearch], async () => {
-  console.log("hey");
-  datatables.loadingState = true;
-  await Axios.get(
-    "/employees?showEntries=" +
-      currentEntries +
-      "&page=" +
-      datatables.currentPage +
-      "&searchName=" +
-      nameSearch.value +
-      "&is_active=" +
-      isActiveSearch.value
-  ).then((response) => {
-    entries.value = response.data.data.data;
-    datatables.totalItems = response.data.data.total;
-    datatables.currentPage = response.data.data.current_page;
-    datatables.allPages = response.data.data.last_page;
-    datatables.pagination = response.data.data.links;
-    datatables.loadingState = false;
-  });
+//search field
+let search = ref("");
+
+//filter by POC ID/ Poc title
+watch([search], async () => {
+  //fetchData("/tasks", search.value);
+  filterData(
+    "/tasks",
+    "&user_id=" +
+      userInfo.value.id +
+      "&role_id=" +
+      userInfo.value.role_id +
+      "&search=" +
+      search.value
+  );
 });
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/employees");
+  // fetchData("/tasks");
+  filterData(
+    "/tasks",
+    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+  );
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/employees");
+  filterData(
+    "/tasks",
+    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+  );
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/employees");
+    filterData(
+      "/tasks",
+      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+    );
   }
 }
 
@@ -207,14 +240,20 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/employees");
+    filterData(
+      "/tasks",
+      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+    );
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/employees");
+  filterData(
+    "/tasks",
+    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+  );
 }
 
 //Delete selected Item
@@ -228,7 +267,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/employees/" + id).then((response) => {
+      await Axios.delete("/tasks/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -257,10 +296,13 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/employees-multidelete", {
+      await Axios.post("/tasks/tasks-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/employees");
+        filterData(
+          "/tasks",
+          "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+        );
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -270,15 +312,27 @@ function bulkDelete() {
   });
 }
 
-//Change selected data status
-async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/employees-status", status).then((response) => {
-    swal("Your data status changed", {
-      icon: "success",
-    });
-    fetchData("/employees");
-  });
+//Import Task
+const { excelImport, importSpinner } = useExcelImport();
+const excelImporter = ref();
+function importExcel() {
+  //fileUploader.value.files[0]
+  excelImport("tasks-import", excelImporter.value.files[0]);
+  filterData(
+    "/tasks",
+    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+  );
 }
+
+//Change selected data status
+// async function changeStatus(status: { id: number; status: number }) {
+//   await Axios.post("/tasks-status", status).then((response) => {
+//     swal("Your data status changed", {
+//       icon: "success",
+//     });
+//     fetchData("/tasks");
+//   });
+// }
 </script>
 
 <style scoped></style>

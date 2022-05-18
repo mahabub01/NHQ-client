@@ -3,14 +3,18 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial">Serial</th>
+          <th class="col-serial">
+            <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
+            Serial
+          </th>
           <th>Company Name</th>
           <th>Email</th>
-          <th>Contact person Name</th>
-          <th>Contact person Designation</th>
+          <th>Contact Person Name</th>
+          <th>Contact Person Designation</th>
           <th>Contact Person Email</th>
           <th>Contact Person Phone Number</th>
           <th>Number of Projects</th>
+          <th>Status</th>
           <th class="action-field">Edit</th>
           <th class="col-serial">Action</th>
         </tr>
@@ -33,6 +37,16 @@
           <td>{{ td.contact_person_email }}</td>
           <td>{{ td.contact_person_phone }}</td>
           <td>{{ td.number_of_projects }}</td>
+          <td>
+            <span v-if="td.is_active == 1" class="activeStatus"
+              ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
+              {{ td.is_active }}</span
+            >
+            <span v-else class="inactiveStatus"
+              ><i class="far fa-times-circle"></i>
+              {{ isActive(td.is_active) }}</span
+            >
+          </td>
           <td class="action-field" style="text-align: center">
             <router-link :to="`/pmm/clients/${td.id}/edit`" title="Edit Project"
               ><i class="fa fa-pen action-icon"></i
@@ -51,6 +65,24 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
+                <li>
+                  <a
+                    href="#"
+                    v-if="td.is_active == 1"
+                    class="dropdown-item inactiveStatus"
+                    @click.prevent="changeStatus(td.id, td.is_active)"
+                    ><i class="far fa-times-circle"></i> In-Active</a
+                  >
+
+                  <a
+                    href="#"
+                    v-else
+                    :to="`/pmm/categories/${td.id}/edit`"
+                    class="dropdown-item activeStatus"
+                    @click.prevent="changeStatus(td.id, td.is_active)"
+                    ><i class="far fa-check-circle"></i> Active</a
+                  >
+                </li>
                 <li>
                   <router-link
                     :to="`/pmm/clients/${td.id}`"

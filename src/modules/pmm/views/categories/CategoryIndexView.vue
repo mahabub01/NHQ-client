@@ -23,11 +23,7 @@
                         style="margin-left: 6px; margin-right: 6px"
                       ></i>
                     </router-link>
-                    <router-link
-                      to="/pmm/categories"
-                      class="rev-underline-subtitle"
-                      >Category List</router-link
-                    >
+                    <a href="" class="rev-underline-subtitle">Category List</a>
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -144,7 +140,7 @@
           ><i class="fas fa-plus-square"></i> Create Category
         </template>
         <template v-slot:body>
-          <form @submit.prevent="categorySubmit" class="form-page">
+          <form @submit.prevent="createSubmit" class="form-page">
             <div class="row">
               <div class="col-md-12">
                 <label class="form-label">
@@ -155,7 +151,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -173,7 +168,6 @@
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -218,7 +212,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -236,7 +229,6 @@
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -310,7 +302,7 @@ const rules: any = {
 
 const v$ = useVuelidate(rules, state);
 
-async function categorySubmit() {
+async function createSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
@@ -418,6 +410,7 @@ function remove(id: number) {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
+        fetchData("/projects/categories");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",

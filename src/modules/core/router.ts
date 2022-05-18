@@ -31,6 +31,14 @@ export const CoreModuleRoute = [
             /* webpackChunkName: "profile-uodate" */ "./views/auth/ProfileUpdate.vue"
           ),
       },
+      {
+        path: "profile-details",
+        name: "profile-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "profile-details" */ "./views/auth/ProfileDetails.vue"
+          ),
+      },
 
       {
         path: "modules",
@@ -38,6 +46,30 @@ export const CoreModuleRoute = [
         component: () =>
           import(
             /* webpackChunkName: "modules" */ "./views/modules/ModuleIndexView.vue"
+          ),
+      },
+      {
+        path: "components",
+        name: "components",
+        component: () =>
+          import(
+            /* webpackChunkName: "components" */ "./views/components/ComponentIndexView.vue"
+          ),
+      },
+      {
+        path: "permissions",
+        name: "permissions",
+        component: () =>
+          import(
+            /* webpackChunkName: "permission" */ "./views/permissions/PermissionIndexView.vue"
+          ),
+      },
+      {
+        path: "roles",
+        name: "roles",
+        component: () =>
+          import(
+            /* webpackChunkName: "roles" */ "./views/roles/RoleIndexView.vue"
           ),
       },
     ],

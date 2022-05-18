@@ -135,13 +135,12 @@
         </template>
         <template v-slot:body>
           <form @submit.prevent="filterSubmit" class="form-page">
-            <div class="row">
+            <div class="row form-row">
               <div class="col-md-4">
                 <label class="form-label"> Search </label>
                 <input
                   type="text"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.search"
                 />
               </div>
@@ -151,7 +150,6 @@
                 <input
                   type="date"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.date_of_birth"
                 />
               </div>
@@ -160,7 +158,6 @@
                 <input
                   type="date"
                   class="form-input"
-                  placeholder="Search here"
                   v-model="filterState.joinning_date"
                 />
               </div>
@@ -338,6 +335,7 @@ function remove(id: number) {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
+        fetchData("/employees");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",

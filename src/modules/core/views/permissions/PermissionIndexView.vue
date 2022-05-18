@@ -22,9 +22,9 @@
                       ></i>
                     </router-link>
                     <router-link
-                      to="/core/modules"
+                      to="/core/permissions"
                       class="rev-underline-subtitle"
-                      >Modules</router-link
+                      >Permissions</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -55,9 +55,9 @@
 
                       <input
                         type="text"
-                        placeholder="Search Title"
+                        placeholder="Search Name"
                         style="margin-right: 7px"
-                        v-model.lazy="titleSearch"
+                        v-model.lazy="nameSearch"
                       />
 
                       <button
@@ -102,14 +102,14 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <module-table
+                    <permission-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       @editId="showEdit($event)"
                       ref="multiselected"
-                    ></module-table>
+                    ></permission-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -139,26 +139,26 @@
     <div>
       <create-modal :modalsize="modalSize" v-if="createModalState">
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Module
+          ><i class="fas fa-plus-square"></i> Create Permission
         </template>
         <template v-slot:body>
           <form @submit.prevent="createSubmit" class="form-page">
             <div class="row mb-3">
               <div class="col-md-6">
                 <label class="form-label">
-                  Title
+                  Name
                   <span class="mandatory">*</span>
                 </label>
                 <input
                   type="text"
                   class="form-input"
-                  :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Enter Your Title"
-                  v-model.lazy="v$.title.$model"
+                  :class="{ isInvalid: v$.name.$error }"
+                  placeholder="Enter Your Permission Name"
+                  v-model.lazy="v$.name.$model"
                 />
                 <p
                   class="error-mgs"
-                  v-for="(error, index) in v$.title.$errors"
+                  v-for="(error, index) in v$.name.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -185,22 +185,22 @@
                 </p>
               </div>
             </div>
-            <div class="row">
+            <div class="row mb-3">
               <div class="col-md-6">
                 <label class="form-label">
-                  Slug
+                  Module
                   <span class="mandatory">*</span>
                 </label>
-                <input
-                  type="text"
-                  class="form-input"
-                  :class="{ isInvalid: v$.slug.$error }"
-                  placeholder="Enter Your Slug"
-                  v-model.lazy="v$.slug.$model"
+                <Select2
+                  v-model="v$.module_id.$model"
+                  :options="modules"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.module_id.$error }"
                 />
+
                 <p
                   class="error-mgs"
-                  v-for="(error, index) in v$.slug.$errors"
+                  v-for="(error, index) in v$.module_id.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -208,22 +208,58 @@
                 </p>
               </div>
               <div class="col-md-6">
-                <label class="form-label"> Icons </label>
+                <label class="form-label">
+                  Component
+                  <span class="mandatory">*</span>
+                </label>
+                <Select2
+                  v-model="v$.component_id.$model"
+                  :options="components"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.component_id.$error }"
+                />
+
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.component_id.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label"> Is View Component </label>
                 <input
                   type="text"
                   class="form-input"
-                  :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Enter Your Icons"
-                  v-model="state.icons"
+                  placeholder="Enter Your Is View Component"
+                  v-model="state.is_view_with_component"
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"> Professional Name </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  :class="{ isInvalid: v$.name.$error }"
+                  placeholder="Enter Professional Name"
+                  v-model="state.professional_name"
                 />
               </div>
             </div>
 
-            <div class="row form-row">
-              <div class="col-md-12" style="min-height: 267px">
-                <label class="form-label">Comments</label>
-                <!-- :content="" use for set default Data-->
-                <TheCKEditor @sendContent="setComments" />
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label"> URL </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Enter Your Url"
+                  v-model="state.url"
+                />
               </div>
             </div>
 
@@ -251,26 +287,26 @@
     <!--start Edit Modal -->
     <EditModal :modalsize="modalSize" v-if="editModalState">
       <template v-slot:editheader
-        ><i class="fas fa-plus-square"></i> Edit Module
+        ><i class="fas fa-plus-square"></i> Edit Permission
       </template>
       <template v-slot:editbody>
         <form @submit.prevent="updateHandler" class="form-page">
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">
-                Title
+                Name
                 <span class="mandatory">*</span>
               </label>
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.title.$error }"
-                placeholder="Enter Your Title"
-                v-model.lazy="v$.title.$model"
+                :class="{ isInvalid: v$.name.$error }"
+                placeholder="Enter Your Permission Name"
+                v-model.lazy="v$.name.$model"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.title.$errors"
+                v-for="(error, index) in v$.name.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i>
@@ -278,31 +314,41 @@
               </p>
             </div>
             <div class="col-md-6">
-              <label class="form-label"> Action </label>
+              <label class="form-label">
+                Action <span class="mandatory">*</span>
+              </label>
               <input
                 type="text"
                 class="form-input"
                 placeholder="Enter Your Action"
-                v-model="state.action"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <label class="form-label">
-                Slug
-                <span class="mandatory">*</span>
-              </label>
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.slug.$error }"
-                placeholder="Enter Your Slug"
-                v-model.lazy="v$.slug.$model"
+                v-model.lazy="v$.action.$model"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.slug.$errors"
+                v-for="(error, index) in v$.action.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">
+                Module
+                <span class="mandatory">*</span>
+              </label>
+              <Select2
+                v-model="v$.module_id.$model"
+                :options="modules"
+                :settings="{ placeholder: 'Choose' }"
+                :class="{ isInvalid: v$.module_id.$error }"
+              />
+
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.module_id.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i>
@@ -310,26 +356,57 @@
               </p>
             </div>
             <div class="col-md-6">
-              <label class="form-label"> Icons </label>
+              <label class="form-label">
+                Component
+                <span class="mandatory">*</span>
+              </label>
+              <Select2
+                v-model="v$.component_id.$model"
+                :options="components"
+                :settings="{ placeholder: 'Choose' }"
+                :class="{ isInvalid: v$.component_id.$error }"
+              />
+
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.component_id.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label"> Is View Component </label>
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.title.$error }"
-                placeholder="Enter Your Icons"
-                v-model="state.icons"
+                placeholder="Enter Your Is View Component"
+                v-model="state.is_view_with_component"
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label"> Professional Name </label>
+              <input
+                type="text"
+                class="form-input"
+                :class="{ isInvalid: v$.name.$error }"
+                placeholder="Enter Professional Name"
+                v-model="state.professional_name"
               />
             </div>
           </div>
 
-          <div class="row form-row">
-            <div class="col-md-12" style="min-height: 267px">
-              <label class="form-label">Comments</label>
-              <!-- :content="" use for set default Data-->
-              <!-- :content="" use for set default Data-->
-              <TheCKEditor
-                v-if="loadCKEditor"
-                @sendContent="setComments"
-                :content="state.comments"
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label"> URL </label>
+              <input
+                type="text"
+                class="form-input"
+                placeholder="Enter Your Url"
+                v-model="state.url"
               />
             </div>
           </div>
@@ -359,7 +436,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed, reactive } from "vue";
 import Axios from "@/http-common";
-import ModuleTable from "./ModuleTable.vue";
+import PermissionTable from "./PermissionTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
@@ -369,14 +446,13 @@ import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
+import Select2 from "vue3-select2-component";
 import toastr from "toastr";
 
 //modal size
 const modalSize = ref("modal-lg");
 
 //modal setting
-
 const createModalState = computed(() => {
   return store.state.modalModule.creatModal;
 });
@@ -384,15 +460,6 @@ const createModalState = computed(() => {
 const editModalState = computed(() => {
   return store.state.modalModule.editModal;
 });
-
-// Load CkEditor Data
-const loadCKEditor = computed(() => {
-  return store.state.modalModule.loadCKEditor;
-});
-
-const setComments = (value: any) => {
-  state.comments = value;
-};
 
 //create store
 const store = useStore();
@@ -411,20 +478,23 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
 /**********************
- * Create Modules
+ * Create permissions
  ***********************/
 const state = reactive({
-  title: "",
-  slug: "",
+  name: "",
   action: "",
-  icons: "",
-  comments: "",
+  professional_name: "",
+  module_id: "",
+  component_id: "",
+  is_view_with_component: "",
+  url: "",
 });
 
 const rules: any = {
-  title: { required },
-  slug: { required },
+  name: { required },
   action: { required },
+  module_id: { required },
+  component_id: { required },
 };
 
 const v$ = useVuelidate(rules, state);
@@ -434,14 +504,18 @@ async function createSubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     savingSpinner.value = true;
-    await Axios.post("modules", state)
+    await Axios.post("permissions", state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
-          fetchData("modules");
+          fetchData("permissions");
           resetForm();
           savingSpinner.value = false;
-          swal("Success Job!", "Your modules created successfully!", "success");
+          swal(
+            "Success Job!",
+            "Your permissions created successfully!",
+            "success"
+          );
         } else {
           savingSpinner.value = false;
           toastr.error(response.data.message);
@@ -452,33 +526,56 @@ async function createSubmit() {
       });
   }
 }
+const modules = ref([]);
+const components = ref([]);
+
+async function getModules() {
+  await Axios.get("modules-selectable")
+    .then((response) => {
+      modules.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+async function getComponents() {
+  await Axios.get("components-selectable")
+    .then((response) => {
+      components.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
 
 //reset all property
 function resetForm() {
-  state.title = "";
-  state.slug = "";
+  state.name = "";
   state.action = "";
-  state.icons = "";
-  state.comments = "";
+  state.module_id = "";
+  state.component_id = "";
+  state.professional_name = "";
+  state.is_view_with_component = "";
+  state.url = "";
   v$.value.$reset();
 }
 
 /**********************
- * End Create Module
+ * End Create permission
  ***********************/
 
 //Search Property
-let titleSearch = ref("");
+let nameSearch = ref("");
 
-watch([titleSearch], async () => {
+watch([nameSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
-    "/modules?showEntries=" +
+    "/permissions?showEntries=" +
       currentEntries.value +
       "&page=" +
       datatables.currentPage +
-      "&searchTitle=" +
-      titleSearch.value
+      "&searchName=" +
+      nameSearch.value
   ).then((response) => {
     entries.value = response.data.data;
     datatables.totalItems = response.data.meta.total;
@@ -491,20 +588,22 @@ watch([titleSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/modules");
+  fetchData("/permissions");
+  getModules();
+  getComponents();
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/modules");
+  fetchData("/permissions");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/modules");
+    fetchData("/permissions");
   }
 }
 
@@ -512,20 +611,20 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/modules");
+    fetchData("/permissions");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("modules");
+  fetchData("permissions");
 }
 
 //Delete selected Item
 function remove(id: number) {
   swal({
-    title: "Are you sure?",
+    name: "Are you sure?",
     text: "Once deleted, you will not be able to recover this record!",
     icon: "warning",
     buttons: true,
@@ -533,11 +632,11 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/modules/" + id).then((response) => {
+      await Axios.delete("/permissions/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
-        fetchData("/modules");
+        fetchData("/permissions");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -563,26 +662,20 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/modules-multidelete", {
+      await Axios.post("/permissions-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/modules");
         deletingSpinner.value = false;
-        swal("Poof! Your data has been deleted!", {
-          icon: "success",
-        });
+        if (response.data.code === 200) {
+          fetchData("/permissions");
+          swal("Poof! Your data has been deleted!", {
+            icon: "success",
+          });
+        } else {
+          toastr.error(response.data.message);
+        }
       });
     }
-  });
-}
-
-//Change selected data status
-async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/modules-change-status", status).then((response) => {
-    swal("Your data status changed", {
-      icon: "success",
-    });
-    fetchData("modules");
   });
 }
 
@@ -591,14 +684,15 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
-  await Axios.get("/modules/" + id).then((response) => {
+  await Axios.get("/permissions/" + id).then((response) => {
     single_datas.value = response.data.data;
-    state.title = single_datas.value.title;
-    state.slug = single_datas.value.slug;
+    state.name = single_datas.value.name;
     state.action = single_datas.value.action;
-    state.icons = single_datas.value.icons;
-    state.comments = single_datas.value.comments;
-    store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
+    state.professional_name = single_datas.value.professional_name;
+    state.module_id = single_datas.value.module_id;
+    state.component_id = single_datas.value.component_id;
+    state.is_view_with_component = single_datas.value.is_view_with_component;
+    state.url = single_datas.value.url;
   });
 }
 
@@ -607,14 +701,18 @@ async function updateHandler() {
   v$.value.$touch();
   if (!v$.value.$error) {
     savingSpinner.value = true;
-    await Axios.put("modules/" + editableId, state)
+    await Axios.put("permissions/" + editableId, state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-          fetchData("/modules");
+          fetchData("/permissions");
           resetForm();
           savingSpinner.value = false;
-          swal("Success Job!", "Your module updated successfully!", "success");
+          swal(
+            "Success Job!",
+            "Your permission updated successfully!",
+            "success"
+          );
         } else {
           savingSpinner.value = false;
           toastr.error(response.data.message);

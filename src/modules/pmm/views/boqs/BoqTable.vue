@@ -69,7 +69,7 @@
 
                   <a
                     href="#"
-                    v-else
+                    v-else 
                     :to="`/pmm/categories/${td.id}/edit`"
                     class="dropdown-item activeStatus"
                     @click.prevent="changeStatus(td.id, td.is_active)"
@@ -87,6 +87,11 @@
                     @click.prevent="removeItem(item.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
+                  >
+                  <router-link
+                    :to="`/pmm/boqs/details/${item.slug}`"
+                    class="dropdown-item"
+                    ><i class="fas fa-eye"></i> Details</router-link
                   >
                 </li>
               </ul>

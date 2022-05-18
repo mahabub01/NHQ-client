@@ -15,9 +15,9 @@
                   </button>
                   <div class="page-bootcamp-left">
                     <router-link
-                      to="/pmm/boq-category-items"
+                      to="/pmm/priorities"
                       class="rev-underline-subtitle"
-                      >Boq Category Items</router-link
+                      >Priority List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -58,7 +58,8 @@
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true)
+                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true),
+                            resetForm()
                         "
                       >
                         <i class="fas fa-plus"></i> Create
@@ -94,14 +95,14 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <category-table
+                    <priority-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       @editId="showEdit($event)"
                       ref="multiselected"
-                    ></category-table>
+                    ></priority-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -131,10 +132,10 @@
     <div>
       <create-modal>
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Boq Category Items
+          ><i class="fas fa-plus-square"></i> Create Priority
         </template>
         <template v-slot:body>
-          <form @submit.prevent="categorySubmit" class="form-page">
+          <form @submit.prevent="createSubmit" class="form-page">
             <div class="row">
               <div class="col-md-12">
                 <label class="form-label">
@@ -145,7 +146,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -160,32 +160,9 @@
             </div>
             <div class="row form-row">
               <div class="col-md-12">
-                <label class="form-label"
-                  >Boq Category<span class="mandatory">*</span></label
-                >
-                <Select2
-                  v-model="v$.pmm_boq_category_id.$model"
-                  :options="boqCategoryID"
-                  :settings="{ placeholder: 'Choose' }"
-                  :class="{ isInvalid: v$.pmm_boq_category_id.$error }"
-                />
-
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.pmm_boq_category_id.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
-              </div>
-            </div>
-            <div class="row form-row">
-              <div class="col-md-12">
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -216,7 +193,7 @@
     <div>
       <edit-modal>
         <template v-slot:editheader>
-          <i class="fas fa-plus-square"></i> Edit Boq Category Items
+          <i class="fas fa-plus-square"></i> Edit Priority
         </template>
         <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
@@ -230,7 +207,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -243,34 +219,11 @@
                 </p>
               </div>
             </div>
-
-            <div class="row form-row">
-              <div class="col-md-12">
-                <label class="form-label"
-                  >Boq Category<span class="mandatory">*</span></label
-                >
-                <Select2
-                  v-model="v$.pmm_boq_category_id.$model"
-                  :options="boqCategoryID"
-                  :settings="{ placeholder: 'Choose', multiple: false }"
-                  :class="{ isInvalid: v$.pmm_boq_category_id.$error }"
-                />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.pmm_boq_category_id.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
-              </div>
-            </div>
             <div class="row form-row">
               <div class="col-md-12">
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -302,7 +255,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, reactive } from "vue";
 import Axios from "@/http-common";
-import CategoryTable from "./CategoryTable.vue";
+import PriorityTable from "./PriorityTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
@@ -313,7 +266,6 @@ import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import toastr from "toastr";
-import Select2 from "vue3-select2-component";
 
 //create store
 const store = useStore();
@@ -332,45 +284,34 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
 /**********************
- * Create Category
+ * Create Priority
  ***********************/
 const state = reactive({
   title: "",
-  pmm_boq_category_id: "",
   description: "",
 });
 
 const rules: any = {
   title: { required },
-  pmm_boq_category_id: { required },
 };
 
 const v$ = useVuelidate(rules, state);
-//Category list for Category Select
-const boqCategoryID = ref([]);
 
-async function categoryId() {
-  await Axios.get("/boq-category-selectable").then((response) => {
-    boqCategoryID.value = response.data.data;
-  });
-}
-
-async function categorySubmit() {
+async function createSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
     savingSpinner.value = true;
-    await Axios.post("boq-category-items", state)
+    await Axios.post("/priorities", state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
-          fetchData("/boq-category-items");
+          fetchData("/priorities");
           resetForm();
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your category created successfully!",
+            "Your priority created successfully!",
             "success"
           );
         } else {
@@ -387,12 +328,11 @@ async function categorySubmit() {
 //reset all property
 function resetForm() {
   state.title = "";
-  state.pmm_boq_category_id = "";
   state.description = "";
   v$.value.$reset();
 }
 /**********************
- * End Create Category
+ * End Create Priority
  ***********************/
 
 //Search Property
@@ -401,7 +341,7 @@ let titleSearch = ref("");
 watch([titleSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
-    "/boq-category-items?showEntries=" +
+    "/priorities?showEntries=" +
       currentEntries.value +
       "&page=" +
       datatables.currentPage +
@@ -419,21 +359,20 @@ watch([titleSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/boq-category-items");
-  categoryId();
+  fetchData("/priorities");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/boq-category-items");
+  fetchData("/priorities");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/boq-category-items");
+    fetchData("/priorities");
   }
 }
 
@@ -441,14 +380,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/boq-category-items");
+    fetchData("/priorities");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/boq-category-items");
+  fetchData("/priorities");
 }
 
 //Delete selected Item
@@ -462,11 +401,12 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/boq-category-items/" + id).then((response) => {
+      await Axios.delete("/priorities/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
         deletingSpinner.value = false;
+        fetchData("/priorities");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });
@@ -491,10 +431,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/boq-category-items-multidelete", {
+      await Axios.post("/priorities-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/boq-category-items");
+        fetchData("/priorities");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -506,11 +446,11 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/boq-category-items-status", status).then((response) => {
+  await Axios.post("/priorities-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("/boq-category-items");
+    fetchData("/priorities");
   });
 }
 
@@ -519,10 +459,9 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
-  await Axios.get("/boq-category-items/" + id).then((response) => {
+  await Axios.get("/priorities/" + id).then((response) => {
     single_datas.value = response.data.data;
     state.title = single_datas.value.title;
-    state.pmm_boq_category_id = single_datas.value.pmm_boq_category_id;
     state.description = single_datas.value.description;
   });
 }
@@ -531,18 +470,17 @@ async function editSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
     savingSpinner.value = true;
-    await Axios.put("boq-category-items/" + editableId, state)
+    await Axios.put("/priorities/" + editableId, state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-          fetchData("/boq-category-items");
+          fetchData("/priorities");
           resetForm();
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your category updated successfully!",
+            "Your priority updated successfully!",
             "success"
           );
         } else {
@@ -559,7 +497,6 @@ async function editSubmit() {
 function showEdit(id) {
   editableId = id;
   getEditData(id);
-  categoryId();
   store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
 }
 </script>

@@ -1,5 +1,6 @@
 <template>
   <div class="container-fluid">
+    <the-spinner :isSaving="savingSpinner"></the-spinner>
     <form @submit.prevent="handleSubmit">
       <div class="form-bootcamp">
         <div class="row">
@@ -7,7 +8,7 @@
             <router-link to="/pmm/employees"
               >Employee <i class="fas fa-chevron-right"></i
             ></router-link>
-            <router-link to="#">Edit</router-link>
+            <router-link to="#">Create</router-link>
           </div>
           <div class="col-md-8">
             <div class="float-right">
@@ -37,7 +38,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.name.$error }"
-                placeholder="Name here"
                 v-model.lazy="v$.name.$model"
               />
               <p
@@ -71,7 +71,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.email.$error }"
-                placeholder="Email here"
                 v-model.lazy="v$.email.$model"
               />
               <p
@@ -83,23 +82,12 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label"
-                >Depertment <span class="mandatory">*</span></label
-              >
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.depertment.$error }"
-                placeholder="Depertment here"
-                v-model.lazy="v$.depertment.$model"
+              <label class="form-label">Department</label>
+              <Select2
+                v-model="formState.department_id"
+                :options="departments"
+                :settings="{ placeholder: 'Choose' }"
               />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.depertment.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
-              </p>
             </div>
           </div>
           <!--end row -->
@@ -113,8 +101,6 @@
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.phone.$error }"
-                placeholder="Phone here"
                 v-model.lazy="v$.phone.$model"
               />
               <p
@@ -130,7 +116,6 @@
               <input
                 type="date"
                 class="form-input"
-                placeholder="Date of Birth here"
                 v-model.lazy="formState.date_of_birth"
               />
             </div>
@@ -143,16 +128,14 @@
               <label class="form-label"
                 >Designation<span class="mandatory">*</span></label
               >
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.designation.$error }"
-                placeholder="Designation here"
-                v-model.lazy="v$.designation.$model"
+              <Select2
+                v-model="formState.designation_id"
+                :options="designations"
+                :settings="{ placeholder: 'Choose' }"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.designation.$errors"
+                v-for="(error, index) in v$.designation_id.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
@@ -163,7 +146,6 @@
               <input
                 type="number"
                 class="form-input"
-                placeholder="Nid Number here"
                 v-model.lazy="formState.nid_number"
               />
             </div>
@@ -180,7 +162,6 @@
                 type="password"
                 class="form-input"
                 :class="{ isInvalid: v$.password.$error }"
-                placeholder="Password here"
                 v-model.lazy="v$.password.$model"
               />
               <p
@@ -196,7 +177,6 @@
               <input
                 type="date"
                 class="form-input"
-                placeholder="Title here"
                 v-model.lazy="formState.joinning_date"
               />
             </div>
@@ -208,14 +188,14 @@
             <div class="col-md-4 offset-md-1">
               <label class="form-label">Present Address</label>
               <textarea
-                placeholder="Present Address here"
+                style="padding: 10px"
                 v-model.lazy="formState.present_address"
               ></textarea>
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">About Employee</label>
               <textarea
-                placeholder="About Employee here"
+                style="padding: 10px"
                 v-model.lazy="formState.about_employee"
               ></textarea>
             </div>
@@ -226,10 +206,7 @@
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
               <label class="form-label">Parmanent Address</label>
-              <textarea
-                placeholder="Parmanent Address here"
-                v-model.lazy="formState.parmanent_address"
-              ></textarea>
+              <textarea v-model.lazy="formState.parmanent_address"></textarea>
             </div>
           </div>
           <!--end row -->
@@ -249,6 +226,7 @@ import TheButton from "@/modules/shared/TheButton.vue";
 import { useRoute, useRouter } from "vue-router";
 import DataLoadingSpinner from "@/modules/shared/DataLoadingSpinner.vue";
 import Select2 from "vue3-select2-component";
+import toastr from "toastr";
 
 const route = useRoute();
 const router = useRouter();
@@ -279,6 +257,8 @@ const formState = reactive({
 const rules: any = {
   name: { required },
   email: { required },
+  phone: { required },
+  designation_id: { required },
   password: { required },
 };
 
@@ -323,10 +303,14 @@ async function handleSubmit() {
     buttonLoading.value = true;
     await Axios.put("employees/" + route.params.id, formState)
       .then((response) => {
-        swal("Success Job!", "Your employee update successfully!", "success");
-        reset(); //reset all property
         buttonLoading.value = false;
-        router.push("/pmm/employees");
+        if (response.data.code === 200) {
+          reset();
+          swal("Success Job!", "Your employee update successfully!", "success");
+          router.push("/pmm/employees");
+        } else {
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);
@@ -339,10 +323,12 @@ onMounted(async () => {
   await Axios.get("/employees/" + route.params.id).then((response) => {
     singleData = response.data.data;
     if (singleData != "") {
+      console.log(singleData);
+
       formState.name = singleData.name;
       formState.email = singleData.email;
       formState.phone = singleData.phone;
-      formState.designation_id = singleData.designation;
+      formState.designation_id = singleData.designation_id;
       formState.password = singleData.password;
       formState.gender = singleData.gender;
       formState.date_of_birth = singleData.date_of_birth;

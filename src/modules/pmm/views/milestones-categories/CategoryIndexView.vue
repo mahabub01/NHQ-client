@@ -26,7 +26,7 @@
                     <router-link
                       to="/pmm/categories"
                       class="rev-underline-subtitle"
-                      >Category List</router-link
+                      >Milestone Category List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -67,7 +67,8 @@
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true)
+                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true),
+                            resetForm()
                         "
                       >
                         <i class="fas fa-plus"></i> Create
@@ -140,10 +141,10 @@
     <div>
       <create-modal>
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Category
+          ><i class="fas fa-plus-square"></i> Create Milestone Category
         </template>
         <template v-slot:body>
-          <form @submit.prevent="categorySubmit" class="form-page">
+          <form @submit.prevent="createSubmit" class="form-page">
             <div class="row">
               <div class="col-md-12">
                 <label class="form-label">
@@ -154,7 +155,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -172,7 +172,6 @@
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -203,7 +202,7 @@
     <div>
       <edit-modal>
         <template v-slot:editheader>
-          <i class="fas fa-plus-square"></i> Edit Category
+          <i class="fas fa-plus-square"></i> Edit Milestone Category
         </template>
         <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
@@ -217,7 +216,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -235,7 +233,6 @@
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -309,7 +306,7 @@ const rules: any = {
 
 const v$ = useVuelidate(rules, state);
 
-async function categorySubmit() {
+async function createSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
@@ -324,7 +321,7 @@ async function categorySubmit() {
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your poc category created successfully!",
+            "Your milestone category created successfully!",
             "success"
           );
         } else {
@@ -419,6 +416,7 @@ function remove(id: number) {
           (e: { id: number }) => e.id !== id
         );
         deletingSpinner.value = false;
+        fetchData("/milestones/categories");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });
@@ -493,7 +491,7 @@ async function editSubmit() {
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your category updated successfully!",
+            "Your milestone category updated successfully!",
             "success"
           );
         } else {

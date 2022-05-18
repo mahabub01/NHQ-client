@@ -7,11 +7,9 @@
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
             Serial
           </th>
-          <th>Team Name</th>
-          <th>Team Lead</th>
-          <th>User</th>
-          <th>Description</th>
-          <th>Status</th>
+          <th>Name</th>
+          <th>Module</th>
+          <th>Component</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -26,24 +24,10 @@
             />
             {{ index + 1 }}
           </td>
-          <td>{{ td.team_name }}</td>
-          <td>{{ td.team_lead }}</td>
-          <td>
-            <span v-for="client in td.clients" :key="client.id"
-              >{{ client.member.name }},</span
-            >
-          </td>
-          <td>{{ td.description }}</td>
-          <td>
-            <span v-if="td.is_active == 1" class="activeStatus"
-              ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
-              {{ td.is_active }}</span
-            >
-            <span v-else class="inactiveStatus"
-              ><i class="far fa-times-circle"></i>
-              {{ isActive(td.is_active) }}</span
-            >
-          </td>
+          <td>{{ td.name }}</td>
+          <td>{{ td.module_id }}</td>
+          <td>{{ td.component_id }}</td>
+
           <td class="col-serial">
             <div class="btn-group">
               <button
@@ -57,23 +41,6 @@
               </button>
               <ul class="dropdown-menu table-dropdown">
                 <li>
-                  <a
-                    href="#"
-                    v-if="td.is_active == 1"
-                    class="dropdown-item inactiveStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-times-circle"></i> In-Active</a
-                  >
-
-                  <a
-                    href="#"
-                    v-else
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item activeStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-check-circle"></i> Active</a
-                  >
-
                   <a
                     href="#"
                     @click.prevent="getId(td.id)"
@@ -110,16 +77,14 @@ let isCheckAll = ref(false);
 
 const emit = defineEmits([
   "delete",
-  "update:team_nameSearch",
-  "update:isActiveSearch",
+  "update:nameSearch",
   "activation",
   "editId",
 ]);
 
 const props = defineProps({
   multiselected: Array,
-  isActiveSearch: String,
-  team_nameSearch: String,
+  nameSearch: String,
 });
 
 defineExpose({ multiselect });
@@ -144,15 +109,6 @@ function updateCheckall() {
   }
 }
 
-//isActive Data
-function isActive(val: number) {
-  if (val == 1) {
-    return "Active";
-  } else {
-    return "In-Active";
-  }
-}
-
 //Get Id Emit use for update
 function getId(id: number) {
   emit("editId", id);
@@ -162,22 +118,6 @@ function getId(id: number) {
 function removeItem(id: number) {
   emit("delete", id);
 }
-
-//Change Status
-function changeStatus(id: number, status: number) {
-  let full_status = {
-    id: id,
-    status: status,
-  };
-  emit("activation", full_status);
-}
 </script>
 
-<style scoped>
-.activeStatus {
-  color: green;
-}
-.inactiveStatus {
-  color: red;
-}
-</style>
+<style scoped></style>

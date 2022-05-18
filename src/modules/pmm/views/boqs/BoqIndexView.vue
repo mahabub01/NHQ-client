@@ -350,7 +350,7 @@
               <Select2
                 v-model="v$.version_id.$model"
                 :options="versions"
-                :settings="{ placeholder: 'Choose' }"
+                :settings="{ placeholder: 'Choose', multiple: false }"
                 :class="{ isInvalid: v$.version_id.$error }"
               />
 
@@ -695,12 +695,6 @@ watch([search], async () => {
   );
 });
 
-//Watch Category Id
-// watch([category_id], async () => {
-//   console.log("category Watch");
-//   //getCategoriesItems(category_id);
-// });
-
 //modal setting
 const createModalState = computed(() => {
   return store.state.modalModule.creatModal;
@@ -843,7 +837,7 @@ async function getCategories() {
 
 async function myChangeEvent(val: any) {
   loadingSpinner.value = true;
-  await Axios.get("boq-categoryitem-selectable/" + val.id)
+  await Axios.get("boq-category-item-selectable/" + val.id)
     .then((response) => {
       console.log(response);
       loadingSpinner.value = false;

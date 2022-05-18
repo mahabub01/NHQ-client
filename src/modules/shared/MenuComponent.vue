@@ -134,10 +134,19 @@
                   ><i class="fas fa-table"></i> Designation list</router-link
                 >
               </li>
-
               <li>
-                <router-link class="dropdown-item" to="/pmm/clients"
-                  ><i class="fas fa-table"></i> Client list</router-link
+                <router-link class="dropdown-item" to="/pmm/task-categories"
+                  ><i class="fas fa-table"></i> Task Category list</router-link
+                >
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/pmm/versions"
+                  ><i class="fas fa-table"></i> Version list</router-link
+                >
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/pmm/priorities"
+                  ><i class="fas fa-table"></i> Priority list</router-link
                 >
               </li>
             </ul>
@@ -186,23 +195,23 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li>
-                <router-link class="dropdown-item" to="#"
+                <router-link class="dropdown-item" to="/core/modules"
                   ><i class="fas fa-table"></i> Modules List</router-link
                 >
               </li>
               <li>
-                <router-link class="dropdown-item" to="#"
+                <router-link class="dropdown-item" to="/core/components"
                   ><i class="fas fa-table"></i> Components List</router-link
                 >
               </li>
 
               <li>
-                <router-link class="dropdown-item" to="#"
+                <router-link class="dropdown-item" to="/core/permissions"
                   ><i class="fas fa-table"></i> Pemissions List</router-link
                 >
               </li>
               <li>
-                <router-link class="dropdown-item" to="#"
+                <router-link class="dropdown-item" to="/core/roles"
                   ><i class="fas fa-table"></i> Roles List</router-link
                 >
               </li>

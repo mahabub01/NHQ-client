@@ -14,17 +14,17 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link to="/" class="rev-underline-subtitle"
-                      >Admin
+                    <router-link to="#" class="rev-underline-subtitle"
+                      >Authentication
                       <i
                         class="fas fa-chevron-right"
                         style="margin-left: 6px; margin-right: 6px"
                       ></i>
                     </router-link>
                     <router-link
-                      to="/pmm/designations"
+                      to="/core/components"
                       class="rev-underline-subtitle"
-                      >Designation List</router-link
+                      >Components</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -102,14 +102,14 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <designation-table
+                    <component-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       @editId="showEdit($event)"
                       ref="multiselected"
-                    ></designation-table>
+                    ></component-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -137,14 +137,14 @@
 
     <!--start Create Modal -->
     <div>
-      <create-modal>
+      <create-modal :modalsize="modalSize" v-if="createModalState">
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Designation
+          ><i class="fas fa-plus-square"></i> Create Component
         </template>
         <template v-slot:body>
           <form @submit.prevent="createSubmit" class="form-page">
-            <div class="row">
-              <div class="col-md-12">
+            <div class="row mb-3">
+              <div class="col-md-6">
                 <label class="form-label">
                   Title
                   <span class="mandatory">*</span>
@@ -153,6 +153,7 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
+                  placeholder="Enter Your Title"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -164,21 +165,96 @@
                   {{ error.$message }}
                 </p>
               </div>
+              <div class="col-md-6">
+                <label class="form-label">
+                  Action <span class="mandatory">*</span>
+                </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Enter Your Action"
+                  v-model.lazy="v$.action.$model"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.action.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
             </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">
+                  Slug
+                  <span class="mandatory">*</span>
+                </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  :class="{ isInvalid: v$.slug.$error }"
+                  placeholder="Enter Your Slug"
+                  v-model.lazy="v$.slug.$model"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.slug.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"> Icons </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  :class="{ isInvalid: v$.title.$error }"
+                  placeholder="Enter Your Icons"
+                  v-model="state.icons"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="form-label">
+                  Module
+                  <span class="mandatory">*</span>
+                </label>
+                <Select2
+                  v-model="v$.module_id.$model"
+                  :options="modules"
+                  :settings="{ placeholder: 'Choose' }"
+                  :class="{ isInvalid: v$.module_id.$error }"
+                />
+
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.module_id.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+
             <div class="row form-row">
-              <div class="col-md-12">
-                <label class="form-label">Description</label>
-                <textarea
-                  class="form-textarea"
-                  v-model.lazy="state.description"
-                ></textarea>
+              <div class="col-md-12" style="min-height: 267px">
+                <label class="form-label">Comments</label>
+                <!-- :content="" use for set default Data-->
+                <TheCKEditor @sendContent="setComments" />
               </div>
             </div>
 
             <div class="modal-footer">
               <button
                 type="button"
-                class="form-button-danger"
+                class="btn btn-secondary"
                 data-bs-dismiss="modal"
                 @click.prevent="
                   store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
@@ -186,7 +262,7 @@
               >
                 <i class="far fa-times-circle"></i> Close
               </button>
-              <button type="submit" class="form-button">
+              <button type="submit" class="btn pro-button">
                 <i class="fas fa-save"></i> Save
               </button>
             </div>
@@ -197,72 +273,139 @@
     <!--end Create Modal -->
 
     <!--start Edit Modal -->
-    <div>
-      <edit-modal>
-        <template v-slot:editheader>
-          <i class="fas fa-plus-square"></i> Edit Designation
-        </template>
-        <template v-slot:editbody>
-          <form @submit.prevent="editSubmit" class="form-page">
-            <div class="row">
-              <div class="col-md-12">
-                <label class="form-label">
-                  Title
-                  <span class="mandatory">*</span>
-                </label>
-                <input
-                  type="text"
-                  class="form-input"
-                  :class="{ isInvalid: v$.title.$error }"
-                  v-model.lazy="v$.title.$model"
-                />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.title.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
-              </div>
-            </div>
-            <div class="row form-row">
-              <div class="col-md-12">
-                <label class="form-label">Description</label>
-                <textarea
-                  class="form-textarea"
-                  v-model.lazy="state.description"
-                ></textarea>
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="form-button-danger"
-                data-bs-dismiss="modal"
-                @click.prevent="
-                  store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
-                "
+    <EditModal :modalsize="modalSize" v-if="editModalState">
+      <template v-slot:editheader
+        ><i class="fas fa-plus-square"></i> Edit Component
+      </template>
+      <template v-slot:editbody>
+        <form @submit.prevent="updateHandler" class="form-page">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">
+                Title
+                <span class="mandatory">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-input"
+                :class="{ isInvalid: v$.title.$error }"
+                placeholder="Enter Your Title"
+                v-model.lazy="v$.title.$model"
+              />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.title.$errors"
+                :key="index"
               >
-                <i class="far fa-times-circle"></i> Close
-              </button>
-              <button type="submit" class="form-button">
-                <i class="fas fa-save"></i> Save
-              </button>
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
             </div>
-          </form>
-        </template>
-      </edit-modal>
-    </div>
-    <!--end Create Modal -->
+            <div class="col-md-6">
+              <label class="form-label"> Action </label>
+              <input
+                type="text"
+                class="form-input"
+                placeholder="Enter Your Action"
+                v-model="state.action"
+              />
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">
+                Slug
+                <span class="mandatory">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-input"
+                :class="{ isInvalid: v$.slug.$error }"
+                placeholder="Enter Your Slug"
+                v-model.lazy="v$.slug.$model"
+              />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.slug.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label"> Icons </label>
+              <input
+                type="text"
+                class="form-input"
+                :class="{ isInvalid: v$.title.$error }"
+                placeholder="Enter Your Icons"
+                v-model="state.icons"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="form-label">
+                Module
+                <span class="mandatory">*</span>
+              </label>
+              <Select2
+                v-model="v$.module_id.$model"
+                :options="modules"
+                :settings="{ placeholder: 'Choose' }"
+                :class="{ isInvalid: v$.module_id.$error }"
+              />
+
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.module_id.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col-md-12" style="min-height: 267px">
+              <label class="form-label">Comments</label>
+              <!-- :content="" use for set default Data-->
+              <TheCKEditor
+                v-if="loadCKEditor"
+                @sendContent="setComments"
+                :content="state.comments"
+              />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              @click.prevent="
+                store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
+              "
+            >
+              <i class="far fa-times-circle"></i> Close
+            </button>
+            <button type="submit" class="btn pro-button">
+              <i class="fas fa-save"></i> Save
+            </button>
+          </div>
+        </form>
+      </template>
+    </EditModal>
+    <!--end Edit Modal -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, reactive } from "vue";
+import { onMounted, ref, watch, computed, reactive } from "vue";
 import Axios from "@/http-common";
-import DesignationTable from "./DesignationTable.vue";
+import ComponentTable from "./ComponentTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
@@ -272,7 +415,29 @@ import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
+import Select2 from "vue3-select2-component";
 import toastr from "toastr";
+
+// Load CkEditor Data
+const loadCKEditor = computed(() => {
+  return store.state.modalModule.loadCKEditor;
+});
+//modal size
+const modalSize = ref("modal-lg");
+
+//modal setting
+const createModalState = computed(() => {
+  return store.state.modalModule.creatModal;
+});
+
+const editModalState = computed(() => {
+  return store.state.modalModule.editModal;
+});
+
+const setComments = (value: any) => {
+  state.comments = value;
+};
 
 //create store
 const store = useStore();
@@ -291,15 +456,22 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
 /**********************
- * Create Category
+ * Create Components
  ***********************/
 const state = reactive({
   title: "",
-  description: "",
+  slug: "",
+  action: "",
+  icons: "",
+  comments: "",
+  module_id: "",
 });
 
 const rules: any = {
   title: { required },
+  slug: { required },
+  action: { required },
+  module_id: { required },
 };
 
 const v$ = useVuelidate(rules, state);
@@ -308,18 +480,17 @@ async function createSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
     savingSpinner.value = true;
-    await Axios.post("client/designations", state)
+    await Axios.post("components", state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
-          fetchData("/client/designations");
+          fetchData("components");
           resetForm();
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your designation created successfully!",
+            "Your components created successfully!",
             "success"
           );
         } else {
@@ -332,15 +503,31 @@ async function createSubmit() {
       });
   }
 }
+const modules = ref([]);
+
+async function getModules() {
+  await Axios.get("modules-selectable")
+    .then((response) => {
+      modules.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
 
 //reset all property
 function resetForm() {
   state.title = "";
-  state.description = "";
+  state.slug = "";
+  state.action = "";
+  state.icons = "";
+  state.comments = "";
+  state.module_id = "";
   v$.value.$reset();
 }
+
 /**********************
- * End Create Category
+ * End Create Component
  ***********************/
 
 //Search Property
@@ -349,7 +536,7 @@ let titleSearch = ref("");
 watch([titleSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
-    "/client/designations?showEntries=" +
+    "/components?showEntries=" +
       currentEntries.value +
       "&page=" +
       datatables.currentPage +
@@ -367,20 +554,21 @@ watch([titleSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/client/designations");
+  fetchData("/components");
+  getModules();
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/client/designations");
+  fetchData("/components");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/client/designations");
+    fetchData("/components");
   }
 }
 
@@ -388,14 +576,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/client/designations");
+    fetchData("/components");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/client/designations");
+  fetchData("components");
 }
 
 //Delete selected Item
@@ -409,9 +597,12 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/client/designations/" + id).then((response) => {
-        fetchData("/client/designations");
+      await Axios.delete("/components/" + id).then((response) => {
+        entries.value = entries.value.filter(
+          (e: { id: number }) => e.id !== id
+        );
         deletingSpinner.value = false;
+        fetchData("/components");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });
@@ -436,10 +627,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/client/designations-multidelete", {
+      await Axios.post("/components-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/client/designations");
+        fetchData("/components");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -451,11 +642,11 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/client/designations-status", status).then((response) => {
+  await Axios.post("/components-change-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    fetchData("/client/designations");
+    fetchData("components");
   });
 }
 
@@ -464,29 +655,33 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
-  await Axios.get("/client/designations/" + id).then((response) => {
+  await Axios.get("/components/" + id).then((response) => {
     single_datas.value = response.data.data;
     state.title = single_datas.value.title;
-    state.description = single_datas.value.description;
+    state.slug = single_datas.value.slug;
+    state.action = single_datas.value.action;
+    state.icons = single_datas.value.icons;
+    state.comments = single_datas.value.comments;
+    state.module_id = single_datas.value.module_id;
+    store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
   });
 }
 
-async function editSubmit() {
+async function updateHandler() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
     savingSpinner.value = true;
-    await Axios.put("client/designations/" + editableId, state)
+    await Axios.put("components/" + editableId, state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-          fetchData("/client/designations");
+          fetchData("/components");
           resetForm();
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your designation updated successfully!",
+            "Your component updated successfully!",
             "success"
           );
         } else {

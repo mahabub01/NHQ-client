@@ -7,46 +7,35 @@
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
             Serial
           </th>
-          <th>Project ID</th>
-          <th>Created Date</th>
-          <th>Updated Date</th>
-          <th style="width: 40% !important">Scope of Work List</th>
-          <th>Latest Version</th>
-          <th>Point</th>
-          <th class="action-field">Edit</th>
-          <th class="action-field">File</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Status</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
-        <tr v-for="(item, index) in $attrs.entries" :key="index">
+        <tr v-for="(td, index) in $attrs.entries" :key="td">
           <td class="col-serial">
             <input
               type="checkbox"
               v-model="multiselect"
-              :value="item.id"
+              :value="td.id"
               @change="updateCheckall"
             />
             {{ index + 1 }}
           </td>
-          <td>{{ item.project_ID }}</td>
-          <td>{{ item.created_at }}</td>
-          <td>{{ item.updated_at }}</td>
-          <td style="width: 40% !important">{{ item.oem_title }}</td>
-          <td>{{ item.version }}</td>
-          <td>{{ item.point }}</td>
-          <td class="action-field" style="text-align: center">
-            <a href="#" @click.prevent="getEdit(item.id)" title="Edit OEM"
-              ><i class="fa fa-pen action-icon"></i
-            ></a>
-          </td>
-          <td class="action-field" style="text-align: center">
-            <a v-if="item.file != null" :href="`${item.file}`" target="_blank"
-              ><i class="fa fa-paperclip action-icon"></i
-            ></a>
-            <a href="#" onclick="alert('File not uploaded')" v-else
-              ><i class="fa fa-paperclip action-icon" style="opacity: 0.6"></i
-            ></a>
+          <td>{{ td.title }}</td>
+          <td>{{ td.description }}</td>
+
+          <td>
+            <span v-if="td.is_active == 1" class="activeStatus"
+              ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
+              {{ td.is_active }}</span
+            >
+            <span v-else class="inactiveStatus"
+              ><i class="far fa-times-circle"></i>
+              {{ isActive(td.is_active) }}</span
+            >
           </td>
           <td class="col-serial">
             <div class="btn-group">
@@ -59,18 +48,36 @@
               >
                 <i class="fas fa-sort-down"></i>
               </button>
-              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
+              <ul class="dropdown-menu table-dropdown">
                 <li>
                   <a
                     href="#"
-                    @click.prevent="removeItem(item.id)"
+                    v-if="td.is_active == 1"
+                    class="dropdown-item inactiveStatus"
+                    @click.prevent="changeStatus(td.id, td.is_active)"
+                    ><i class="far fa-times-circle"></i> In-Active</a
+                  >
+
+                  <a
+                    href="#"
+                    v-else
+                    :to="`/priorities/${td.id}/edit`"
+                    class="dropdown-item activeStatus"
+                    @click.prevent="changeStatus(td.id, td.is_active)"
+                    ><i class="far fa-check-circle"></i> Active</a
+                  >
+
+                  <a
+                    href="#"
+                    @click.prevent="getId(td.id)"
+                    class="dropdown-item"
+                    ><i class="fas fa-edit"></i> Edit</a
+                  >
+                  <a
+                    href="#"
+                    @click.prevent="removeItem(td.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
-                  >
-                  <router-link
-                    :to="`/pmm/oems/details/${item.slug}`"
-                    class="dropdown-item"
-                    ><i class="fas fa-eye"></i> Details</router-link
                   >
                 </li>
               </ul>
@@ -84,6 +91,10 @@
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import { useStore } from "vuex";
+
+//use store
+const store = useStore();
 
 const attrs = useAttrs();
 
@@ -95,8 +106,7 @@ const emit = defineEmits([
   "update:titleSearch",
   "update:isActiveSearch",
   "activation",
-  "getFiles",
-  "edit",
+  "editId",
 ]);
 
 const props = defineProps({
@@ -136,19 +146,14 @@ function isActive(val: number) {
   }
 }
 
+//Get Id Emit use for update
+function getId(id: number) {
+  emit("editId", id);
+}
+
 //Delete Emit use for Delete
 function removeItem(id: number) {
   emit("delete", id);
-}
-
-//Delete Emit use for Delete
-function getFile(pid: number) {
-  emit("getFiles", pid);
-}
-
-//Get Id Emit use for update
-function getEdit(id: number) {
-  emit("edit", id);
 }
 
 //Change Status
@@ -167,9 +172,5 @@ function changeStatus(id: number, status: number) {
 }
 .inactiveStatus {
   color: red;
-}
-
-.action-field {
-  width: 30px !important;
 }
 </style>

@@ -105,9 +105,9 @@
                       <li class="auth_option">
                         <router-link
                           class="auth_option_item"
-                          to="/core/password-change"
+                          to="/core/profile-details"
                         >
-                          <i class="fas fa-key"></i> Change password
+                          <i class="fas fa-user"></i> Profile Information
                         </router-link>
                       </li>
                       <li class="auth_option">
@@ -119,12 +119,15 @@
                         </router-link>
                       </li>
                       <li class="auth_option">
-                        <a class="auth_option_item" href="#"
-                          ><i class="fas fa-user"></i> Profile Information</a
+                        <router-link
+                          class="auth_option_item"
+                          to="/core/password-change"
                         >
+                          <i class="fas fa-key"></i> Change password
+                        </router-link>
                       </li>
                     </ul>
-                    <ul class="auth_card pt_15">
+                    <ul class="auth_card pt_15 mb-2">
                       <li class="auth_email">
                         <button
                           type="button"
@@ -156,25 +159,9 @@ import { useCookies } from "vue3-cookies";
 import { useStore } from "vuex";
 
 const router = useRouter();
-//let singleData = "";
-
-// const auth = reactive({
-//   name: "",
-//   email: "",
-// });
 
 const store = useStore();
 const { cookies } = useCookies();
-
-// onMounted(async () => {
-//   await Axios.get("/auth-inforamtion").then((response) => {
-//     singleData = response.data.data[0];
-//     if (singleData != "") {
-//       auth.name = singleData.name;
-//       auth.email = singleData.email;
-//     }
-//   });
-// });
 
 const userInfo = computed(() => {
   return store.state.currentUser.userPemissions;

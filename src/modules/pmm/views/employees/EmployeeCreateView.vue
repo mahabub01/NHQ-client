@@ -38,7 +38,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.name.$error }"
-                placeholder="Name here"
                 v-model.lazy="v$.name.$model"
               />
               <p
@@ -72,7 +71,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.email.$error }"
-                placeholder="Email here"
                 v-model.lazy="v$.email.$model"
               />
               <p

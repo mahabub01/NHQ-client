@@ -9,15 +9,13 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-7">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link
-                      class="rev-underline-subtitle"
-                      to="/pmm/milestones"
-                      >Milestones List</router-link
+                    <router-link to="/versions" class="rev-underline-subtitle"
+                      >Version List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -28,8 +26,7 @@
                     </ul>
                   </div>
                 </div>
-
-                <div class="col-md-8">
+                <div class="col-md-5">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -49,8 +46,9 @@
 
                       <input
                         type="text"
-                        v-model.lazy="nameSearch"
-                        placeholder="Search Team"
+                        placeholder="Search Title"
+                        style="margin-right: 7px"
+                        v-model.lazy="titleSearch"
                       />
 
                       <button
@@ -58,19 +56,12 @@
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true)
+                          store.commit('modalModule/CHNAGE_CREATE_MODAL', true),
+                            resetForm()
                         "
                       >
-                        <i class="fas fa-filter"></i>
+                        <i class="fas fa-plus"></i> Create
                       </button>
-
-                      <router-link
-                        v-if="userInfo.role_id != 9"
-                        to="/pmm/milestones/create"
-                        class="link_btn"
-                        style="margin-right: 7px"
-                        ><i class="fas fa-plus"></i> Create</router-link
-                      >
                       <div class="btn-group">
                         <button
                           type="button"
@@ -79,7 +70,8 @@
                           data-bs-display="static"
                           aria-expanded="false"
                         >
-                          <i class="fas fa-cog"></i> Bulk Action
+                          <i class="fas fa-wrench"></i> Bulk Action
+                          <i class="fas fa-chevron-down"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-lg-end">
                           <li>
@@ -87,8 +79,8 @@
                               href="#"
                               @click="bulkDelete"
                               class="dropdown-item"
-                              ><i class="fas fa-trash-alt"></i> Bulk Delete</a
-                            >
+                              ><i class="fas fa-trash-alt"></i> Bulk Delete
+                            </a>
                           </li>
                         </ul>
                       </div>
@@ -101,14 +93,14 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <milestone-table
+                    <version-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
-                      v-model:nameSearch.lazy="nameSearch"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
+                      @editId="showEdit($event)"
                       ref="multiselected"
-                    ></milestone-table>
+                    ></version-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -134,47 +126,34 @@
       :isSaving="savingSpinner"
     ></the-spinner>
 
-    <!--start Filter Modal -->
+    <!--start Create Modal -->
     <div>
-      <filter-modal>
+      <create-modal>
         <template v-slot:header
-          ><i class="fas fa-filter"></i> Filter Milestone
+          ><i class="fas fa-plus-square"></i> Create Version
         </template>
         <template v-slot:body>
-          <form @submit.prevent="filterSubmit" class="form-page">
-            <div class="row">
-              <div class="col-md-4 mb_30">
-                <label class="form-label"> Name/ID </label>
+          <form @submit.prevent="createSubmit" class="form-page">
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label">
+                  Title
+                  <span class="mandatory">*</span>
+                </label>
                 <input
                   type="text"
                   class="form-input"
-                  v-model="filterState.milestone_name_id"
+                  :class="{ isInvalid: v$.title.$error }"
+                  v-model.lazy="v$.title.$model"
                 />
-              </div>
-
-              <div class="col-md-4 mb_30">
-                <label class="form-label"> Extend Date </label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model="filterState.extended_date"
-                />
-              </div>
-              <div class="col-md-4 mb_30">
-                <label class="form-label"> Start Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model="filterState.start_date"
-                />
-              </div>
-              <div class="col-md-4 mb_30">
-                <label class="form-label"> End Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model="filterState.end_date"
-                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.title.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
               </div>
             </div>
 
@@ -184,40 +163,92 @@
                 class="form-button-danger"
                 data-bs-dismiss="modal"
                 @click.prevent="
-                  store.commit('modalModule/CHNAGE_FILTER_MODAL', false)
+                  store.commit('modalModule/CHNAGE_CREATE_MODAL', false)
                 "
               >
                 <i class="far fa-times-circle"></i> Close
               </button>
               <button type="submit" class="form-button">
-                <i class="fas fa-filter"></i> Filter
+                <i class="fas fa-save"></i> Save
               </button>
             </div>
           </form>
         </template>
-      </filter-modal>
+      </create-modal>
     </div>
-    <!--end Filter Modal -->
+    <!--end Create Modal -->
+
+    <!--start Edit Modal -->
+    <div>
+      <edit-modal>
+        <template v-slot:editheader>
+          <i class="fas fa-plus-square"></i> Edit Version
+        </template>
+        <template v-slot:editbody>
+          <form @submit.prevent="editSubmit" class="form-page">
+            <div class="row form-row">
+              <div class="col-md-12">
+                <label class="form-label">
+                  Title
+                  <span class="mandatory">*</span>
+                </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  :class="{ isInvalid: v$.title.$error }"
+                  v-model.lazy="v$.title.$model"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.title.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="form-button-danger"
+                data-bs-dismiss="modal"
+                @click.prevent="
+                  store.commit('modalModule/CHNAGE_EDIT_MODAL', false)
+                "
+              >
+                <i class="far fa-times-circle"></i> Close
+              </button>
+              <button type="submit" class="form-button">
+                <i class="fas fa-save"></i> Save
+              </button>
+            </div>
+          </form>
+        </template>
+      </edit-modal>
+    </div>
+    <!--end Create Modal -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, reactive, computed } from "vue";
+import { onMounted, ref, watch, reactive } from "vue";
 import Axios from "@/http-common";
-import MilestoneTable from "./MilestoneTable.vue";
+import VersionTable from "./VersionTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
-import FilterModal from "../../../core/shared/FilterModal.vue";
+import CreateModal from "../../../core/shared/CreateModal.vue";
+import EditModal from "../../../core/shared/EditModal.vue";
 import { useStore } from "vuex";
+import { useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
+import toastr from "toastr";
 
 //create store
 const store = useStore();
-
-const userInfo = computed(() => {
-  return store.state.currentUser.userPemissions;
-});
 
 //use for deleting spenner
 let deletingSpinner = ref(false);
@@ -226,32 +257,70 @@ let savingSpinner = ref(false);
 //use for multiselected
 const multiselected = ref([]);
 
+let singleData = "";
+
 //use datatable composables
-const {
-  entries,
-  datatables,
-  showEntries,
-  currentEntries,
-  fetchData,
-  filterData,
-} = useDatatable();
+const { entries, datatables, showEntries, currentEntries, fetchData } =
+  useDatatable();
+
+/**********************
+ * Create Version
+ ***********************/
+const state = reactive({
+  title: "",
+});
+
+const rules: any = {
+  title: { required },
+};
+
+const v$ = useVuelidate(rules, state);
+
+async function createSubmit() {
+  v$.value.$validate();
+  v$.value.$touch();
+  if (!v$.value.$error) {
+    savingSpinner.value = true;
+    await Axios.post("/versions", state)
+      .then((response) => {
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
+          fetchData("/versions");
+          resetForm();
+          savingSpinner.value = false;
+          swal("Success Job!", "Your version created successfully!", "success");
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.log("problem Here" + error);
+      });
+  }
+}
+
+//reset all property
+function resetForm() {
+  state.title = "";
+  v$.value.$reset();
+}
+/**********************
+ * End Create Version
+ ***********************/
 
 //Search Property
-let nameSearch = ref(null);
+let titleSearch = ref("");
 
-watch([nameSearch], async () => {
+watch([titleSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
-    "/milestones?showEntries=" +
+    "/versions?showEntries=" +
       currentEntries.value +
       "&page=" +
       datatables.currentPage +
-      "&searchName=" +
-      nameSearch.value +
-      "&user_id=" +
-      userInfo.value.id +
-      "&role_id=" +
-      userInfo.value.role_id
+      "&searchTitle=" +
+      titleSearch.value
   ).then((response) => {
     entries.value = response.data.data;
     datatables.totalItems = response.data.meta.total;
@@ -264,33 +333,20 @@ watch([nameSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  filterData(
-    "/milestones",
-    "&user_id=" +
-      store.state.currentUser.userPemissions.id +
-      "&role_id=" +
-      store.state.currentUser.userPemissions.role_id
-  );
-  console.log(store.state.currentUser.userPemissions.id);
+  fetchData("/versions");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  filterData(
-    "/milestones",
-    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
-  );
+  fetchData("/versions");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    filterData(
-      "/milestones",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
-    );
+    fetchData("/versions");
   }
 }
 
@@ -298,20 +354,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    filterData(
-      "/milestones",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
-    );
+    fetchData("/versions");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  filterData(
-    "/milestones",
-    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
-  );
+  fetchData("/versions");
 }
 
 //Delete selected Item
@@ -325,12 +375,12 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/milestones/" + id).then((response) => {
+      await Axios.delete("/versions/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
-        fetchData("/milestones");
         deletingSpinner.value = false;
+        fetchData("/versions");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });
@@ -355,13 +405,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/milestones-multidelete", {
+      await Axios.post("/versions-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        filterData(
-          "/milestones",
-          "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
-        );
+        fetchData("/versions");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -373,44 +420,53 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/milestones-status", status).then((response) => {
+  await Axios.post("/versions-status", status).then((response) => {
     swal("Your data status changed", {
       icon: "success",
     });
-    filterData(
-      "/milestones",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
-    );
+    fetchData("/versions");
   });
 }
 
-// Filter Pert
+// edit pert
+const single_datas = ref([]);
+let editableId = "";
 
-// use for filter
-let filteringSpinner = ref(false);
-
-const filterState = reactive({
-  milestone_name_id: "",
-  extended_date: "",
-  start_date: "",
-  end_date: "",
-  user_id: userInfo.value.id,
-});
-
-async function filterSubmit() {
-  store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
-  datatables.loadingState = true;
-  filteringSpinner.value = true;
-
-  await Axios.post("milestones-filter", filterState).then((response) => {
-    filteringSpinner.value = false;
-    entries.value = response.data.data;
-    datatables.totalItems = response.data.meta.total;
-    datatables.currentPage = response.data.meta.current_page;
-    datatables.allPages = response.data.meta.last_page;
-    datatables.pagination = response.data.meta.links;
-    datatables.loadingState = false;
+async function getEditData(id: number) {
+  await Axios.get("/versions/" + id).then((response) => {
+    single_datas.value = response.data.data;
+    state.title = single_datas.value.title;
   });
+}
+
+async function editSubmit() {
+  v$.value.$validate();
+  v$.value.$touch();
+  if (!v$.value.$error) {
+    savingSpinner.value = true;
+    await Axios.put("/versions/" + editableId, state)
+      .then((response) => {
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
+          fetchData("/versions");
+          resetForm();
+          savingSpinner.value = false;
+          swal("Success Job!", "Your version updated successfully!", "success");
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.log("problem Here" + error);
+      });
+  }
+}
+
+function showEdit(id) {
+  editableId = id;
+  getEditData(id);
+  store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
 }
 </script>
 

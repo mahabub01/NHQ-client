@@ -4,7 +4,7 @@
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
-            <router-link to="/pmm/employees"
+            <router-link to="/core/profile-details"
               >Profile <i class="fas fa-chevron-right"></i
             ></router-link>
             <router-link to="#">Edit</router-link>
@@ -17,7 +17,7 @@
               <router-link
                 class="form-button-danger"
                 style="color: white"
-                to="/pmm/employees"
+                to="/core/profile-details"
                 ><i class="far fa-times-circle"></i> Discard
               </router-link>
             </div>
@@ -37,7 +37,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.name.$error }"
-                placeholder="Name here"
                 v-model.lazy="v$.name.$model"
               />
               <p
@@ -71,7 +70,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.email.$error }"
-                placeholder="Email here"
                 v-model.lazy="v$.email.$model"
               />
               <p
@@ -83,12 +81,11 @@
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Employee ID</label>
+              <label class="form-label">Nid Number</label>
               <input
-                type="text"
+                type="number"
                 class="form-input"
-                placeholder="Employee ID here"
-                v-model.lazy="formState.employee_id"
+                v-model.lazy="formState.nid_number"
               />
             </div>
           </div>
@@ -133,28 +130,25 @@
               <label class="form-label"
                 >Designation<span class="mandatory">*</span></label
               >
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.designation.$error }"
-                placeholder="Designation here"
-                v-model.lazy="v$.designation.$model"
+              <Select2
+                v-model="formState.designation_id"
+                :options="selectable_desination"
+                :settings="{ placeholder: 'Choose' }"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.designation.$errors"
+                v-for="(error, index) in v$.designation_id.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i> {{ error.$message }}
               </p>
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">Nid Number</label>
-              <input
-                type="number"
-                class="form-input"
-                placeholder="Nid Number here"
-                v-model.lazy="formState.nid_number"
+              <label class="form-label">Department</label>
+              <Select2
+                v-model="formState.department_id"
+                :options="selectable_department"
+                :settings="{ placeholder: 'Choose' }"
               />
             </div>
           </div>
@@ -163,12 +157,32 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Depertment</label>
+              <label class="form-label">About Employee</label>
+              <TheCKEditor
+                @sendContent="getAboutEmployee"
+                :content="formState.about_employee"
+                v-if="loadCKEditor"
+              />
+            </div>
+            <div class="col-md-4 offset-md-2">
+              <label class="form-label">Joinning Date</label>
               <input
-                type="text"
+                type="date"
                 class="form-input"
-                placeholder="Depertment here"
-                v-model.lazy="formState.depertment"
+                placeholder="Title here"
+                v-model.lazy="formState.joinning_date"
+              />
+            </div>
+          </div>
+          <!--end row -->
+          <!--start row -->
+          <div class="row form-row">
+            <div class="col-md-4 offset-md-1">
+              <label class="form-label">About Employee</label>
+              <TheCKEditor
+                @sendContent="getAboutEmployee"
+                :content="formState.about_employee"
+                v-if="loadCKEditor"
               />
             </div>
             <div class="col-md-4 offset-md-2">
@@ -186,25 +200,14 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Present Address</label>
-              <textarea
-                placeholder="Present Address here"
-                v-model.lazy="formState.present_address"
-              ></textarea>
+              <label class="form-label">Present Addresss</label>
+              <TheCKEditor
+                @sendContent="getAboutEmployee"
+                :content="formState.about_employee"
+                v-if="loadCKEditor"
+              />
             </div>
             <div class="col-md-4 offset-md-2">
-              <label class="form-label">About Employee</label>
-              <textarea
-                placeholder="About Employee here"
-                v-model.lazy="formState.about_employee"
-              ></textarea>
-            </div>
-          </div>
-          <!--end row -->
-
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
               <label class="form-label">Parmanent Address</label>
               <textarea
                 placeholder="Parmanent Address here"
@@ -220,20 +223,40 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import Axios from "@/http-common";
-import swal from "sweetalert";
-import TheButton from "@/modules/shared/TheButton.vue";
+import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
-import DataLoadingSpinner from "@/modules/shared/DataLoadingSpinner.vue";
+import toastr from "toastr";
+import swal from "sweetalert";
+import Axios from "@/http-common";
+import TheButton from "@/modules/shared/TheButton.vue";
 import Select2 from "vue3-select2-component";
+import DataLoadingSpinner from "@/modules/shared/DataLoadingSpinner.vue";
+import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
+
+//create store
+const store = useStore();
 
 const route = useRoute();
 const router = useRouter();
 let singleData = "";
 
+// Load CkEditor Data
+const loadCKEditor = computed(() => {
+  return store.state.modalModule.loadCKEditor;
+});
+
+//set CKEditor Data
+const getAboutEmployee = (value: any) => {
+  formState.about_employee = value;
+};
+
+//set CKEditor Data
+const getPresentAddress = (value: any) => {
+  formState.present_address = value;
+};
 //Button Loading
 let buttonLoading = ref(false);
 
@@ -244,14 +267,13 @@ const formState = reactive({
   name: "",
   email: "",
   phone: "",
-  designation: "",
+  designation_id: "",
   gender: "",
-  employee_id: "",
   date_of_birth: "",
   present_address: "",
   parmanent_address: "",
   nid_number: "",
-  depertment: "",
+  department_id: "",
   joinning_date: "",
   about_employee: "",
 });
@@ -260,7 +282,7 @@ const rules: any = {
   name: { required },
   email: { required },
   phone: { required },
-  designation: { required },
+  designation_id: { required },
 };
 
 const v$ = useVuelidate(rules, formState);
@@ -271,37 +293,67 @@ async function handleSubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     buttonLoading.value = true;
-    await Axios.post("auth-inforamtion", formState)
+    await Axios.post("/auth-information", formState)
       .then((response) => {
-        swal("Success Job!", "Your employee update successfully!", "success");
-        reset(); //reset all property
         buttonLoading.value = false;
-        console.log(formState);
+        if (response.data.code === 200) {
+          swal(
+            "Success Job!",
+            "Your information updated successfully!",
+            "success"
+          );
+        } else {
+          toastr.error(response.data.message);
+        }
       })
       .catch((error) => {
         console.log("problem Here" + error);
       });
   }
 }
+//const selectable_project = ref([]);
+const selectable_department = ref([]);
+
+//const selectable_project = ref([]);
+const selectable_desination = ref([]);
+
+onMounted(() => {
+  designationSelectable();
+  departmentSelectable();
+});
+
+// selectable designation
+async function designationSelectable() {
+  await Axios.get("/designation-selectable").then((response) => {
+    selectable_desination.value = response.data.data;
+  });
+}
+
+// selectable department
+async function departmentSelectable() {
+  await Axios.get("/department-selectable").then((response) => {
+    selectable_department.value = response.data.data;
+  });
+}
 
 onMounted(async () => {
   loadingSpinner.value = true;
-  await Axios.get("/auth-inforamtion").then((response) => {
+  await Axios.get("/auth-information-data").then((response) => {
     singleData = response.data.data[0];
     if (singleData != "") {
       formState.name = singleData.name;
       formState.email = singleData.email;
       formState.phone = singleData.phone;
-      formState.designation = singleData.designation;
+      formState.designation_id = singleData.designation_id;
       formState.gender = singleData.gender;
-      formState.employee_id = singleData.employee_id;
       formState.date_of_birth = singleData.date_of_birth;
       formState.present_address = singleData.present_address;
       formState.parmanent_address = singleData.parmanent_address;
       formState.nid_number = singleData.nid_number;
-      formState.depertment = singleData.depertment;
+      formState.department_id = singleData.department_id;
       formState.joinning_date = singleData.joinning_date;
       formState.about_employee = singleData.about_employee;
+      store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
     }
     loadingSpinner.value = false;
   });
@@ -312,13 +364,6 @@ const genderList = reactive([
   { id: 1, text: "Male" },
   { id: 2, text: "Female" },
 ]);
-
-//reset all property
-function reset() {
-  formState.name = "";
-  // state.description = "";
-  v$.value.$reset();
-}
 </script>
 
 <style scoped></style>

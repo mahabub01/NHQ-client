@@ -14,9 +14,7 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <a class="rev-underline-subtitle" href=""
-                      >Projects > Tag List</a
-                    >
+                    <a class="rev-underline-subtitle" href="">Tag List</a>
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -144,7 +142,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -162,7 +159,6 @@
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -207,7 +203,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Title here"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -225,7 +220,6 @@
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -275,7 +269,6 @@ const store = useStore();
 //use for deleting spenner
 let deletingSpinner = ref(false);
 let savingSpinner = ref(false);
-let loadingSpinner = ref(false);
 
 //use for multiselected
 const multiselected = ref([]);
@@ -331,7 +324,7 @@ function resetForm() {
   v$.value.$reset();
 }
 /**********************
- * End Create tag
+ * End Create Tag
  ***********************/
 
 //Search Property
@@ -404,6 +397,7 @@ function remove(id: number) {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
+        fetchData("/projects/tags");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -457,9 +451,7 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
-  loadingSpinner.value = true;
   await Axios.get("/projects/tags/" + id).then((response) => {
-    loadingSpinner.value = false;
     single_datas.value = response.data.data;
     state.title = single_datas.value.title;
     state.description = single_datas.value.description;

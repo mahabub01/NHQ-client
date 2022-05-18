@@ -150,7 +150,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.team_name.$error }"
-                  placeholder="Team Name here"
                   v-model.lazy="v$.team_name.$model"
                 />
                 <p
@@ -215,7 +214,6 @@
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -260,7 +258,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.team_name.$error }"
-                  placeholder="Team Name here"
                   v-model.lazy="v$.team_name.$model"
                 />
                 <p
@@ -324,7 +321,6 @@
                 <label class="form-label">Description</label>
                 <textarea
                   class="form-textarea"
-                  placeholder="Discription here"
                   v-model.lazy="state.description"
                 ></textarea>
               </div>
@@ -510,6 +506,8 @@ function remove(id: number) {
           (e: { id: number }) => e.id !== id
         );
         deletingSpinner.value = false;
+        fetchData("/projects/teams");
+
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });
@@ -568,7 +566,6 @@ async function getEditData(id: number) {
     state.team_lead = single_datas.value.team_lead;
     state.clients = single_datas.value.clients[0];
     state.description = single_datas.value.description;
-    console.log(state.clients);
   });
 }
 
@@ -609,6 +606,7 @@ const employeesSelectable = ref([]);
 
 // teams data get
 async function openCreateModal() {
+  resetForm();
   store.commit("modalModule/CHNAGE_CREATE_MODAL", true);
   await Axios.get("/employees-selectable").then((response) => {
     employeesSelectable.value = response.data.data;

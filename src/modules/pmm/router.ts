@@ -11,7 +11,7 @@ export const PmmModuleRoute = [
         name: "categories",
         component: () =>
           import(
-            /* webpackChunkName: "category" */ "./views/categories/CategoryIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/categories/CategoryIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -20,7 +20,7 @@ export const PmmModuleRoute = [
         name: "tags",
         component: () =>
           import(
-            /* webpackChunkName: "tags" */ "./views/tags/TagIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/tags/TagIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -30,7 +30,7 @@ export const PmmModuleRoute = [
         name: "teams",
         component: () =>
           import(
-            /* webpackChunkName: "teams" */ "./views/teams/TeamIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/teams/TeamIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -40,7 +40,7 @@ export const PmmModuleRoute = [
         name: "clients",
         component: () =>
           import(
-            /* webpackChunkName: "clients" */ "./views/clients/ClientIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/clients/ClientIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -49,7 +49,7 @@ export const PmmModuleRoute = [
         name: "clients-create",
         component: () =>
           import(
-            /* webpackChunkName: "clients-create" */ "./views/clients/ClientCreateView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/clients/ClientCreateView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -58,7 +58,7 @@ export const PmmModuleRoute = [
         name: "clients-edit",
         component: () =>
           import(
-            /* webpackChunkName: "clients-edit" */ "./views/clients/ClientEditView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/clients/ClientEditView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -67,7 +67,7 @@ export const PmmModuleRoute = [
         name: "clients-details",
         component: () =>
           import(
-            /* webpackChunkName: "clients-edit" */ "./views/clients/ClientDetailsView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/clients/ClientDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -76,7 +76,7 @@ export const PmmModuleRoute = [
         name: "projects",
         component: () =>
           import(
-            /* webpackChunkName: "projects" */ "./views/projects/ProjectIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/projects/ProjectIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -85,7 +85,7 @@ export const PmmModuleRoute = [
         name: "projects-create",
         component: () =>
           import(
-            /* webpackChunkName: "projects-create" */ "./views/projects/ProjectCreateView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/projects/ProjectCreateView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -94,7 +94,7 @@ export const PmmModuleRoute = [
         name: "projects-edit",
         component: () =>
           import(
-            /* webpackChunkName: "projects-edit" */ "./views/projects/ProjectEditView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/projects/ProjectEditView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -103,7 +103,7 @@ export const PmmModuleRoute = [
         name: "projects-details",
         component: () =>
           import(
-            /* webpackChunkName: "projects" */ "./views/projects/ProjectDetailsView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/projects/ProjectDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -112,7 +112,7 @@ export const PmmModuleRoute = [
         name: "employees",
         component: () =>
           import(
-            /* webpackChunkName: "employees" */ "./views/employees/EmployeeIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/employees/EmployeeIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -121,7 +121,7 @@ export const PmmModuleRoute = [
         name: "employees-create",
         component: () =>
           import(
-            /* webpackChunkName: "employees-create" */ "./views/employees/EmployeeCreateView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/employees/EmployeeCreateView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -130,7 +130,7 @@ export const PmmModuleRoute = [
         name: "employees-edit",
         component: () =>
           import(
-            /* webpackChunkName: "employees-edit" */ "./views/employees/EmployeeEditView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/employees/EmployeeEditView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -139,7 +139,7 @@ export const PmmModuleRoute = [
         name: "milestones",
         component: () =>
           import(
-            /* webpackChunkName: "milestones" */ "./views/milestones/MilestoneIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/milestones/MilestoneIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -148,7 +148,7 @@ export const PmmModuleRoute = [
         name: "milestones-create",
         component: () =>
           import(
-            /* webpackChunkName: "milestones-create" */ "./views/milestones/MilestoneCreateView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/milestones/MilestoneCreateView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -157,16 +157,26 @@ export const PmmModuleRoute = [
         name: "milestones-edit",
         component: () =>
           import(
-            /* webpackChunkName: "milestones-edit" */ "./views/milestones/MilestoneEditView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/milestones/MilestoneEditView.vue"
           ),
         meta: { middleware: "auth" },
       },
+      {
+        path: "milestones/details/:slug",
+        name: "milestones-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/milestones/MilestoneDetailsView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
       {
         path: "milestones-categories",
         name: "milestones-categories",
         component: () =>
           import(
-            /* webpackChunkName: "milestones-category" */ "./views/milestones-categories/CategoryIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/milestones-categories/CategoryIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -176,7 +186,7 @@ export const PmmModuleRoute = [
         name: "tasks",
         component: () =>
           import(
-            /* webpackChunkName: "tasks" */ "./views/tasks/TaskIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/tasks/TaskIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -186,7 +196,36 @@ export const PmmModuleRoute = [
         name: "tasks-create",
         component: () =>
           import(
-            /* webpackChunkName: "tasks-category" */ "./views/tasks/TaskCreateView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/tasks/TaskCreateView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "task-categories",
+        name: "task-categories",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/task-categories/CategoryIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "versions",
+        name: "versions",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/versions/VersionIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "priorities",
+        name: "priorities",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/priorities/PriorityIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -226,7 +265,16 @@ export const PmmModuleRoute = [
         name: "pocs",
         component: () =>
           import(
-            /* webpackChunkName: "pocs" */ "./views/pocs/PocIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/pocs/PocIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "pocs/details/:slug",
+        name: "pocs-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/pocs/PocDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -235,7 +283,7 @@ export const PmmModuleRoute = [
         name: "pocs-categories",
         component: () =>
           import(
-            /* webpackChunkName: "pocs-category" */ "./views/pocs-categories/CategoryIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/pocs-categories/CategoryIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -244,7 +292,16 @@ export const PmmModuleRoute = [
         name: "boqs",
         component: () =>
           import(
-            /* webpackChunkName: "boqs" */ "./views/boqs/BoqIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/boqs/BoqIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "boqs/details/:slug",
+        name: "boqs-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/boqs/BoqDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -253,7 +310,7 @@ export const PmmModuleRoute = [
         name: "boq-categories",
         component: () =>
           import(
-            /* webpackChunkName: "boq-category" */ "./views/boq-categories/CategoryIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/boq-categories/CategoryIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -262,7 +319,7 @@ export const PmmModuleRoute = [
         name: "boq-category-items",
         component: () =>
           import(
-            /* webpackChunkName: "boq-category-item" */ "./views/boq-category-item/CategoryIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/boq-category-items/CategoryIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -271,7 +328,16 @@ export const PmmModuleRoute = [
         name: "oems",
         component: () =>
           import(
-            /* webpackChunkName: "oems" */ "./views/oems/OemIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/oems/OemIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "oems/details/:slug",
+        name: "oems-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/oems/OemDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -281,7 +347,7 @@ export const PmmModuleRoute = [
         name: "designations",
         component: () =>
           import(
-            /* webpackChunkName: "designations" */ "./views/designations/DesignationIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/designations/DesignationIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -290,7 +356,7 @@ export const PmmModuleRoute = [
         name: "departments",
         component: () =>
           import(
-            /* webpackChunkName: "depertments" */ "./views/departments/DepartmentIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/departments/DepartmentIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },

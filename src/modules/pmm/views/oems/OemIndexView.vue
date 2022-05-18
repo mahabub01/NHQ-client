@@ -301,7 +301,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.title.$error }"
-                placeholder="OEM title"
                 v-model.lazy="v$.title.$model"
               />
               <p
@@ -388,7 +387,6 @@
                 type="text"
                 class="form-input"
                 v-model="filterState.search"
-                placeholder="Search here"
               />
             </div>
             <div class="col-md-4">
@@ -735,6 +733,10 @@ function remove(id: number) {
         if (response.data.code === 200) {
           entries.value = entries.value.filter(
             (e: { id: number }) => e.id !== id
+          );
+          filterData(
+            "/projects/oems",
+            "&project_id=" + route.params.project_id
           );
           swal("Poof! Your data has been deleted!", {
             icon: "success",

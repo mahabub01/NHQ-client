@@ -62,7 +62,8 @@
                         class="theme-color-btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true)
+                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true),
+                            resetForm()
                         "
                       >
                         <i class="fas fa-filter"></i>
@@ -210,7 +211,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="POC title"
                   v-model.lazy="v$.title.$model"
                 />
                 <p
@@ -301,7 +301,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.title.$error }"
-                placeholder="POC title"
                 v-model.lazy="v$.title.$model"
               />
               <p
@@ -378,7 +377,6 @@
                 type="text"
                 class="form-input"
                 v-model="filterState.search"
-                placeholder="Search here"
               />
             </div>
             <div class="col-md-4">
@@ -725,6 +723,10 @@ function remove(id: number) {
           entries.value = entries.value.filter(
             (e: { id: number }) => e.id !== id
           );
+          filterData(
+            "/projects/pocs",
+            "&project_id=" + route.params.project_id
+          );
           swal("Poof! Your data has been deleted!", {
             icon: "success",
           });
@@ -770,16 +772,6 @@ function bulkDelete() {
         }
       });
     }
-  });
-}
-
-//Change selected data status
-async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/projects/pocs-change-status", status).then((response) => {
-    swal("Your data status changed", {
-      icon: "success",
-    });
-    filterData("/projects/pocs", "&project_id=" + route.params.project_id);
   });
 }
 

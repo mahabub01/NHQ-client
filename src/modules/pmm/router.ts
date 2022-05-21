@@ -343,6 +343,45 @@ export const PmmModuleRoute = [
       },
 
       {
+        path: "delivery-timelines/:project_id",
+        name: "delivery-timelines",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/delivery-timelines/DeliveryTimelineIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "delivery-challans/:project_id",
+        name: "delivery-challans",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/delivery-challans/DeliveryChallanIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "disti-orders/:project_id",
+        name: "disti-orders",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/disti-orders/DistiOrderIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "customer-pos/:project_id",
+        name: "customer-pos",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/customer-pos/CustomerPOIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
         path: "designations",
         name: "designations",
         component: () =>

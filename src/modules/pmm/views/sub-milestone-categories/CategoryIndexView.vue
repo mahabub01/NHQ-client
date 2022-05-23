@@ -15,9 +15,9 @@
                   </button>
                   <div class="page-bootcamp-left">
                     <router-link
-                      to="/pmm/task-categories"
+                      to="/pmm/sub-milestone-categories"
                       class="rev-underline-subtitle"
-                      >Task Category List</router-link
+                      >Sub Milestone Category List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -132,7 +132,7 @@
     <div>
       <create-modal>
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Task Category
+          ><i class="fas fa-plus-square"></i> Create Sub Milestone Category
         </template>
         <template v-slot:body>
           <form @submit.prevent="createSubmit" class="form-page">
@@ -193,7 +193,7 @@
     <div>
       <edit-modal>
         <template v-slot:editheader>
-          <i class="fas fa-plus-square"></i> Edit Task Category
+          <i class="fas fa-plus-square"></i> Edit Sub Milestone Category
         </template>
         <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
@@ -311,7 +311,7 @@ async function createSubmit() {
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your task category created successfully!",
+            "Your sub-milestone category created successfully!",
             "success"
           );
         } else {

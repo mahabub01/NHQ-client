@@ -135,8 +135,11 @@
                 >
               </li>
               <li>
-                <router-link class="dropdown-item" to="/pmm/task-categories"
-                  ><i class="fas fa-table"></i> Task Category list</router-link
+                <router-link
+                  class="dropdown-item"
+                  to="/pmm/sub-milestone-categories"
+                  ><i class="fas fa-table"></i> Sub Milestone Category
+                  list</router-link
                 >
               </li>
               <li>

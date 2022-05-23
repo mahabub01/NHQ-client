@@ -201,11 +201,11 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
-        path: "task-categories",
-        name: "task-categories",
+        path: "sub-milestone-categories",
+        name: "sub-milestone-categories",
         component: () =>
           import(
-            /* webpackChunkName: "pmm-module" */ "./views/task-categories/CategoryIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/sub-milestone-categories/CategoryIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -232,20 +232,20 @@ export const PmmModuleRoute = [
 
       {
         path: "sub-milestones/details/:id",
-        name: "sub-milestonesdetails",
+        name: "sub-milestones-details",
         component: () =>
           import(
-            /* webpackChunkName: "tasks" */ "./views/sub-milestones/SubMilestoneDetailsView.vue"
+            /* webpackChunkName: "sub-milestones" */ "./views/sub-milestones/SubMilestoneDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },
 
       {
         path: "sub-milestones-by-milestone/:id",
-        name: "sub-milestonebymilestone",
+        name: "sub-milestoneby-milestone",
         component: () =>
           import(
-            /* webpackChunkName: "tasks" */ "./views/sub-milestones/SubMilestoneByMilestoneView.vue"
+            /* webpackChunkName: "submilestones" */ "./views/sub-milestones/SubMilestoneByMilestoneView.vue"
           ),
         meta: { middleware: "auth" },
       },

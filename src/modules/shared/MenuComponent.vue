@@ -29,7 +29,7 @@
 
           <!-- Sub Milestone ar poriborte hobe Task  -->
           <li class="nav-item dropdown">
-            <router-link class="nav-link" to="/pmm/tasks">
+            <router-link class="nav-link" to="/pmm/sub-milestones">
               Sub Milestone
             </router-link>
           </li>

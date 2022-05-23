@@ -7,10 +7,6 @@
             class="form_section d-flex flex-column justify-content-center align-items-center"
           >
             <div class="card-signup bg-transparent">
-              <the-spinner
-                :is-authenticating="is_authenticating"
-                :is-authenticated="is_authenticated"
-              ></the-spinner>
               <!--start alert section-->
               <div
                 v-if="isShowAlert"
@@ -19,6 +15,20 @@
               >
                 <div>
                   <i class="fas fa-exclamation-triangle"></i> {{ alertMessage }}
+                </div>
+              </div>
+              <!--end alert section-->
+            </div>
+
+            <div class="card-signup bg-transparent">
+              <!--start alert section-->
+              <div
+                v-if="isShowSuccess"
+                class="alert alert-success d-flex align-items-center"
+                role="alert"
+              >
+                <div>
+                  <i class="fas fa-check-circle"></i> {{ alertMessage }}
                 </div>
               </div>
               <!--end alert section-->
@@ -108,17 +118,13 @@ import { useRouter } from "vue-router";
 import { useCookies } from "vue3-cookies";
 import Axios from "@/http-common";
 import toastr from "toastr";
-import swal from "sweetalert";
 
 const isShowAlert = ref(false);
+const isShowSuccess = ref(false);
 const alertMessage = ref("");
-const is_authenticating = ref(false);
-const is_authenticated = ref(false);
 const router = useRouter();
 
 const store = useStore();
-
-const { cookies } = useCookies();
 
 const formState = reactive({
   email: "",
@@ -135,21 +141,18 @@ async function handleSubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     isShowAlert.value = false;
+    isShowSuccess.value = false;
 
     await Axios.post("reset-password", formState)
       .then((response) => {
         if (response.data.code == 200) {
-          alert(response.data.message);
-
-          isShowAlert.value = true;
-          alertMessage.value = response.data.message;
+          isShowSuccess.value = true;
+          alertMessage.value = "Email send successfuly.Please check your email";
 
           //   resetForm();
-          swal("Success Job!", "Your modules created successfully!", "success");
         } else {
           isShowAlert.value = false;
           toastr.error(response.data.message);
-          console.log(response.data.message);
         }
       })
       .catch((error) => {

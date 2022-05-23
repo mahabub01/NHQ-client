@@ -100,14 +100,15 @@
                   <router-link
                     :to="`/pmm/pocs/${item.id}`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create POC</router-link
+                    ><i class="far fa-plus-square"></i> POC
+                    Document</router-link
                   >
                 </li>
                 <li>
                   <router-link
                     :to="`/pmm/boqs/${item.id}`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create BOQ</router-link
+                    ><i class="far fa-plus-square"></i> BOQ</router-link
                   >
                 </li>
 
@@ -115,7 +116,39 @@
                   <router-link
                     :to="`/pmm/oems/${item.id}`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Create OEM</router-link
+                    ><i class="far fa-plus-square"></i> OEM
+                    Communication</router-link
+                  >
+                </li>
+                <li>
+                  <router-link
+                    :to="`/pmm/customer-pos/${item.id}`"
+                    class="dropdown-item"
+                    ><i class="far fa-plus-square"></i> Customer PO</router-link
+                  >
+                </li>
+                <li>
+                  <router-link
+                    :to="`/pmm/disti-orders/${item.id}`"
+                    class="dropdown-item"
+                    ><i class="far fa-plus-square"></i> Disti Order</router-link
+                  >
+                </li>
+                <li>
+                  <router-link
+                    :to="`/pmm/delivery-timelines/${item.id}`"
+                    class="dropdown-item"
+                    ><i class="far fa-plus-square"></i> Delivery
+                    Timeline</router-link
+                  >
+                </li>
+
+                <li>
+                  <router-link
+                    :to="`/pmm/delivery-challans/${item.id}`"
+                    class="dropdown-item"
+                    ><i class="far fa-plus-square"></i> Delivery
+                    Challan</router-link
                   >
                 </li>
                 <li>

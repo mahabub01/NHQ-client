@@ -7,8 +7,8 @@
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
             Serial
           </th>
-          <th>Title</th>
-          <th>Slug</th>
+          <th>Role Name</th>
+          <th>Flag</th>
           <th>Comments</th>
           <th>Status</th>
           <th class="col-serial">Action</th>
@@ -25,15 +25,14 @@
             />
             {{ index + 1 }}
           </td>
-          <td>{{ td.title }}</td>
-          <td>{{ td.slug }}</td>
-          <td>{{ td.comments }}</td>
+          <td>{{ td.name }}</td>
+          <td>{{ td.flag }}</td>
+          <td>{{ td.description }}</td>
 
           <td>
             <span v-if="td.is_active == 1" class="activeStatus"
               ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
-              {{ td.is_active }}</span
-            >
+            </span>
             <span v-else class="inactiveStatus"
               ><i class="far fa-times-circle"></i>
               {{ isActive(td.is_active) }}</span
@@ -68,13 +67,17 @@
                     @click.prevent="changeStatus(td.id, td.is_active)"
                     ><i class="far fa-check-circle"></i> Active</a
                   >
-
+                </li>
+                <li>
                   <a
                     href="#"
                     @click.prevent="getId(td.id)"
                     class="dropdown-item"
                     ><i class="fas fa-edit"></i> Edit</a
                   >
+                </li>
+
+                <li>
                   <a
                     href="#"
                     @click.prevent="removeItem(td.id)"

@@ -9,7 +9,7 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-7">
+                <div class="col-md-5">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
@@ -21,10 +21,8 @@
                         style="margin-left: 6px; margin-right: 6px"
                       ></i>
                     </router-link>
-                    <router-link
-                      to="/core/permissions"
-                      class="rev-underline-subtitle"
-                      >Permissions</router-link
+                    <router-link to="/core/users" class="rev-underline-subtitle"
+                      >Users List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -35,7 +33,7 @@
                     </ul>
                   </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-7">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>
@@ -55,9 +53,9 @@
 
                       <input
                         type="text"
-                        placeholder="Search Name"
+                        placeholder="Search Title"
                         style="margin-right: 7px"
-                        v-model.lazy="nameSearch"
+                        v-model.lazy="titleSearch"
                       />
 
                       <button
@@ -102,14 +100,14 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <permission-table
+                    <user-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       @editId="showEdit($event)"
                       ref="multiselected"
-                    ></permission-table>
+                    ></user-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -139,7 +137,7 @@
     <div>
       <create-modal :modalsize="modalSize" v-if="createModalState">
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Permission
+          ><i class="fas fa-plus-square"></i> Create Users
         </template>
         <template v-slot:body>
           <form @submit.prevent="createSubmit" class="form-page">
@@ -155,10 +153,6 @@
                   :class="{ isInvalid: v$.name.$error }"
                   v-model.lazy="v$.name.$model"
                 />
-                <span style="color: silver; font-size: 11px"
-                  >This name use for developer end. example: display_task,
-                  create_task</span
-                >
                 <p
                   class="error-mgs"
                   v-for="(error, index) in v$.name.$errors"
@@ -170,19 +164,16 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label">
-                  Action <span class="mandatory">*</span>
+                  Email <span class="mandatory">*</span>
                 </label>
                 <input
                   type="text"
                   class="form-input"
-                  v-model.lazy="v$.action.$model"
+                  v-model.lazy="v$.email.$model"
                 />
-                <span style="color: silver; font-size: 11px"
-                  >Action use for backend. type # for default value</span
-                >
                 <p
                   class="error-mgs"
-                  v-for="(error, index) in v$.action.$errors"
+                  v-for="(error, index) in v$.email.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -190,22 +181,22 @@
                 </p>
               </div>
             </div>
+
             <div class="row mb-3">
               <div class="col-md-6">
                 <label class="form-label">
-                  Module
+                  Phone
                   <span class="mandatory">*</span>
                 </label>
-                <Select2
-                  v-model="v$.module_id.$model"
-                  :options="modules"
-                  :settings="{ placeholder: 'Choose' }"
-                  :class="{ isInvalid: v$.module_id.$error }"
+                <input
+                  type="text"
+                  class="form-input"
+                  :class="{ isInvalid: v$.phone.$error }"
+                  v-model.lazy="v$.phone.$model"
                 />
-
                 <p
                   class="error-mgs"
-                  v-for="(error, index) in v$.module_id.$errors"
+                  v-for="(error, index) in v$.phone.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -214,19 +205,19 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label">
-                  Component
+                  Role
                   <span class="mandatory">*</span>
                 </label>
                 <Select2
-                  v-model="v$.component_id.$model"
-                  :options="components"
+                  v-model="v$.role_id.$model"
+                  :options="roleList"
                   :settings="{ placeholder: 'Choose' }"
-                  :class="{ isInvalid: v$.component_id.$error }"
+                  :class="{ isInvalid: v$.role_id.$error }"
                 />
 
                 <p
                   class="error-mgs"
-                  v-for="(error, index) in v$.component_id.$errors"
+                  v-for="(error, index) in v$.role_id.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -234,78 +225,48 @@
                 </p>
               </div>
             </div>
-            <div class="row mb-3">
+            <div class="row">
               <div class="col-md-6">
-                <label class="form-label"> Professional Name </label>
+                <label class="form-label">
+                  Password <span class="mandatory">*</span></label
+                >
                 <input
-                  type="text"
+                  type="password"
                   class="form-input"
-                  :class="{ isInvalid: v$.name.$error }"
-                  v-model="state.professional_name"
+                  :class="{ isInvalid: v$.password.$error }"
+                  v-model.lazy="v$.password.$model"
                 />
-                <span style="color: silver; font-size: 11px"
-                  >Professional name show in component menu.</span
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.password.$errors"
+                  :key="index"
                 >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
               </div>
               <div class="col-md-6">
-                <label class="form-label"> URL </label>
-                <input type="text" class="form-input" v-model="state.url" />
-                <span style="color: silver; font-size: 11px"
-                  >Example: /pmm/tasks/create</span
+                <label class="form-label">
+                  Confirm Password <span class="mandatory">*</span></label
                 >
+                <input
+                  type="password"
+                  class="form-input"
+                  :class="{ isInvalid: v$.confirm_password.$error }"
+                  v-model.lazy="v$.confirm_password.$model"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.confirm_password.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
               </div>
             </div>
 
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <div>
-                  <label class="form-label"> Is View Component </label>
-                  <input
-                    type="radio"
-                    v-model="state.is_view_with_component"
-                    :value="1"
-                    name="dropdown"
-                  />
-                  Yes
-                  <input
-                    type="radio"
-                    v-model="state.is_view_with_component"
-                    :value="0"
-                    checked="checked"
-                    name="dropdown"
-                  />
-                  No
-                </div>
-                <span style="color: silver; font-size: 11px"
-                  >If checked true then show your menu dropdown</span
-                >
-              </div>
-              <div class="col-md-6">
-                <div>
-                  <label class="form-label"> Is View for System Admin </label>
-                  <input
-                    type="radio"
-                    v-model="state.is_view_for_system_admin"
-                    :value="1"
-                    name="systemadmin"
-                  />
-                  Yes
-                  <input
-                    type="radio"
-                    v-model="state.is_view_for_system_admin"
-                    :value="0"
-                    checked="checked"
-                    name="systemadmin"
-                  />
-                  No
-                </div>
-                <span style="color: silver; font-size: 11px"
-                  >If checked true then show just Systemadmin</span
-                >
-              </div>
-            </div>
-
-            <div class="modal-footer">
+            <div class="modal-footer" style="margin-top: 30px">
               <button
                 type="button"
                 class="btn btn-secondary"
@@ -329,7 +290,7 @@
     <!--start Edit Modal -->
     <EditModal :modalsize="modalSize" v-if="editModalState">
       <template v-slot:editheader
-        ><i class="fas fa-plus-square"></i> Edit Permission
+        ><i class="fas fa-plus-square"></i> Edit Component
       </template>
       <template v-slot:editbody>
         <form @submit.prevent="updateHandler" class="form-page">
@@ -343,7 +304,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.name.$error }"
-                placeholder="Enter Your Permission Name"
                 v-model.lazy="v$.name.$model"
               />
               <p
@@ -357,17 +317,16 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">
-                Action <span class="mandatory">*</span>
+                Email <span class="mandatory">*</span>
               </label>
               <input
                 type="text"
                 class="form-input"
-                placeholder="Enter Your Action"
-                v-model.lazy="v$.action.$model"
+                v-model.lazy="v$.email.$model"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.action.$errors"
+                v-for="(error, index) in v$.email.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i>
@@ -375,22 +334,22 @@
               </p>
             </div>
           </div>
+
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">
-                Module
+                Phone
                 <span class="mandatory">*</span>
               </label>
-              <Select2
-                v-model="v$.module_id.$model"
-                :options="modules"
-                :settings="{ placeholder: 'Choose' }"
-                :class="{ isInvalid: v$.module_id.$error }"
+              <input
+                type="text"
+                class="form-input"
+                :class="{ isInvalid: v$.phone.$error }"
+                v-model.lazy="v$.phone.$model"
               />
-
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.module_id.$errors"
+                v-for="(error, index) in v$.phone.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i>
@@ -399,19 +358,19 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">
-                Component
+                Role
                 <span class="mandatory">*</span>
               </label>
               <Select2
-                v-model="v$.component_id.$model"
-                :options="components"
+                v-model="v$.role_id.$model"
+                :options="roleList"
                 :settings="{ placeholder: 'Choose' }"
-                :class="{ isInvalid: v$.component_id.$error }"
+                :class="{ isInvalid: v$.role_id.$error }"
               />
 
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.component_id.$errors"
+                v-for="(error, index) in v$.role_id.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i>
@@ -419,74 +378,44 @@
               </p>
             </div>
           </div>
-          <div class="row mb-3">
+          <div class="row">
             <div class="col-md-6">
-              <label class="form-label"> Professional Name </label>
-              <input
-                type="text"
-                class="form-input"
-                :class="{ isInvalid: v$.name.$error }"
-                placeholder="Enter Professional Name"
-                v-model="state.professional_name"
-              />
-            </div>
-            <div class="col-md-6">
-              <label class="form-label"> URL </label>
-              <input
-                type="text"
-                class="form-input"
-                placeholder="Enter Your Url"
-                v-model="state.url"
-              />
-            </div>
-          </div>
-
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <div>
-                <label class="form-label"> Is View Component </label>
-                <input
-                  type="radio"
-                  v-model="state.is_view_with_component"
-                  :value="1"
-                  name="dropdown"
-                />
-                Yes
-                <input
-                  type="radio"
-                  v-model="state.is_view_with_component"
-                  :value="0"
-                  checked="checked"
-                  name="dropdown"
-                />
-                No
-              </div>
-              <span style="color: silver; font-size: 11px"
-                >If checked true then show your menu dropdown</span
+              <label class="form-label">
+                Password <span class="mandatory">*</span></label
               >
+              <input
+                type="password"
+                class="form-input"
+                :class="{ isInvalid: v$.password.$error }"
+                v-model.lazy="v$.password.$model"
+              />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.password.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
             </div>
             <div class="col-md-6">
-              <div>
-                <label class="form-label"> Is View for System Admin </label>
-                <input
-                  type="radio"
-                  v-model="state.is_view_for_system_admin"
-                  :value="1"
-                  name="is_view_for_system_admin"
-                />
-                Yes
-                <input
-                  type="radio"
-                  v-model="state.is_view_for_system_admin"
-                  :value="0"
-                  checked="checked"
-                  name="is_view_for_system_admin"
-                />
-                No
-              </div>
-              <span style="color: silver; font-size: 11px"
-                >If checked true then show just Systemadmin</span
+              <label class="form-label">
+                Confirm Password <span class="mandatory">*</span></label
               >
+              <input
+                type="password"
+                class="form-input"
+                :class="{ isInvalid: v$.confirm_password.$error }"
+                v-model.lazy="v$.confirm_password.$model"
+              />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.confirm_password.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
             </div>
           </div>
 
@@ -509,13 +438,14 @@
       </template>
     </EditModal>
     <!--end Edit Modal -->
+    <h1 v-if="getPermission(`project displaysadflkjsd`)">Test Data Here</h1>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch, computed, reactive } from "vue";
 import Axios from "@/http-common";
-import PermissionTable from "./PermissionTable.vue";
+import UserTable from "./UserTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
@@ -527,6 +457,9 @@ import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Select2 from "vue3-select2-component";
 import toastr from "toastr";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 //modal size
 const modalSize = ref("modal-lg");
@@ -557,24 +490,24 @@ const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
 /**********************
- * Create permissions
+ * Create Components
  ***********************/
 const state = reactive({
   name: "",
-  action: "",
-  professional_name: "",
-  module_id: "",
-  component_id: "",
-  is_view_with_component: 0,
-  is_view_for_system_admin: 0,
-  url: "",
+  email: "",
+  phone: "",
+  password: "",
+  confirm_password: "",
+  role_id: "",
 });
 
 const rules: any = {
   name: { required },
-  action: { required },
-  module_id: { required },
-  component_id: { required },
+  email: { required },
+  phone: { required },
+  role_id: { required },
+  password: { required },
+  confirm_password: { required },
 };
 
 const v$ = useVuelidate(rules, state);
@@ -583,19 +516,15 @@ async function createSubmit() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
-    savingSpinner.value = true;
-    await Axios.post("permissions", state)
+    //savingSpinner.value = true;
+    await Axios.post("users", state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
-          fetchData("permissions");
+          fetchData("users");
           resetForm();
           savingSpinner.value = false;
-          swal(
-            "Success Job!",
-            "Your permissions created successfully!",
-            "success"
-          );
+          swal("Success Job!", "User created successfully!", "success");
         } else {
           savingSpinner.value = false;
           toastr.error(response.data.message);
@@ -606,22 +535,12 @@ async function createSubmit() {
       });
   }
 }
-const modules = ref([]);
-const components = ref([]);
+const roleList = ref([]);
 
-async function getModules() {
-  await Axios.get("modules-selectable")
+async function getRoles() {
+  await Axios.get("role-selectable")
     .then((response) => {
-      modules.value = response.data.data;
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-async function getComponents() {
-  await Axios.get("components-selectable")
-    .then((response) => {
-      components.value = response.data.data;
+      roleList.value = response.data.data;
     })
     .catch((error) => {
       console.log("problem Here" + error);
@@ -631,32 +550,30 @@ async function getComponents() {
 //reset all property
 function resetForm() {
   state.name = "";
-  state.action = "";
-  state.module_id = "";
-  state.component_id = "";
-  state.professional_name = "";
-  state.is_view_with_component = 0;
-  state.is_view_for_system_admin = 0;
-  state.url = "";
+  state.phone = "";
+  state.email = "";
+  state.role_id = "";
+  state.password = "";
+  state.confirm_password = "";
   v$.value.$reset();
 }
 
 /**********************
- * End Create permission
+ * End Create Component
  ***********************/
 
 //Search Property
-let nameSearch = ref("");
+let titleSearch = ref("");
 
-watch([nameSearch], async () => {
+watch([titleSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
-    "/permissions?showEntries=" +
+    "/users?showEntries=" +
       currentEntries.value +
       "&page=" +
       datatables.currentPage +
-      "&searchName=" +
-      nameSearch.value
+      "&searchTitle=" +
+      titleSearch.value
   ).then((response) => {
     entries.value = response.data.data;
     datatables.totalItems = response.data.meta.total;
@@ -669,22 +586,21 @@ watch([nameSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/permissions");
-  getModules();
-  getComponents();
+  fetchData("/users");
+  getRoles();
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/permissions");
+  fetchData("/users");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/permissions");
+    fetchData("/users");
   }
 }
 
@@ -692,20 +608,20 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/permissions");
+    fetchData("/users");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("permissions");
+  fetchData("users");
 }
 
 //Delete selected Item
 function remove(id: number) {
   swal({
-    name: "Are you sure?",
+    title: "Are you sure?",
     text: "Once deleted, you will not be able to recover this record!",
     icon: "warning",
     buttons: true,
@@ -713,12 +629,12 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/permissions/" + id).then((response) => {
+      await Axios.delete("/users/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
-        fetchData("/permissions");
         deletingSpinner.value = false;
+        fetchData("/users");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });
@@ -743,20 +659,26 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/permissions-multidelete", {
+      await Axios.post("/users-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
+        fetchData("/users");
         deletingSpinner.value = false;
-        if (response.data.code === 200) {
-          fetchData("/permissions");
-          swal("Poof! Your data has been deleted!", {
-            icon: "success",
-          });
-        } else {
-          toastr.error(response.data.message);
-        }
+        swal("Poof! Your data has been deleted!", {
+          icon: "success",
+        });
       });
     }
+  });
+}
+
+//Change selected data status
+async function changeStatus(status: { id: number; status: number }) {
+  await Axios.post("/users-change-status", status).then((response) => {
+    swal("Your data status changed", {
+      icon: "success",
+    });
+    fetchData("users");
   });
 }
 
@@ -764,36 +686,34 @@ function bulkDelete() {
 const single_datas = ref([]);
 let editableId = "";
 
-async function getEditData(id: number) {
-  await Axios.get("/permissions/" + id).then((response) => {
-    single_datas.value = response.data.data;
-    state.name = single_datas.value.name;
-    state.action = single_datas.value.action;
-    state.professional_name = single_datas.value.professional_name;
-    state.module_id = String(single_datas.value.module_id);
-    state.component_id = String(single_datas.value.component_id);
-    state.is_view_with_component = single_datas.value.is_view_with_component;
-    state.is_view_for_system_admin =
-      single_datas.value.is_view_for_system_admin;
-    state.url = single_datas.value.url;
-  });
-}
+// async function getEditData(id: number) {
+//   await Axios.get("/components/" + id).then((response) => {
+//     single_datas.value = response.data.data;
+//     state.title = single_datas.value.title;
+//     state.slug = single_datas.value.slug;
+//     state.action = single_datas.value.action;
+//     state.icons = single_datas.value.icons;
+//     state.comments = single_datas.value.comments;
+//     state.module_id = single_datas.value.module_id;
+//     store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
+//   });
+// }
 
 async function updateHandler() {
   v$.value.$validate();
   v$.value.$touch();
   if (!v$.value.$error) {
     savingSpinner.value = true;
-    await Axios.put("permissions/" + editableId, state)
+    await Axios.put("users/" + editableId, state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-          fetchData("/permissions");
+          fetchData("/users");
           resetForm();
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your permission updated successfully!",
+            "Your component updated successfully!",
             "success"
           );
         } else {
@@ -807,11 +727,11 @@ async function updateHandler() {
   }
 }
 
-function showEdit(id) {
-  editableId = id;
-  getEditData(id);
-  store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
-}
+// function showEdit(id) {
+//   editableId = id;
+//   getEditData(id);
+//   store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
+// }
 </script>
 
 <style scoped></style>

@@ -182,7 +182,6 @@ async function handleSubmit() {
       })
       .then((response) => {
         is_authenticating.value = false;
-        console.log(response);
         if (response.data.code == 400) {
           isShowAlert.value = true;
           alertMessage.value = response.data.message;
@@ -205,6 +204,7 @@ async function handleSubmit() {
         localStorage.setItem("user_id", response.data.data.user.id);
         cookies.set("user-token", response.data.data.access_token, "/");
         cookies.set("user", response.data.data.user, "/");
+        console.log("User " + response.data.data.user);
 
         // store.dispatch(
         //   "currentUser/assignCurrentUser",
@@ -219,7 +219,7 @@ async function handleSubmit() {
         //store.dispatch("currentUser/assignAllPermission", response.data.data);
 
         //console.log(response.data.data.id);
-        //getAllPermissions(response.data.data.user.id);
+        getAllPermissions(response.data.data.user.id);
         router.go(1);
         router.push("/core/dashboard");
       })

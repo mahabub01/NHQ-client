@@ -167,7 +167,6 @@ const userInfo = computed(() => {
   return store.state.currentUser.userPemissions;
 });
 
-console.log(store.state.currentUser.token);
 // sign out code
 
 async function signOut() {

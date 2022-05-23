@@ -1,11 +1,10 @@
 <template>
-  <header-component></header-component>
   <menu-component></menu-component>
   <router-view></router-view>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
-import HeaderComponent from "../shared/HeaderComponent.vue";
+// import HeaderComponent from "../shared/HeaderComponent.vue";
 import MenuComponent from "../shared/MenuComponent.vue";
 import Axios from "@/http-common";
 import { useStore } from "vuex";

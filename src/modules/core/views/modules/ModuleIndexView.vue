@@ -175,6 +175,9 @@
                   placeholder="Enter Your Action"
                   v-model.lazy="v$.action.$model"
                 />
+                <span style="color: silver; font-size: 11px"
+                  >if nothing action that time write <b>#</b></span
+                >
                 <p
                   class="error-mgs"
                   v-for="(error, index) in v$.action.$errors"
@@ -198,6 +201,9 @@
                   placeholder="Enter Your Slug"
                   v-model.lazy="v$.slug.$model"
                 />
+                <span style="color: silver; font-size: 11px"
+                  >Write slug with small letter and don't use whitespace</span
+                >
                 <p
                   class="error-mgs"
                   v-for="(error, index) in v$.slug.$errors"

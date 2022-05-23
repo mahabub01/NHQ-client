@@ -7,9 +7,10 @@
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
             Serial
           </th>
-          <th>Title</th>
-          <th>Slug</th>
-          <th>Comments</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Role</th>
           <th>Status</th>
           <th class="col-serial">Action</th>
         </tr>
@@ -25,14 +26,14 @@
             />
             {{ index + 1 }}
           </td>
-          <td>{{ td.title }}</td>
-          <td>{{ td.slug }}</td>
-          <td>{{ td.comments }}</td>
-
+          <td>{{ td.name }}</td>
+          <td>{{ td.email }}</td>
+          <td>{{ td.phone }}</td>
+          <td>{{ td.role }}</td>
           <td>
             <span v-if="td.is_active == 1" class="activeStatus"
-              ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
-              {{ td.is_active }}</span
+              ><i class="far fa-check-circle"></i>
+              {{ isActive(td.is_active) }}</span
             >
             <span v-else class="inactiveStatus"
               ><i class="far fa-times-circle"></i>
@@ -50,7 +51,7 @@
               >
                 <i class="fas fa-sort-down"></i>
               </button>
-              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
+              <ul class="dropdown-menu table-dropdown">
                 <li>
                   <a
                     href="#"
@@ -68,19 +69,29 @@
                     @click.prevent="changeStatus(td.id, td.is_active)"
                     ><i class="far fa-check-circle"></i> Active</a
                   >
+                </li>
 
-                  <a
+                <!-- <a
                     href="#"
                     @click.prevent="getId(td.id)"
                     class="dropdown-item"
                     ><i class="fas fa-edit"></i> Edit</a
-                  >
+                  > -->
+                <li>
                   <a
                     href="#"
                     @click.prevent="removeItem(td.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
                   >
+                </li>
+                <li>
+                  <router-link
+                    class="dropdown-item"
+                    :to="`/core/user-permission/${td.id}`"
+                  >
+                    <i class="fas fa-cogs"></i> Permissions
+                  </router-link>
                 </li>
               </ul>
             </div>

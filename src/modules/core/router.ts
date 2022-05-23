@@ -20,7 +20,7 @@ export const CoreModuleRoute = [
         name: "password-change",
         component: () =>
           import(
-            /* webpackChunkName: "password-change" */ "./views/auth/PasswordChange.vue"
+            /* webpackChunkName: "authentication" */ "./views/auth/PasswordChange.vue"
           ),
       },
 
@@ -29,7 +29,7 @@ export const CoreModuleRoute = [
         name: "profile-update",
         component: () =>
           import(
-            /* webpackChunkName: "profile-uodate" */ "./views/auth/ProfileUpdate.vue"
+            /* webpackChunkName: "authentication" */ "./views/auth/ProfileUpdate.vue"
           ),
       },
       {
@@ -37,7 +37,7 @@ export const CoreModuleRoute = [
         name: "profile-details",
         component: () =>
           import(
-            /* webpackChunkName: "profile-details" */ "./views/auth/ProfileDetails.vue"
+            /* webpackChunkName: "authentication" */ "./views/auth/ProfileDetails.vue"
           ),
       },
 
@@ -46,7 +46,7 @@ export const CoreModuleRoute = [
         name: "modules",
         component: () =>
           import(
-            /* webpackChunkName: "modules" */ "./views/modules/ModuleIndexView.vue"
+            /* webpackChunkName: "authentication" */ "./views/modules/ModuleIndexView.vue"
           ),
       },
       {
@@ -54,7 +54,7 @@ export const CoreModuleRoute = [
         name: "components",
         component: () =>
           import(
-            /* webpackChunkName: "components" */ "./views/components/ComponentIndexView.vue"
+            /* webpackChunkName: "authentication" */ "./views/components/ComponentIndexView.vue"
           ),
       },
       {
@@ -62,7 +62,7 @@ export const CoreModuleRoute = [
         name: "permissions",
         component: () =>
           import(
-            /* webpackChunkName: "permission" */ "./views/permissions/PermissionIndexView.vue"
+            /* webpackChunkName: "authentication" */ "./views/permissions/PermissionIndexView.vue"
           ),
       },
       {
@@ -70,7 +70,31 @@ export const CoreModuleRoute = [
         name: "roles",
         component: () =>
           import(
-            /* webpackChunkName: "roles" */ "./views/roles/RoleIndexView.vue"
+            /* webpackChunkName: "authentication" */ "./views/roles/RoleIndexView.vue"
+          ),
+      },
+      {
+        path: "roles/create",
+        name: "roles_create",
+        component: () =>
+          import(
+            /* webpackChunkName: "authentication" */ "./views/roles/RoleCreateView.vue"
+          ),
+      },
+      {
+        path: "users/create",
+        name: "users_create",
+        component: () =>
+          import(
+            /* webpackChunkName: "authentication" */ "./views/users/UserCreateView.vue"
+          ),
+      },
+      {
+        path: "users",
+        name: "users",
+        component: () =>
+          import(
+            /* webpackChunkName: "authentication" */ "./views/users/UserIndexView.vue"
           ),
       },
     ],

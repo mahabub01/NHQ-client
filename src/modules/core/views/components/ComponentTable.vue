@@ -8,6 +8,7 @@
             Serial
           </th>
           <th>Title</th>
+          <th>Profesonal Name</th>
           <th>Slug</th>
           <th>Module</th>
           <th>Comments</th>
@@ -27,6 +28,7 @@
             {{ index + 1 }}
           </td>
           <td>{{ td.title }}</td>
+          <td>{{ td.professional_name }}</td>
           <td>{{ td.slug }}</td>
           <td>{{ td.module }}</td>
           <td>{{ td.comments }}</td>
@@ -34,8 +36,7 @@
           <td>
             <span v-if="td.is_active == 1" class="activeStatus"
               ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
-              {{ td.is_active }}</span
-            >
+            </span>
             <span v-else class="inactiveStatus"
               ><i class="far fa-times-circle"></i>
               {{ isActive(td.is_active) }}</span
@@ -52,7 +53,7 @@
               >
                 <i class="fas fa-sort-down"></i>
               </button>
-              <ul class="dropdown-menu table-dropdown">
+              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
                   <a
                     href="#"

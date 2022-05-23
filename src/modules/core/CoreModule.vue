@@ -22,7 +22,7 @@ onMounted(() => {
 async function getAllPermissions(userId: string | null) {
   await Axios.get("/get-user-all-permissions/" + userId).then((response) => {
     store.dispatch("currentUser/assignAllPermission", response.data);
-    console.log(store.state.currentUser.userPemissions);
+    //store.dispatch("currentUser/change", "SOMETHING from core");
   });
 }
 </script>

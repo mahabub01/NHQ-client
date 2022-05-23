@@ -171,6 +171,10 @@ const userInfo = computed(() => {
   return store.state.currentUser.userPemissions;
 });
 
+const testVuex = computed(() => {
+  return store.state.currentUser.testData;
+});
+
 //use for deleting spenner
 let deletingSpinner = ref(false);
 let savingSpinner = ref(false);
@@ -179,14 +183,8 @@ let savingSpinner = ref(false);
 const multiselected = ref([]);
 
 //use datatable composables
-const {
-  entries,
-  datatables,
-  showEntries,
-  currentEntries,
-  fetchData,
-  filterData,
-} = useDatatable();
+const { entries, datatables, showEntries, currentEntries, filterData } =
+  useDatatable();
 
 //Search Property
 let nameSearch = ref("");
@@ -213,17 +211,19 @@ watch([search], async () => {
 onMounted(() => {
   // fetchData("/tasks");
   filterData(
-    "/tasks",
-    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+    "/submilestones",
+    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
   );
+  console.log("User Data....." + userInfo.value.flag);
+  //console.log(testVuex.value);
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
   filterData(
-    "/tasks",
-    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+    "/submilestones",
+    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
   );
 }
 
@@ -232,8 +232,8 @@ function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
     filterData(
-      "/tasks",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+      "/submilestones",
+      "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
     );
   }
 }
@@ -243,8 +243,8 @@ function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
     filterData(
-      "/tasks",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+      "/submilestones",
+      "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
     );
   }
 }
@@ -253,8 +253,8 @@ function next() {
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
   filterData(
-    "/tasks",
-    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+    "/submilestones",
+    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
   );
 }
 
@@ -269,12 +269,11 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/tasks/" + id).then((response) => {
+      await Axios.delete("/submilestones/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
         deletingSpinner.value = false;
-        fetchData("/employees");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });
@@ -299,12 +298,12 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/tasks/tasks-multidelete", {
+      await Axios.post("/submilestones/multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
         filterData(
-          "/tasks",
-          "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+          "/submilestones",
+          "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
         );
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
@@ -320,10 +319,10 @@ const { excelImport, importSpinner } = useExcelImport();
 const excelImporter = ref();
 function importExcel() {
   //fileUploader.value.files[0]
-  excelImport("tasks-import", excelImporter.value.files[0]);
+  excelImport("submilestones-import", excelImporter.value.files[0]);
   filterData(
-    "/tasks",
-    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+    "/submilestones",
+    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
   );
 }
 

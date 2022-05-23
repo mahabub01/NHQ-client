@@ -140,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, reactive } from "vue";
+import { onMounted, ref, watch, reactive, computed } from "vue";
 import Axios from "@/http-common";
 import ProjectTable from "./ProjectTable.vue";
 import swal from "sweetalert";
@@ -166,48 +166,6 @@ const multiselected = ref([]);
 const { entries, datatables, showEntries, currentEntries, fetchData } =
   useDatatable();
 
-/**********************
- * Create Project
- ***********************/
-const state = reactive({
-  title: "",
-  description: "",
-});
-
-const rules: any = {
-  title: { required },
-};
-
-const v$ = useVuelidate(rules, state);
-
-async function createSubmit() {
-  v$.value.$validate();
-  v$.value.$touch();
-  if (!v$.value.$error) {
-    store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
-    savingSpinner.value = true;
-    await Axios.post("projects/categories", state)
-      .then((response) => {
-        resetForm();
-        savingSpinner.value = false;
-        swal("Success Job!", "Your category created successfully!", "success");
-      })
-      .catch((error) => {
-        console.log("problem Here" + error);
-      });
-  }
-}
-
-//reset all property
-function resetForm() {
-  state.title = "";
-  state.description = "";
-  v$.value.$reset();
-}
-/**********************
- * End Create Category
- ***********************/
-
 //search field
 let search = ref("");
 
@@ -217,7 +175,7 @@ watch([search], async () => {
 });
 
 //Load Data form computed onMounted
-onMounted(() => {
+onMounted(async () => {
   fetchData("/projects/projects");
 });
 

@@ -67,16 +67,15 @@
 </template>
 
 <script setup lang="ts">
+import Excel from "exceljs";
+import { saveAs } from "file-saver";
 // import { useStore } from "vuex";
 // import { useCookies } from "vue3-cookies";
 
 // const { cookies } = useCookies();
 
 // const store = useStore();
-//console.log(store.state.currentUser.token);
-
-import Excel from "exceljs";
-import { saveAs } from "file-saver";
+// console.log(store.state.currentUser.user);
 
 async function exportData() {
   // Create workbook & add worksheet

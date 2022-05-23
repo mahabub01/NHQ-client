@@ -190,7 +190,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, defineEmits, onMounted } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";

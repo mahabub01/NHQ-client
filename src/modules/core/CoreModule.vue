@@ -1,11 +1,10 @@
 <template>
-  <header-component></header-component>
   <menu-component></menu-component>
   <router-view></router-view>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
-import HeaderComponent from "../shared/HeaderComponent.vue";
+// import HeaderComponent from "../shared/HeaderComponent.vue";
 import MenuComponent from "../shared/MenuComponent.vue";
 import Axios from "@/http-common";
 import { useStore } from "vuex";
@@ -23,7 +22,7 @@ onMounted(() => {
 async function getAllPermissions(userId: string | null) {
   await Axios.get("/get-user-all-permissions/" + userId).then((response) => {
     store.dispatch("currentUser/assignAllPermission", response.data);
-    console.log(store.state.currentUser.userPemissions);
+    //store.dispatch("currentUser/change", "SOMETHING from core");
   });
 }
 </script>

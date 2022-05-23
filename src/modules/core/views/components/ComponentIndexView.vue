@@ -153,9 +153,11 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Enter Your Title"
                   v-model.lazy="v$.title.$model"
                 />
+                <span style="color: silver; font-size: 11px"
+                  >This Component use for developer.</span
+                >
                 <p
                   class="error-mgs"
                   v-for="(error, index) in v$.title.$errors"
@@ -167,17 +169,21 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label">
-                  Action <span class="mandatory">*</span>
+                  Profesonal Name
+                  <span class="mandatory">*</span>
                 </label>
                 <input
                   type="text"
                   class="form-input"
-                  placeholder="Enter Your Action"
-                  v-model.lazy="v$.action.$model"
+                  :class="{ isInvalid: v$.professional_name.$error }"
+                  v-model.lazy="v$.professional_name.$model"
                 />
+                <span style="color: silver; font-size: 11px"
+                  >This Name show in Menu list.</span
+                >
                 <p
                   class="error-mgs"
-                  v-for="(error, index) in v$.action.$errors"
+                  v-for="(error, index) in v$.professional_name.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -196,9 +202,11 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.slug.$error }"
-                  placeholder="Enter Your Slug"
                   v-model.lazy="v$.slug.$model"
                 />
+                <span style="color: silver; font-size: 11px"
+                  >Write slug with small letter and don't use whitespace</span
+                >
                 <p
                   class="error-mgs"
                   v-for="(error, index) in v$.slug.$errors"
@@ -214,7 +222,6 @@
                   type="text"
                   class="form-input"
                   :class="{ isInvalid: v$.title.$error }"
-                  placeholder="Enter Your Icons"
                   v-model="state.icons"
                 />
               </div>
@@ -240,6 +247,53 @@
                   <i class="fas fa-exclamation-triangle"></i>
                   {{ error.$message }}
                 </p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">
+                  Action <span class="mandatory">*</span>
+                </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  v-model.lazy="v$.action.$model"
+                />
+                <span style="color: silver; font-size: 11px"
+                  >Example: /pmm/tasks</span
+                >
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.action.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div>
+                  <label class="form-label"> Is Dropdown </label>
+                  <input
+                    type="radio"
+                    v-model="state.is_dropdown"
+                    :value="1"
+                    name="dropdown"
+                  />
+                  Yes
+                  <input
+                    type="radio"
+                    v-model="state.is_dropdown"
+                    :value="0"
+                    checked="checked"
+                    name="dropdown"
+                  />
+                  No
+                </div>
+                <span style="color: silver; font-size: 11px"
+                  >If checked true then your component is dropdown or not</span
+                >
               </div>
             </div>
 
@@ -289,9 +343,11 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.title.$error }"
-                placeholder="Enter Your Title"
                 v-model.lazy="v$.title.$model"
               />
+              <span style="color: silver; font-size: 11px"
+                >This Component use for developer.</span
+              >
               <p
                 class="error-mgs"
                 v-for="(error, index) in v$.title.$errors"
@@ -302,15 +358,30 @@
               </p>
             </div>
             <div class="col-md-6">
-              <label class="form-label"> Action </label>
+              <label class="form-label">
+                Profesonal Name
+                <span class="mandatory">*</span>
+              </label>
               <input
                 type="text"
                 class="form-input"
-                placeholder="Enter Your Action"
-                v-model="state.action"
+                :class="{ isInvalid: v$.professional_name.$error }"
+                v-model.lazy="v$.professional_name.$model"
               />
+              <span style="color: silver; font-size: 11px"
+                >This Name show in Menu list.</span
+              >
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.professional_name.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
             </div>
           </div>
+
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">
@@ -321,9 +392,11 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.slug.$error }"
-                placeholder="Enter Your Slug"
                 v-model.lazy="v$.slug.$model"
               />
+              <span style="color: silver; font-size: 11px"
+                >Write slug with small letter and don't use whitespace</span
+              >
               <p
                 class="error-mgs"
                 v-for="(error, index) in v$.slug.$errors"
@@ -339,7 +412,6 @@
                 type="text"
                 class="form-input"
                 :class="{ isInvalid: v$.title.$error }"
-                placeholder="Enter Your Icons"
                 v-model="state.icons"
               />
             </div>
@@ -365,6 +437,53 @@
                 <i class="fas fa-exclamation-triangle"></i>
                 {{ error.$message }}
               </p>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">
+                Action <span class="mandatory">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-input"
+                v-model.lazy="v$.action.$model"
+              />
+              <span style="color: silver; font-size: 11px"
+                >Example: /pmm/tasks</span
+              >
+              <p
+                class="error-mgs"
+                v-for="(error, index) in v$.action.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div>
+                <label class="form-label"> Is Dropdown </label>
+                <input
+                  type="radio"
+                  v-model="state.is_dropdown"
+                  :value="1"
+                  name="dropdown"
+                />
+                Yes
+                <input
+                  type="radio"
+                  v-model="state.is_dropdown"
+                  :value="0"
+                  checked="checked"
+                  name="dropdown"
+                />
+                No
+              </div>
+              <span style="color: silver; font-size: 11px"
+                >If checked true then your component is dropdown or not</span
+              >
             </div>
           </div>
 
@@ -464,7 +583,9 @@ const state = reactive({
   action: "",
   icons: "",
   comments: "",
-  module_id: "",
+  module_id: String(""),
+  professional_name: "",
+  is_dropdown: 0,
 });
 
 const rules: any = {
@@ -472,6 +593,8 @@ const rules: any = {
   slug: { required },
   action: { required },
   module_id: { required },
+  professional_name: { required },
+  is_dropdown: { required },
 };
 
 const v$ = useVuelidate(rules, state);
@@ -518,11 +641,13 @@ async function getModules() {
 //reset all property
 function resetForm() {
   state.title = "";
+  state.professional_name = "";
   state.slug = "";
   state.action = "";
   state.icons = "";
   state.comments = "";
   state.module_id = "";
+  state.is_dropdown = "";
   v$.value.$reset();
 }
 
@@ -662,7 +787,9 @@ async function getEditData(id: number) {
     state.action = single_datas.value.action;
     state.icons = single_datas.value.icons;
     state.comments = single_datas.value.comments;
-    state.module_id = single_datas.value.module_id;
+    state.module_id = String(single_datas.value.module_id);
+    state.professional_name = single_datas.value.professional_name;
+    state.is_dropdown = single_datas.value.is_dropdown;
     store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
   });
 }

@@ -8,8 +8,11 @@
             Serial
           </th>
           <th>Name</th>
+          <th>Professional Name</th>
           <th>Module</th>
           <th>Component</th>
+          <th>Is View in Menu</th>
+          <th>Is View For Admin</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -25,8 +28,11 @@
             {{ index + 1 }}
           </td>
           <td>{{ td.name }}</td>
+          <td>{{ td.professional_name }}</td>
           <td>{{ td.module_id }}</td>
           <td>{{ td.component_id }}</td>
+          <td>{{ td.is_view_with_component }}</td>
+          <td>{{ td.is_view_for_system_admin }}</td>
 
           <td class="col-serial">
             <div class="btn-group">
@@ -39,7 +45,7 @@
               >
                 <i class="fas fa-sort-down"></i>
               </button>
-              <ul class="dropdown-menu table-dropdown">
+              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
                 <li>
                   <a
                     href="#"

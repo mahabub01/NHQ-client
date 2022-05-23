@@ -29,7 +29,10 @@ createApp(App)
   .mount("#app");
 
 //with Credential for every request
-axios.defaults.withCredentials = true;
+//axios.defaults.withCredentials = true;
+// axios.defaults.headers.common = {
+//   Authorization: `Bearer ${localStorage.getItem("token")}`,
+// };
 
 axios.interceptors.response.use(undefined, function (error) {
   if (error) {

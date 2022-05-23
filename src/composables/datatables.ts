@@ -27,12 +27,16 @@ export function useDatatable() {
         "&search=" +
         search
     ).then((response) => {
-      entries.value = response.data.data;
-      datatables.totalItems = response.data.meta.total;
-      datatables.currentPage = response.data.meta.current_page;
-      datatables.allPages = response.data.meta.last_page;
-      datatables.pagination = response.data.meta.links;
-      datatables.loadingState = false;
+      if (response.data.code == 200) {
+        entries.value = response.data.data;
+        datatables.totalItems = response.data.meta.total;
+        datatables.currentPage = response.data.meta.current_page;
+        datatables.allPages = response.data.meta.last_page;
+        datatables.pagination = response.data.meta.links;
+        datatables.loadingState = false;
+      } else {
+        toastr.error("Unauthenticated");
+      }
     });
   }
 

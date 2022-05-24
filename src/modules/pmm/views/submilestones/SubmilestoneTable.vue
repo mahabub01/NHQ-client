@@ -9,8 +9,8 @@
           </th>
           <th class="col-serial" style="width: 50px !important"></th>
           <th>Time</th>
-          <th style="width: 280px">Sub Milestone Name</th>
-          <th>Sub Milestone ID</th>
+          <th style="width: 280px">Submilestone Name</th>
+          <th>Submilestone ID</th>
           <th style="width: 80px !important">Project ID</th>
           <th>Milestone ID</th>
           <th>Expected</th>
@@ -99,7 +99,7 @@
                 </li>
                 <li>
                   <router-link
-                    :to="`/pmm/sub-milestones/time-tracker/${item.id}`"
+                    :to="`/pmm/submilestones/time-tracker/${item.id}`"
                     class="dropdown-item"
                     >Time Tracker</router-link
                   >
@@ -107,9 +107,9 @@
 
                 <li>
                   <router-link
-                    :to="`/pmm/sub-milestones/details/${item.id}`"
+                    :to="`/pmm/submilestones/details/${item.id}`"
                     class="dropdown-item"
-                    >Sub Milestone Details</router-link
+                    >Submilestone Details</router-link
                   >
                 </li>
 
@@ -134,7 +134,7 @@
 
                 <li style="text-align: center; margin-top: 10px">
                   <router-link
-                    :to="`/pmm/tasks/${item.id}`"
+                    :to="`/pmm/milestones/${item.id}`"
                     class="btn btn-info icon_btn"
                     style="width: 80%"
                   >

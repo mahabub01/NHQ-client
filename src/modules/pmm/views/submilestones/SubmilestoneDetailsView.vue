@@ -9,10 +9,10 @@
     <div class="form-bootcamp">
       <div class="row">
         <div class="col-md-4">
-          <router-link to="/pmm/sub-milestones"
-            >Sub Milestone List <i class="fas fa-chevron-right"></i
+          <router-link to="/pmm/submilestones"
+            >Submilestone List <i class="fas fa-chevron-right"></i
           ></router-link>
-          <router-link to="#">Sub Milestone Details</router-link>
+          <router-link to="#">Submilestone Details</router-link>
         </div>
         <div class="col-md-8"></div>
       </div>
@@ -22,7 +22,7 @@
         <div class="row">
           <div class="col-md-6 offset-md-3">
             <h4 class="form-page-title details-header-title">
-              Sub Milestone Details
+              Submilestone Details
             </h4>
             <div class="row">
               <div class="col-md-6">

@@ -182,30 +182,30 @@ export const PmmModuleRoute = [
       },
 
       {
-        path: "sub-milestones",
-        name: "sub-milestones",
+        path: "submilestones",
+        name: "submilestones",
         component: () =>
           import(
-            /* webpackChunkName: "pmm-module" */ "./views/sub-milestones/SubMilestoneIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/submilestones/SubmilestoneIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
 
       {
-        path: "sub-milestones/create",
-        name: "sub-milestones-create",
+        path: "submilestones/create",
+        name: "submilestones-create",
         component: () =>
           import(
-            /* webpackChunkName: "pmm-module" */ "./views/sub-milestones/SubMilestoneCreateView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/submilestones/SubmilestoneCreateView.vue"
           ),
         meta: { middleware: "auth" },
       },
       {
-        path: "sub-milestone-categories",
-        name: "sub-milestone-categories",
+        path: "submilestone-categories",
+        name: "submilestone-categories",
         component: () =>
           import(
-            /* webpackChunkName: "pmm-module" */ "./views/sub-milestone-categories/CategoryIndexView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/submilestone-categories/CategoryIndexView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -231,31 +231,31 @@ export const PmmModuleRoute = [
       },
 
       {
-        path: "sub-milestones/details/:id",
-        name: "sub-milestones-details",
+        path: "submilestones/details/:id",
+        name: "submilestones-details",
         component: () =>
           import(
-            /* webpackChunkName: "sub-milestones" */ "./views/sub-milestones/SubMilestoneDetailsView.vue"
+            /* webpackChunkName: "submilestones" */ "./views/submilestones/SubmilestoneDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },
 
       {
-        path: "sub-milestones-by-milestone/:id",
-        name: "sub-milestoneby-milestone",
+        path: "submilestones-by-milestone/:id",
+        name: "submilestoneby-milestone",
         component: () =>
           import(
-            /* webpackChunkName: "submilestones" */ "./views/sub-milestones/SubMilestoneByMilestoneView.vue"
+            /* webpackChunkName: "submilestones" */ "./views/submilestones/SubmilestoneByMilestoneView.vue"
           ),
         meta: { middleware: "auth" },
       },
 
       {
-        path: "sub-milestones/time-tracker/:sub_milestone_id",
-        name: "sub-milestones-time-tracker",
+        path: "submilestones/time-tracker/:submilestone_id",
+        name: "submilestones-time-tracker",
         component: () =>
           import(
-            /* webpackChunkName: "time-tracker" */ "./views/sub-milestones/TimeTrackerView.vue"
+            /* webpackChunkName: "time-tracker" */ "./views/submilestones/TimeTrackerView.vue"
           ),
         meta: { middleware: "auth" },
       },

@@ -15,9 +15,9 @@
                   </button>
                   <div class="page-bootcamp-left">
                     <router-link
-                      to="/pmm/sub-milestone-categories"
+                      to="/pmm/submilestone-categories"
                       class="rev-underline-subtitle"
-                      >Sub Milestone Category List</router-link
+                      >Submilestone Category List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -132,7 +132,7 @@
     <div>
       <create-modal>
         <template v-slot:header
-          ><i class="fas fa-plus-square"></i> Create Sub Milestone Category
+          ><i class="fas fa-plus-square"></i> Create Submilestone Category
         </template>
         <template v-slot:body>
           <form @submit.prevent="createSubmit" class="form-page">
@@ -193,7 +193,7 @@
     <div>
       <edit-modal>
         <template v-slot:editheader>
-          <i class="fas fa-plus-square"></i> Edit Sub Milestone Category
+          <i class="fas fa-plus-square"></i> Edit Submilestone Category
         </template>
         <template v-slot:editbody>
           <form @submit.prevent="editSubmit" class="form-page">
@@ -302,16 +302,16 @@ async function createSubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     savingSpinner.value = true;
-    await Axios.post("/task-categories", state)
+    await Axios.post("/submilestone-categories", state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
-          fetchData("/task-categories");
+          fetchData("/submilestone-categories");
           resetForm();
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your sub-milestone category created successfully!",
+            "Your submilestone category created successfully!",
             "success"
           );
         } else {
@@ -341,7 +341,7 @@ let titleSearch = ref("");
 watch([titleSearch], async () => {
   datatables.loadingState = true;
   await Axios.get(
-    "/task-categories?showEntries=" +
+    "/submilestone-categories?showEntries=" +
       currentEntries.value +
       "&page=" +
       datatables.currentPage +
@@ -359,20 +359,20 @@ watch([titleSearch], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  fetchData("/task-categories");
+  fetchData("/submilestone-categories");
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/task-categories");
+  fetchData("/submilestone-categories");
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/task-categories");
+    fetchData("/submilestone-categories");
   }
 }
 
@@ -380,14 +380,14 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/task-categories");
+    fetchData("/submilestone-categories");
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/task-categories");
+  fetchData("/submilestone-categories");
 }
 
 //Delete selected Item
@@ -401,7 +401,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/task-categories/" + id).then((response) => {
+      await Axios.delete("/submilestone-categories/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -430,10 +430,10 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/task-categories-multidelete", {
+      await Axios.post("/submilestone-categories-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
-        fetchData("/task-categories");
+        fetchData("/submilestone-categories");
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -445,12 +445,14 @@ function bulkDelete() {
 
 //Change selected data status
 async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/task-categories-status", status).then((response) => {
-    swal("Your data status changed", {
-      icon: "success",
-    });
-    fetchData("/task-categories");
-  });
+  await Axios.post("/submilestone-categories-status", status).then(
+    (response) => {
+      swal("Your data status changed", {
+        icon: "success",
+      });
+      fetchData("/submilestone-categories");
+    }
+  );
 }
 
 // edit pert
@@ -458,7 +460,7 @@ const single_datas = ref([]);
 let editableId = "";
 
 async function getEditData(id: number) {
-  await Axios.get("/task-categories/" + id).then((response) => {
+  await Axios.get("/submilestone-categories/" + id).then((response) => {
     single_datas.value = response.data.data;
     state.title = single_datas.value.title;
     state.description = single_datas.value.description;
@@ -470,16 +472,16 @@ async function editSubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     savingSpinner.value = true;
-    await Axios.put("/task-categories/" + editableId, state)
+    await Axios.put("/submilestone-categories/" + editableId, state)
       .then((response) => {
         if (response.data.code == 200) {
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-          fetchData("/task-categories");
+          fetchData("/submilestone-categories");
           resetForm();
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your task category updated successfully!",
+            "Your submilestone category updated successfully!",
             "success"
           );
         } else {

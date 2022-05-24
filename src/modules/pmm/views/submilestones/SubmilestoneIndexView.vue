@@ -15,9 +15,9 @@
                   </button>
                   <div class="page-bootcamp-left">
                     <router-link
-                      to="/pmm/sub-milestones"
+                      to="/pmm/submilestones"
                       class="rev-underline-subtitle"
-                      >Sub Milestone List</router-link
+                      >Submilestone List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -65,7 +65,7 @@
 
                       <router-link
                         v-if="userInfo.role_id != 9"
-                        to="/pmm/sub-milestones/create"
+                        to="/pmm/submilestones/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
@@ -116,7 +116,7 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <sub-milestone-table
+                    <submilestone-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       v-model:nameSearch.lazy="nameSearch"
@@ -124,7 +124,7 @@
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       ref="multiselected"
-                    ></sub-milestone-table>
+                    ></submilestone-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -156,21 +156,23 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
 import Axios from "@/http-common";
-import SubMilestoneTable from "./SubMilestoneTable.vue";
+import SubmilestoneTable from "./SubmilestoneTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import { useExcelImport } from "@/composables/excel-import";
-import { useRoute } from "vue-router";
 
-const route = useRoute();
 //create store
 const store = useStore();
 
 const userInfo = computed(() => {
   return store.state.currentUser.userPemissions;
+});
+
+const testVuex = computed(() => {
+  return store.state.currentUser.testData;
 });
 
 //use for deleting spenner
@@ -201,9 +203,7 @@ watch([search], async () => {
       "&role_id=" +
       userInfo.value.role_id +
       "&search=" +
-      search.value +
-      "&milestone_id =" +
-      route.params.id
+      search.value
   );
 });
 
@@ -211,27 +211,19 @@ watch([search], async () => {
 onMounted(() => {
   // fetchData("/tasks");
   filterData(
-    "/tasks",
-    "&user_id=" +
-      userInfo.value.id +
-      "&role_id=" +
-      userInfo.value.role_id +
-      "&milestone_id=" +
-      route.params.id
+    "/submilestones",
+    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
   );
+  console.log("User Data....." + userInfo.value.flag);
+  //console.log(testVuex.value);
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
   filterData(
-    "/tasks",
-    "&user_id=" +
-      userInfo.value.id +
-      "&role_id=" +
-      userInfo.value.role_id +
-      "&milestone_id=" +
-      route.params.id
+    "/submilestones",
+    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
   );
 }
 
@@ -240,13 +232,8 @@ function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
     filterData(
-      "/tasks",
-      "&user_id=" +
-        userInfo.value.id +
-        "&role_id=" +
-        userInfo.value.role_id +
-        "&milestone_id=" +
-        route.params.id
+      "/submilestones",
+      "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
     );
   }
 }
@@ -256,13 +243,8 @@ function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
     filterData(
-      "/tasks",
-      "&user_id=" +
-        userInfo.value.id +
-        "&role_id=" +
-        userInfo.value.role_id +
-        "&milestone_id=" +
-        route.params.id
+      "/submilestones",
+      "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
     );
   }
 }
@@ -271,13 +253,8 @@ function next() {
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
   filterData(
-    "/tasks",
-    "&user_id=" +
-      userInfo.value.id +
-      "&role_id=" +
-      userInfo.value.role_id +
-      "&milestone_id=" +
-      route.params.id
+    "/submilestones",
+    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
   );
 }
 
@@ -292,7 +269,7 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/tasks/" + id).then((response) => {
+      await Axios.delete("/submilestones/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
@@ -321,17 +298,12 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/tasks/tasks-multidelete", {
+      await Axios.post("/submilestones/multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
         filterData(
-          "/tasks",
-          "&user_id=" +
-            userInfo.value.id +
-            "&role_id=" +
-            userInfo.value.role_id +
-            "&milestone_id=" +
-            route.params.id
+          "/submilestones",
+          "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
         );
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
@@ -347,15 +319,10 @@ const { excelImport, importSpinner } = useExcelImport();
 const excelImporter = ref();
 function importExcel() {
   //fileUploader.value.files[0]
-  excelImport("tasks-import", excelImporter.value.files[0]);
+  excelImport("submilestones-import", excelImporter.value.files[0]);
   filterData(
-    "/tasks",
-    "&user_id=" +
-      userInfo.value.id +
-      "&role_id=" +
-      userInfo.value.role_id +
-      "&milestone_id=" +
-      route.params.id
+    "/submilestones",
+    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
   );
 }
 

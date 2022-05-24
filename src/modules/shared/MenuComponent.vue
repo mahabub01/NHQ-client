@@ -230,12 +230,15 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li
-                  v-for="(subpermission, subindex) in viewmodulelist.permission"
+                  v-for="(
+                    subpermission, subindex
+                  ) in viewmodulelist.permissions"
                   :key="subindex"
                 >
                   <router-link
+                    v-if="subpermission.is_view_with_component"
                     class="dropdown-item"
-                    :to="`${subpermission.action}`"
+                    :to="`${subpermission.url}`"
                     ><i class="fas fa-table"></i>
                     {{ subpermission.professional_name }}</router-link
                   >
@@ -481,6 +484,7 @@ async function loadFirstComponent() {
   let user_id = localStorage.getItem("user_id");
   await Axios.get("/get-first-module-component/" + user_id).then((response) => {
     userComponents.value = response.data.data.components;
+    console.log(userComponents.value);
   });
 }
 

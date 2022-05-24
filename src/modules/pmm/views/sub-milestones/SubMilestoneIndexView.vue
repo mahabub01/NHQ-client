@@ -64,7 +64,7 @@
                       ></router-link> -->
 
                       <router-link
-                        v-if="userInfo.role_id != 9"
+                        v-if="user.role_id != 9"
                         to="/pmm/sub-milestones/create"
                         class="link_btn"
                         style="margin-right: 7px"
@@ -79,7 +79,7 @@
                         style="display: none"
                       />
                       <label
-                        v-if="userInfo.role_id != 9"
+                        v-if="user.role_id != 9"
                         for="importId"
                         class="theme-color-btn"
                         style="margin-right: 7px; cursor: pointer"
@@ -167,12 +167,12 @@ import { useExcelImport } from "@/composables/excel-import";
 //create store
 const store = useStore();
 
-const userInfo = computed(() => {
-  return store.state.currentUser.userPemissions;
-});
+// const userInfo = computed(() => {
+//   return store.state.currentUser.userPemissions;
+// });
 
-const testVuex = computed(() => {
-  return store.state.currentUser.testData;
+const user = computed(() => {
+  return store.state.currentUser.user;
 });
 
 //use for deleting spenner
@@ -199,9 +199,9 @@ watch([search], async () => {
   filterData(
     "/tasks",
     "&user_id=" +
-      userInfo.value.id +
+      user.value.id +
       "&role_id=" +
-      userInfo.value.role_id +
+      user.value.role_id +
       "&search=" +
       search.value
   );
@@ -209,13 +209,12 @@ watch([search], async () => {
 
 //Load Data form computed onMounted
 onMounted(() => {
-  // fetchData("/tasks");
-  filterData(
-    "/submilestones",
-    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
-  );
-  console.log("User Data....." + userInfo.value.flag);
-  //console.log(testVuex.value);
+  let user_id =
+    user.value.id != "" ? user.value.id : localStorage.getItem("user_id");
+  let flag =
+    user.value.flag != "" ? user.value.flag : localStorage.getItem("flag");
+
+  filterData("/submilestones", "&user_id=" + user_id + "&flag=" + flag);
 });
 
 //show data using show Menu
@@ -223,7 +222,7 @@ function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
   filterData(
     "/submilestones",
-    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
+    "&user_id=" + user.value.id + "&flag=" + user.value.flag
   );
 }
 
@@ -233,7 +232,7 @@ function prev() {
     datatables.currentPage = datatables.currentPage - 1;
     filterData(
       "/submilestones",
-      "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
+      "&user_id=" + user.value.id + "&flag=" + user.value.flag
     );
   }
 }
@@ -244,7 +243,7 @@ function next() {
     datatables.currentPage = datatables.currentPage + 1;
     filterData(
       "/submilestones",
-      "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
+      "&user_id=" + user.value.id + "&flag=" + user.value.flag
     );
   }
 }
@@ -254,7 +253,7 @@ function currentPage(currentp: number) {
   datatables.currentPage = currentp;
   filterData(
     "/submilestones",
-    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
+    "&user_id=" + user.value.id + "&flag=" + user.value.flag
   );
 }
 
@@ -284,6 +283,7 @@ function remove(id: number) {
 
 //Delete multiselected data
 function bulkDelete() {
+  console.log(user.value);
   if (multiselected.value.multiselect == "") {
     swal("Warning", "Please select at-least one record", "warning");
     return;
@@ -303,7 +303,7 @@ function bulkDelete() {
       }).then((response) => {
         filterData(
           "/submilestones",
-          "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
+          "&user_id=" + user.value.id + "&flag=" + user.value.flag
         );
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
@@ -322,7 +322,7 @@ function importExcel() {
   excelImport("submilestones-import", excelImporter.value.files[0]);
   filterData(
     "/submilestones",
-    "&user_id=" + userInfo.value.id + "&flag=" + userInfo.value.flag
+    "&user_id=" + user.value.id + "&flag=" + user.value.flag
   );
 }
 

@@ -202,6 +202,7 @@ async function handleSubmit() {
         is_authenticated.value = true;
         localStorage.setItem("token", response.data.data.access_token);
         localStorage.setItem("user_id", response.data.data.user.id);
+        localStorage.setItem("flag", response.data.data.user.flag);
         // cookies.set("user-token", response.data.data.access_token, "/");
         // cookies.set("user", response.data.data.user, "/");
 

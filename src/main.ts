@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-//import { Vue3ProgressPlugin } from "@marcoschulte/vue3-progress";
+import { Vue3ProgressPlugin } from "@marcoschulte/vue3-progress";
 import axios from "axios";
 import VueCookies from "vue3-cookies";
 import VueExcelXlsx from "vue-excel-xlsx";
@@ -18,7 +18,7 @@ createApp(App)
   .use(store)
   .use(router)
   .use(VueExcelXlsx)
-  //.use(Vue3ProgressPlugin)
+  .use(Vue3ProgressPlugin)
   .use(VueCookies, {
     expireTimes: "1d",
     path: "/",
@@ -29,10 +29,7 @@ createApp(App)
   .mount("#app");
 
 //with Credential for every request
-//axios.defaults.withCredentials = true;
-// axios.defaults.headers.common = {
-//   Authorization: `Bearer ${localStorage.getItem("token")}`,
-// };
+axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use(undefined, function (error) {
   if (error) {

@@ -1,16 +1,22 @@
 <template>
+  <vue3-progress-bar></vue3-progress-bar>
   <menu-component></menu-component>
   <router-view></router-view>
 </template>
 <script lang="ts" setup>
+import { useProgress } from "@marcoschulte/vue3-progress";
 import MenuComponent from "../shared/MenuComponent.vue";
 import { onMounted } from "vue";
 import Axios from "@/http-common";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 const store = useStore();
+let progress: any;
+const router = useRouter();
 
 onMounted(() => {
+  progress = useProgress().start();
   let user_id = localStorage.getItem("user_id");
   getAllPermissions(user_id);
 });
@@ -26,6 +32,8 @@ async function getAllPermissions(userId: string | null) {
       role_id: response.data.role_id,
       role: response.data.role.name,
     });
+    progress.finish();
+    console.log("store" + store.state.currentUser.user);
   });
 }
 </script>

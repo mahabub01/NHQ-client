@@ -17,14 +17,17 @@ export default {
     token: localStorage.getItem("token"),
     userPemissions: {},
     testData: {
-      id: "",
-      name: "",
-      email: "",
+      id: "test id",
+      name: "test name",
+      email: "test email",
     },
   },
   getters: {
     getToken(state: any) {
       return state.token;
+    },
+    getUser(state: any) {
+      return state.test;
     },
   },
   mutations: {
@@ -34,7 +37,7 @@ export default {
       state.user.email = data.email;
       state.user.role_id = data.role_id;
       state.user.role = data.role.name;
-      state.user.flag = data.role.flag;
+      state.user.flag = data.flag;
     },
 
     IS_LOGIN_ASSIGN(state: any, data: any) {

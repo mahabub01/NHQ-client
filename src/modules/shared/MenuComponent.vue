@@ -237,7 +237,7 @@
                     class="dropdown-item"
                     :to="`${subpermission.action}`"
                     ><i class="fas fa-table"></i>
-                    {{ subpermission.profesonal_name }}</router-link
+                    {{ subpermission.professional_name }}</router-link
                   >
                 </li>
               </ul>
@@ -249,6 +249,11 @@
               </router-link>
             </li>
           </template>
+          <li class="nav-item dropdown">
+            <router-link class="nav-link" to="/pmm/sub-milestones">
+              Submilestone
+            </router-link>
+          </li>
         </ul>
 
         <!--start for Project Manager role-->
@@ -501,6 +506,7 @@ async function signOut() {
 
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
+        localStorage.removeItem("flag");
         //store.dispatch("currentUser/assignCurrentUser", {});
 
         // store.dispatch("currentUser/isLogin", {

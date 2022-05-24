@@ -148,8 +148,6 @@ import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
-import { useVuelidate } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
 import toastr from "toastr";
 
 //create store

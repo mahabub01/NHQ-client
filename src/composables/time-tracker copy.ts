@@ -87,10 +87,10 @@ export function useTimeTracker() {
         if (isStartForLocalStore == true) {
           if (tracker_type == "counter") {
             localStorage.removeItem(
-              "sub_r_t_counter_" + task_id + "_" + user_id.value
+              "r_t_counter_" + task_id + "_" + user_id.value
             );
             localStorage.setItem(
-              "sub_r_t_counter_" + task_id + "_" + user_id.value,
+              "r_t_counter_" + task_id + "_" + user_id.value,
               JSON.stringify({
                 h: hours,
                 m: minutes,
@@ -99,9 +99,9 @@ export function useTimeTracker() {
               })
             );
           } else {
-            localStorage.removeItem("sub_r_t_" + task_id + "_" + user_id.value);
+            localStorage.removeItem("r_t_" + task_id + "_" + user_id.value);
             localStorage.setItem(
-              "sub_r_t_" + task_id + "_" + user_id.value,
+              "r_t_" + task_id + "_" + user_id.value,
               JSON.stringify({
                 h: hours,
                 m: minutes,
@@ -144,10 +144,8 @@ export function useTimeTracker() {
 
       //remove local storage
       if (isStartForLocalStore == true) {
-        localStorage.removeItem("sub_r_t_" + task_id + "_" + user_id.value);
-        localStorage.removeItem(
-          "sub_r_t_counter_" + task_id + "_" + user_id.value
-        );
+        localStorage.removeItem("r_t_" + task_id + "_" + user_id.value);
+        localStorage.removeItem("r_t_counter_" + task_id + "_" + user_id.value);
       }
     }
   }
@@ -215,22 +213,17 @@ export function useTimeTracker() {
 
   //Store Interval Id
   function storeIntervalId(task_id: number, intervalId: number) {
-    const getInvervalId = localStorage.getItem(
-      "sub_runnig_inverval_" + task_id
-    );
+    const getInvervalId = localStorage.getItem("runnig_inverval_" + task_id);
     if (getInvervalId != null) {
       const arrIntervalId = JSON.parse(getInvervalId);
       const arr: any = [];
       for (let i = 0; i < arrIntervalId.length; i++) {
         arr.push(arrIntervalId[i]);
       }
-      localStorage.setItem(
-        "sub_runnig_inverval_" + task_id,
-        JSON.stringify(arr)
-      );
+      localStorage.setItem("runnig_inverval_" + task_id, JSON.stringify(arr));
     } else {
       localStorage.setItem(
-        "sub_runnig_inverval_" + task_id,
+        "runnig_inverval_" + task_id,
         JSON.stringify([Number(intervalId)])
       );
     }
@@ -238,20 +231,16 @@ export function useTimeTracker() {
 
   //Remove all running interval
   function removeIntervalId(task_id: number) {
-    const getInvervalId = localStorage.getItem(
-      "sub_runnig_inverval_" + task_id
-    );
+    const getInvervalId = localStorage.getItem("runnig_inverval_" + task_id);
     if (getInvervalId != null) {
       const arrIntervalId = [JSON.parse(getInvervalId)];
       arrIntervalId.forEach((item) => {
         window.clearInterval(item);
         console.log(item);
       });
-      localStorage.removeItem("sub_runnig_inverval_" + task_id);
-      localStorage.removeItem("sub_r_t_" + task_id + "_" + user_id.value);
-      localStorage.removeItem(
-        "sub_r_t_counter_" + task_id + "_" + user_id.value
-      );
+      localStorage.removeItem("runnig_inverval_" + task_id);
+      localStorage.removeItem("r_t_" + task_id + "_" + user_id.value);
+      localStorage.removeItem("r_t_counter_" + task_id + "_" + user_id.value);
     }
   }
 

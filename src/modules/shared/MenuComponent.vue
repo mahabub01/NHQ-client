@@ -484,7 +484,6 @@ async function loadFirstComponent() {
   let user_id = localStorage.getItem("user_id");
   await Axios.get("/get-first-module-component/" + user_id).then((response) => {
     userComponents.value = response.data.data.components;
-    console.log(userComponents.value);
   });
 }
 

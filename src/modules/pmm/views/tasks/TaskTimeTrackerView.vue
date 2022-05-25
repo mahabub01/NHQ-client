@@ -3,7 +3,7 @@
     <div class="form-bootcamp">
       <div class="row">
         <div class="col-md-4">
-          <router-link to="/pmm/sub-milestones"
+          <router-link to="/pmm/tasks"
             >Sub Milestone List <i class="fas fa-chevron-right"></i
           ></router-link>
           <router-link to="#">Time Tracker</router-link>
@@ -19,8 +19,8 @@
               @timerStart="startTimer()"
               @timerEnd="stopTimer()"
               ref="timerResult"
-              :taskid="`${route.params.submilestone_id}`"
-              :userid="Number(user_id)"
+              :taskid="route.params.task_id"
+              :userid="user_id"
             ></the-counter>
           </div>
           <div class="col-md-6 timer-table">
@@ -59,17 +59,17 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, reactive } from "vue";
+import { ref, computed, onMounted, reactive } from "vue";
 import TheCounter from "../../../core/shared/TheCounter.vue";
 import Axios from "@/http-common";
 import toastr from "toastr";
+import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import TheSpinner from "@/modules/shared/spinners/TheSpinner.vue";
 
 const route = useRoute();
-//const store = useStore();
-//const user_id = computed(() => store.state.currentUser.user.id);
-const user_id = ref(localStorage.getItem("user_id"));
+const store = useStore();
+const user_id = computed(() => store.state.currentUser.user.id);
 const loadingSpinner = ref(false);
 const savingSpinner = ref(false);
 
@@ -80,7 +80,7 @@ const timerstated = ref(false); // for stop reloading
 
 const timeTrackerState = reactive({
   user_id: user_id.value,
-  task_id: route.params.submilestone_id,
+  task_id: route.params.task_id,
   start_date: "",
   end_date: "",
   start_time: "",
@@ -94,9 +94,7 @@ const timeTrackerState = reactive({
 
 onMounted(() => {
   loadTimerData();
-  let exits_time_id = localStorage.getItem(
-    "sub_timer_" + route.params.submilestone_id_id
-  );
+  let exits_time_id = localStorage.getItem("timer_" + route.params.task_id);
   if (exits_time_id != null) {
     task_time_id.value = exits_time_id;
   }
@@ -105,10 +103,7 @@ onMounted(() => {
 async function loadTimerData() {
   loadingSpinner.value = true;
   await Axios.get(
-    "/submilestone-timers?user_id=" +
-      user_id.value +
-      "&submilestone_id=" +
-      route.params.submilestone_id
+    "/task-timers?user_id=" + user_id.value + "&task_id=" + route.params.task_id
   ).then((response) => {
     if (response.data.code == 200) {
       loadTimeData.value = response.data.data;
@@ -127,12 +122,14 @@ async function startTimer() {
   timeTrackerState.start_time = exposeData.start_time;
   //timeTrackerState.end_time = exposeData.end_time;
   loadTimeData.value.push(exposeData);
-  await Axios.post("submilestone-timers", timeTrackerState)
+  console.log(timerResult.value);
+
+  await Axios.post("task-timers", timeTrackerState)
     .then((response) => {
       if (response.data.code === 200) {
         task_time_id.value = response.data.data.id;
         localStorage.setItem(
-          "sub_timer_" + route.params.submilestone_id,
+          "timer_" + route.params.task_id,
           response.data.data.id
         );
       } else {
@@ -155,11 +152,11 @@ async function stopTimer() {
   timeTrackerState.sec = Number(exposeData.sec);
   timeTrackerState.hour = Number(exposeData.hr);
   timeTrackerState.all_seconds = Number(exposeData.all_seconds);
-  await Axios.put("submilestone-timers/" + task_time_id.value, timeTrackerState)
+  await Axios.put("task-timers/" + task_time_id.value, timeTrackerState)
     .then((response) => {
       if (response.data.code === 200) {
         loadTimerData();
-        localStorage.removeItem("sub_timer_" + route.params.submilestone_id);
+        localStorage.removeItem("timer_" + route.params.task_id);
       } else {
         toastr.error(response.data.message);
       }

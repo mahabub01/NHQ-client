@@ -14,10 +14,8 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link
-                      to="/pmm/sub-milestones"
-                      class="rev-underline-subtitle"
-                      >Sub Milestone List</router-link
+                    <router-link to="/pmm/tasks" class="rev-underline-subtitle"
+                      >Task List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -55,17 +53,17 @@
                         class="table-search"
                       />
 
-                      <!-- <router-link
-                        to="/pmm/tasks/create"
+                      <router-link
+                        v-if="route.params.submilestone_id != ''"
+                        :to="`/pmm/tasks/${route.params.submilestone_id}/create`"
                         class="link_btn"
                         style="margin-right: 7px"
+                        ><i class="fas fa-plus"></i> Create</router-link
                       >
-                        <i class="fas fa-filter"></i
-                      ></router-link> -->
 
                       <router-link
-                        v-if="user.role_id != 9"
-                        to="/pmm/sub-milestones/create"
+                        v-else
+                        :to="`/pmm/tasks/create`"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
@@ -79,7 +77,7 @@
                         style="display: none"
                       />
                       <label
-                        v-if="user.role_id != 9"
+                        v-if="userInfo.role_id != 9"
                         for="importId"
                         class="theme-color-btn"
                         style="margin-right: 7px; cursor: pointer"
@@ -116,7 +114,7 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <sub-milestone-table
+                    <task-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       v-model:nameSearch.lazy="nameSearch"
@@ -124,7 +122,7 @@
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       ref="multiselected"
-                    ></sub-milestone-table>
+                    ></task-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -156,24 +154,26 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
 import Axios from "@/http-common";
-import SubMilestoneTable from "./SubMilestoneTable.vue";
+import TaskTable from "./TaskTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import { useExcelImport } from "@/composables/excel-import";
+import { useRoute } from "vue-router";
 
 //create store
 const store = useStore();
 
-// const userInfo = computed(() => {
-//   return store.state.currentUser.userPemissions;
-// });
+const route = useRoute();
 
-const user = computed(() => {
-  return store.state.currentUser.user;
+const userInfo = computed(() => {
+  return store.state.currentUser.userPemissions;
 });
+
+const user_id = ref(localStorage.getItem("user_id"));
+const flag = ref(localStorage.getItem("flag"));
 
 //use for deleting spenner
 let deletingSpinner = ref(false);
@@ -183,8 +183,14 @@ let savingSpinner = ref(false);
 const multiselected = ref([]);
 
 //use datatable composables
-const { entries, datatables, showEntries, currentEntries, filterData } =
-  useDatatable();
+const {
+  entries,
+  datatables,
+  showEntries,
+  currentEntries,
+  fetchData,
+  filterData,
+} = useDatatable();
 
 //Search Property
 let nameSearch = ref("");
@@ -195,34 +201,43 @@ let search = ref("");
 
 //filter by POC ID/ Poc title
 watch([search], async () => {
-  //fetchData("/tasks", search.value);
   filterData(
     "/tasks",
     "&user_id=" +
-      user.value.id +
-      "&role_id=" +
-      user.value.role_id +
+      user_id.value +
+      "&flag=" +
+      flag.value +
       "&search=" +
-      search.value
+      search.value +
+      "&submilestone_id=" +
+      route.params.submilestone_id
   );
 });
 
 //Load Data form computed onMounted
 onMounted(() => {
-  let user_id =
-    user.value.id != "" ? user.value.id : localStorage.getItem("user_id");
-  let flag =
-    user.value.flag != "" ? user.value.flag : localStorage.getItem("flag");
-
-  filterData("/submilestones", "&user_id=" + user_id + "&flag=" + flag);
+  filterData(
+    "/tasks",
+    "&user_id=" +
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&submilestone_id=" +
+      route.params.submilestone_id
+  );
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
   filterData(
-    "/submilestones",
-    "&user_id=" + user.value.id + "&flag=" + user.value.flag
+    "/tasks",
+    "&user_id=" +
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&submilestone_id=" +
+      route.params.submilestone_id
   );
 }
 
@@ -231,8 +246,13 @@ function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
     filterData(
-      "/submilestones",
-      "&user_id=" + user.value.id + "&flag=" + user.value.flag
+      "/tasks",
+      "&user_id=" +
+        user_id.value +
+        "&flag=" +
+        flag.value +
+        "&submilestone_id=" +
+        route.params.submilestone_id
     );
   }
 }
@@ -242,8 +262,13 @@ function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
     filterData(
-      "/submilestones",
-      "&user_id=" + user.value.id + "&flag=" + user.value.flag
+      "/tasks",
+      "&user_id=" +
+        user_id.value +
+        "&flag=" +
+        flag.value +
+        "&submilestone_id=" +
+        route.params.submilestone_id
     );
   }
 }
@@ -252,8 +277,13 @@ function next() {
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
   filterData(
-    "/submilestones",
-    "&user_id=" + user.value.id + "&flag=" + user.value.flag
+    "/tasks",
+    "&user_id=" +
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&submilestone_id=" +
+      route.params.submilestone_id
   );
 }
 
@@ -268,11 +298,12 @@ function remove(id: number) {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.delete("/submilestones/" + id).then((response) => {
+      await Axios.delete("/tasks/" + id).then((response) => {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
         deletingSpinner.value = false;
+        fetchData("/employees");
         swal("Poof! Your data has been deleted!", {
           icon: "success",
         });
@@ -297,12 +328,17 @@ function bulkDelete() {
   }).then(async (willDelete) => {
     if (willDelete) {
       deletingSpinner.value = true;
-      await Axios.post("/submilestones/multidelete", {
+      await Axios.post("/tasks/tasks-multidelete", {
         ids: multiselected.value.multiselect,
       }).then((response) => {
         filterData(
-          "/submilestones",
-          "&user_id=" + user.value.id + "&flag=" + user.value.flag
+          "/tasks",
+          "&user_id=" +
+            user_id.value +
+            "&flag=" +
+            flag.value +
+            "&submilestone_id=" +
+            route.params.submilestone_id
         );
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
@@ -318,10 +354,15 @@ const { excelImport, importSpinner } = useExcelImport();
 const excelImporter = ref();
 function importExcel() {
   //fileUploader.value.files[0]
-  excelImport("submilestones-import", excelImporter.value.files[0]);
+  excelImport("tasks-import", excelImporter.value.files[0]);
   filterData(
-    "/submilestones",
-    "&user_id=" + user.value.id + "&flag=" + user.value.flag
+    "/tasks",
+    "&user_id=" +
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&submilestone_id=" +
+      route.params.submilestone_id
   );
 }
 

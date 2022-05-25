@@ -59,6 +59,7 @@
                       />
 
                       <button
+                        v-if="getPermission(`create_project_category`)"
                         type="button"
                         class="link_btn"
                         style="margin-right: 7px"
@@ -271,6 +272,9 @@ import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import toastr from "toastr";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 //create store
 const store = useStore();

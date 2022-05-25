@@ -9,10 +9,8 @@
           </th>
           <th class="col-serial" style="width: 50px !important"></th>
           <th>Time</th>
-          <th style="width: 280px">Sub Milestone Name</th>
-          <th>Sub Milestone ID</th>
-          <th style="width: 80px !important">Project ID</th>
-          <th>Milestone ID</th>
+          <th style="width: 280px">Task Name</th>
+          <th>Task ID</th>
           <th>Expected</th>
           <th>Actual</th>
           <th>Start Date</th>
@@ -24,7 +22,7 @@
         </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
-        <tr v-for="(item, index) in entries" :key="item.id">
+        <tr v-for="(item, index) in entries" :key="index">
           <td class="col-serial">
             <input
               type="checkbox"
@@ -57,7 +55,7 @@
                 >
                   <button
                     type="button"
-                    @click="EndSubMilestoneTimer(`${index}`, `${item.id}`)"
+                    @click="EndTaskTimer(`${index}`, `${item.id}`)"
                     class="btn btn-info icon_btn btn-weight stop-btn-color"
                   >
                     End Time
@@ -74,7 +72,7 @@
                 >
                   <button
                     type="button"
-                    @click="EndSubMilestoneTimer(`${index}`, `${item.id}`)"
+                    @click="EndTaskTimer(`${index}`, `${item.id}`)"
                     class="btn btn-info icon_btn btn-weight stop-btn-color"
                   >
                     End Time
@@ -91,7 +89,7 @@
                 >
                   <button
                     type="button"
-                    @click="StartSubMilestoneTimer(`${index}`, `${item.id}`)"
+                    @click="StartTaskTimer(`${index}`, `${item.id}`)"
                     class="btn btn-info icon_btn btn-weight"
                   >
                     Start Time
@@ -99,7 +97,14 @@
                 </li>
                 <li>
                   <router-link
-                    :to="`/pmm/sub-miletone-time-tracker/${item.id}`"
+                    v-if="route.params.submilestone_id != null"
+                    :to="`/pmm/task-time-tracker/${route.params.submilestone_id}/${item.id}`"
+                    class="dropdown-item"
+                    >Time Tracker</router-link
+                  >
+                  <router-link
+                    v-else
+                    :to="`/pmm/task-time-tracker/${item.id}`"
                     class="dropdown-item"
                     >Time Tracker</router-link
                   >
@@ -107,9 +112,16 @@
 
                 <li>
                   <router-link
-                    :to="`/pmm/sub-milestones/details/${item.id}`"
+                    v-if="route.params.submilestone_id != null"
+                    :to="`/pmm/tasks/${route.params.submilestone_id}/details/${item.id}`"
                     class="dropdown-item"
-                    >Sub Milestone Details</router-link
+                    >Task Details</router-link
+                  >
+                  <router-link
+                    v-else
+                    :to="`/pmm/tasks/details/${item.id}`"
+                    class="dropdown-item"
+                    >Task Details</router-link
                   >
                 </li>
 
@@ -122,30 +134,18 @@
                     Delete</a
                   >
                 </li>
-
-                <li style="text-align: center; margin-top: 10px">
-                  <router-link
-                    :to="`/pmm/tasks/${item.id}`"
-                    class="btn btn-info icon_btn"
-                    style="width: 80%"
-                  >
-                    <i class="fas fa-plus"></i> Add Sub Task</router-link
-                  >
-                </li>
               </ul>
             </div>
           </td>
           <td>
-            <sub-milestone-timer
-              :key="item.id"
+            <the-timer
+              :key="index"
               :taskId="`${item.id}`"
               ref="timerRef"
-            ></sub-milestone-timer>
+            ></the-timer>
           </td>
-          <td style="width: 280px">{{ item.submilestone_name }}</td>
-          <td>{{ item.submilestone_unique_id }}</td>
-          <td style="width: 80px !important">{{ item.project_ID }}</td>
-          <td>{{ item.milestone_ID }}</td>
+          <td style="width: 280px">{{ item.task_name }}</td>
+          <td>{{ item.task_unique_id }}</td>
           <td>{{ item.expected_duration }}</td>
           <td>{{ item.actual_duration }}</td>
           <td>{{ item.start_date }}</td>
@@ -164,17 +164,18 @@
               </div>
             </div>
           </td>
-          <td>{{ item.status }}</td>
+          <td>{{ item.task_status }}</td>
           <td class="action-field" style="text-align: center">
-            <router-link
-              :to="`/pmm/sub-milestones/${item.id}/edit`"
-              title="Edit Sub Milestone"
+            <router-link :to="`/pmm/tasks/${item.id}/edit`" title="Edit Task"
               ><i class="fa fa-pen action-icon"></i
             ></router-link>
           </td>
 
           <td class="action-field" style="text-align: center">
-            <a v-if="item.files != null" :href="`${item.files}`" target="_blank"
+            <a
+              v-if="item.file_name != null"
+              :href="`${item.file_name}`"
+              target="_blank"
               ><i class="fa fa-paperclip action-icon"></i
             ></a>
             <a href="#" onclick="alert('File not uploaded')" v-else
@@ -198,9 +199,12 @@ import {
   computed,
   onUpdated,
 } from "vue";
-import SubMilestoneTimer from "./SubMilestoneTimer.vue";
+import TheTimer from "./TheTimer.vue";
 import { useTimeTracker } from "@/composables/time-tracker";
 import toastr from "toastr";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const store = useStore();
 const user_id = computed(() => store.state.currentUser.user.id);
@@ -269,15 +273,15 @@ function removeItem(id: number) {
   emit("delete", id);
 }
 
-//Start SubMilestone Timer
-function StartSubMilestoneTimer(index: any, task_id: any) {
+//Start Task Timer
+function StartTaskTimer(index: any, task_id: any) {
   timerRef.value[index].startCounter(task_id);
   timerBtnCond.value.push(task_id);
   toastr.success("Timer started Successfully.");
 }
 
-//End SubMilestone timer
-function EndSubMilestoneTimer(index: any, task_id: any) {
+//End Task timer
+function EndTaskTimer(index: any, task_id: any) {
   timerRef.value[index].endCounter(task_id);
   let arrayIndex = timerBtnCond.value.indexOf(task_id);
   if (arrayIndex > -1) {

@@ -4,10 +4,10 @@
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
-            <router-link to="/pmm/tasks"
-              >Sub Milestone <i class="fas fa-chevron-right"></i
+            <router-link :to="`/pmm/tasks/${route.params.submilestone_id}`"
+              >Task List <i class="fas fa-chevron-right"></i
             ></router-link>
-            <router-link to="/pmm/tasks/create">Create</router-link>
+            <router-link to="#">Create</router-link>
           </div>
           <div class="col-md-8">
             <div class="float-right">
@@ -17,7 +17,7 @@
               <router-link
                 class="form-button-danger"
                 style="color: white"
-                to="/pmm/tasks"
+                to="`/pmm/tasks/${route.params.submilestone_id}`"
                 ><i class="far fa-times-circle"></i> Discard
               </router-link>
             </div>
@@ -26,7 +26,7 @@
       </div>
       <div class="form-design-body">
         <div class="container">
-          <h4 class="form-page-title">Create Sub Milestone</h4>
+          <h4 class="form-page-title">Create Tasks</h4>
           <div class="row">
             <div class="col-md-4 offset-md-1">
               <!--start field -->
@@ -74,6 +74,27 @@
               <!--start field -->
               <div class="form-row">
                 <label class="form-label"
+                  >Sub Milestone<span class="mandatory">*</span></label
+                >
+                <Select2
+                  v-model="v$.submilestone_id.$model"
+                  :options="submileStoneSelectable"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.submilestone_id.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
+              </div>
+              <!--end field -->
+
+              <!--start field -->
+              <div class="form-row">
+                <label class="form-label"
                   >Task Name<span class="mandatory">*</span></label
                 >
                 <input
@@ -106,29 +127,7 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Follow Up</label>
-                <Select2
-                  v-model="formState.followup_id"
-                  :options="followupSelectable"
-                  :settings="{ placeholder: 'Choose' }"
-                />
-              </div>
-              <!--end field -->
-
-              <!--start field -->
-              <div class="form-row">
-                <label class="form-label">Task Category</label>
-                <Select2
-                  v-model="formState.task_category_id"
-                  :options="taskCategorySelectable"
-                  :settings="{ placeholder: 'Choose' }"
-                />
-              </div>
-              <!--end field -->
-
-              <!--start field -->
-              <div class="form-row">
-                <label class="form-label">Project Description</label>
+                <label class="form-label">Description</label>
                 <TheCKEditor @sendContent="setDescription" />
               </div>
               <!--end field -->
@@ -191,17 +190,6 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Priority</label>
-                <Select2
-                  v-model="formState.priority_id"
-                  :options="prioritySelectable"
-                  :settings="{ placeholder: 'Choose' }"
-                />
-              </div>
-              <!--end field -->
-
-              <!--start field -->
-              <div class="form-row">
                 <label class="form-label">Duration</label>
                 <input
                   type="text"
@@ -240,31 +228,33 @@ import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
 import toastr from "toastr";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
+const route = useRoute();
 
 const formState = reactive({
   project_id: "",
   task_name: "",
   milestone_id: "",
+  submilestone_id: "",
   team_member_id: "",
   task_status: "",
-  followup_id: "",
-  task_category_id: "",
   project_description: "",
   start_date: "",
   end_date: "",
   extended_date: "",
   task_point: 0,
-  priority_id: "",
   duration: "",
+  token: localStorage.getItem("token"),
+  user_id: localStorage.getItem("user_id"),
 });
 
 const rules: any = {
   project_id: { required },
   task_name: { required },
   milestone_id: { required },
+  submilestone_id: { required },
 };
 
 const setDescription = (value: any) => {
@@ -275,9 +265,7 @@ const setDescription = (value: any) => {
 const projectsSelectable = ref([]);
 const milestoneSelectable = ref([]);
 const teamSelectable = ref([]); //Team Members
-const followupSelectable = ref([]);
-const taskCategorySelectable = ref([]);
-const prioritySelectable = ref([]);
+const submileStoneSelectable = ref([]);
 const taskStatusSelectable = reactive([
   { id: "1", text: "In Progress" },
   { id: "2", text: "Completed" },
@@ -290,8 +278,7 @@ let savingSpinner = ref(false);
 onMounted(() => {
   getProjects();
   getMilestones();
-  getCategories();
-  getPriorities();
+  getSubmilestones();
   getTeamMembers();
 });
 
@@ -326,26 +313,11 @@ async function getMilestones() {
 }
 
 //get categories for Selectable
-async function getCategories() {
-  await Axios.get("/task-category-selectable")
+async function getSubmilestones() {
+  await Axios.get("/submilestones-selectable")
     .then((response) => {
       if (response.data.code === 200) {
-        taskCategorySelectable.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-//get Priorities for Selectable
-async function getPriorities() {
-  await Axios.get("/priority-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        prioritySelectable.value = response.data.data;
+        submileStoneSelectable.value = response.data.data;
       } else {
         toastr.error(response.data.message);
       }
@@ -361,7 +333,6 @@ async function getTeamMembers() {
     .then((response) => {
       if (response.data.code === 200) {
         teamSelectable.value = response.data.data;
-        followupSelectable.value = response.data.data;
       } else {
         toastr.error(response.data.message);
       }
@@ -380,12 +351,16 @@ async function handleSubmit() {
     savingSpinner.value = true;
     await Axios.post("tasks", formState)
       .then((response) => {
+        console.log(response);
         if (response.data.code === 200) {
           resetForm();
           //Stop Saving Spinner
           savingSpinner.value = false;
           swal("Success Job!", "Created task Successfully!", "success");
-          router.push("/pmm/tasks");
+          router.push({
+            name: "tasks",
+            params: { submilestone_id: route.params.submilestone_id },
+          });
         } else {
           savingSpinner.value = false;
           //Show Error message

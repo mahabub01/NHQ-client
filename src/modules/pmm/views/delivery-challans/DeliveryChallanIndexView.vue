@@ -180,10 +180,10 @@
 
             <div class="row form-row">
               <div class="col-md-12">
-                <label class="form-label">Choose File</label>
-                <single-file-uploader
+                <multi-file-uploader
+                  label="Choose File"
                   field_name="create_delivery_challan"
-                ></single-file-uploader>
+                ></multi-file-uploader>
               </div>
             </div>
 
@@ -252,10 +252,10 @@
 
           <div class="row form-row">
             <div class="col-md-12">
-              <label class="form-label">Choose File</label>
-              <single-file-uploader
+              <multi-file-uploader
+                label="Choose File"
                 field_name="create_delivery_challan"
-              ></single-file-uploader>
+              ></multi-file-uploader>
 
               <a
                 target="_blank"
@@ -308,6 +308,7 @@ import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import { useRoute } from "vue-router";
 import toastr from "toastr";
 import { usePermission } from "@/composables/permissions";
+import MultiFileUploader from "@/modules/core/shared/file-uploader/MultifileUploader.vue";
 
 const { getPermission } = usePermission();
 

@@ -180,12 +180,21 @@
 
             <div class="row form-row">
               <div class="col-md-12">
-                <label class="form-label">Choose File</label>
-                <single-file-uploader
+                <multi-file-uploader
+                  label="Choose File"
                   field_name="create_disti_order"
-                ></single-file-uploader>
+                ></multi-file-uploader>
               </div>
             </div>
+
+            <!--start field -->
+            <!-- <div class="form-row">
+              <multi-image-uploader
+                label="Implementation Snapshot"
+                field_name="task_snapshot"
+              ></multi-image-uploader>
+            </div> -->
+            <!--end field -->
 
             <div class="modal-footer">
               <button
@@ -252,10 +261,10 @@
 
           <div class="row form-row">
             <div class="col-md-12">
-              <label class="form-label">Choose File</label>
-              <single-file-uploader
+              <multi-file-uploader
+                label="Choose File"
                 field_name="create_disti_order"
-              ></single-file-uploader>
+              ></multi-file-uploader>
 
               <a
                 target="_blank"
@@ -308,6 +317,7 @@ import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import { useRoute } from "vue-router";
 import toastr from "toastr";
 import { usePermission } from "@/composables/permissions";
+import MultiFileUploader from "@/modules/core/shared/file-uploader/MultifileUploader.vue";
 
 const { getPermission } = usePermission();
 //get route information using route

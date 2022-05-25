@@ -223,7 +223,6 @@ import TheTimer from "./TheTimer.vue";
 import SubMilestoneTimer from "./SubMilestoneTimer.vue";
 import { useTimeTracker } from "@/composables/time-tracker";
 import toastr from "toastr";
-import { useTimeTracker } from "@/composables/time-tracker";
 import { usePermission } from "@/composables/permissions";
 
 const { getPermission } = usePermission();

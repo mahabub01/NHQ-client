@@ -206,7 +206,7 @@ export const PmmModuleRoute = [
         name: "sub-milestones-edit",
         component: () =>
           import(
-            /* webpackChunkName: "pmm-module" */ "./views/sub-milestones/SubMilestoneEditView.vue"
+            /* webpackChunkName: "pmm-module" */ "./views/submilestones/SubMilestoneEditView.vue"
           ),
         meta: { middleware: "auth" },
       },

@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { useTimeTracker } from "@/composables/time-tracker";
+import { useTimeTracker } from "@/composables/task-time-tracker";
 import {
   defineProps,
   computed,
@@ -19,9 +19,11 @@ import {
 } from "vue";
 import { useStore } from "vuex";
 import Axios from "@/http-common";
+import toastr from "toastr";
 
 const store = useStore();
-const user_id = computed(() => store.state.currentUser.user.id);
+//const user_id = computed(() => store.state.currentUser.user.id);
+const user_id = ref(localStorage.getItem("user_id"));
 
 const task_time_id = ref();
 
@@ -129,7 +131,7 @@ const endCounter = async (task_id: any) => {
   await Axios.put("task-timers/" + task_time_id.value, timeTrackerState)
     .then((response) => {
       if (response.data.code != 200) {
-        console.log(response.data.message);
+        console.log("stopped");
       }
     })
     .catch((error) => {

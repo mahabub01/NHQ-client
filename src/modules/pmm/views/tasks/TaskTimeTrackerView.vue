@@ -3,9 +3,16 @@
     <div class="form-bootcamp">
       <div class="row">
         <div class="col-md-4">
-          <router-link to="/pmm/tasks"
-            >Sub Milestone List <i class="fas fa-chevron-right"></i
+          <router-link
+            v-if="route.params.submilestone_id != ''"
+            :to="`/pmm/tasks/${route.params.submilestone_id}`"
+            >Task List <i class="fas fa-chevron-right"></i
           ></router-link>
+
+          <router-link v-else to="/pmm/tasks"
+            >Task List <i class="fas fa-chevron-right"></i
+          ></router-link>
+
           <router-link to="#">Time Tracker</router-link>
         </div>
         <div class="col-md-8"></div>
@@ -15,13 +22,13 @@
       <div class="container">
         <div class="row">
           <div class="col-md-6">
-            <the-counter
+            <task-counter
               @timerStart="startTimer()"
               @timerEnd="stopTimer()"
               ref="timerResult"
-              :taskid="route.params.task_id"
-              :userid="user_id"
-            ></the-counter>
+              :taskid="String(route.params.task_id)"
+              :userid="Number(user_id)"
+            ></task-counter>
           </div>
           <div class="col-md-6 timer-table">
             <!--start table-->
@@ -59,8 +66,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, reactive } from "vue";
-import TheCounter from "../../../core/shared/TheCounter.vue";
+import { ref, onMounted, reactive } from "vue";
+import TaskCounter from "../../../core/shared/TaskCounter.vue";
 import Axios from "@/http-common";
 import toastr from "toastr";
 import { useStore } from "vuex";
@@ -69,7 +76,8 @@ import TheSpinner from "@/modules/shared/spinners/TheSpinner.vue";
 
 const route = useRoute();
 const store = useStore();
-const user_id = computed(() => store.state.currentUser.user.id);
+//const user_id = computed(() => store.state.currentUser.user.id);
+const user_id = ref(localStorage.getItem("user_id"));
 const loadingSpinner = ref(false);
 const savingSpinner = ref(false);
 
@@ -122,7 +130,6 @@ async function startTimer() {
   timeTrackerState.start_time = exposeData.start_time;
   //timeTrackerState.end_time = exposeData.end_time;
   loadTimeData.value.push(exposeData);
-  console.log(timerResult.value);
 
   await Axios.post("task-timers", timeTrackerState)
     .then((response) => {
@@ -132,6 +139,7 @@ async function startTimer() {
           "timer_" + route.params.task_id,
           response.data.data.id
         );
+        toastr.success("Task timer started successfully.");
       } else {
         toastr.error(response.data.message);
       }
@@ -157,6 +165,7 @@ async function stopTimer() {
       if (response.data.code === 200) {
         loadTimerData();
         localStorage.removeItem("timer_" + route.params.task_id);
+        toastr.success("Task timer stopped successfully.");
       } else {
         toastr.error(response.data.message);
       }

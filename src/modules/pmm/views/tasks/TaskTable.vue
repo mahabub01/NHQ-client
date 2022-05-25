@@ -22,7 +22,7 @@
         </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
-        <tr v-for="(item, index) in entries" :key="index">
+        <tr v-for="(item, index) in entries" :key="item.id">
           <td class="col-serial">
             <input
               type="checkbox"
@@ -97,7 +97,7 @@
                 </li>
                 <li>
                   <router-link
-                    v-if="route.params.submilestone_id != null"
+                    v-if="route.params.submilestone_id != ''"
                     :to="`/pmm/task-time-tracker/${route.params.submilestone_id}/${item.id}`"
                     class="dropdown-item"
                     >Time Tracker</router-link
@@ -112,7 +112,7 @@
 
                 <li>
                   <router-link
-                    v-if="route.params.submilestone_id != null"
+                    v-if="route.params.submilestone_id != ''"
                     :to="`/pmm/tasks/${route.params.submilestone_id}/details/${item.id}`"
                     class="dropdown-item"
                     >Task Details</router-link
@@ -138,11 +138,11 @@
             </div>
           </td>
           <td>
-            <the-timer
+            <task-timer
               :key="index"
               :taskId="`${item.id}`"
               ref="timerRef"
-            ></the-timer>
+            ></task-timer>
           </td>
           <td style="width: 280px">{{ item.task_name }}</td>
           <td>{{ item.task_unique_id }}</td>
@@ -199,8 +199,8 @@ import {
   computed,
   onUpdated,
 } from "vue";
-import TheTimer from "./TheTimer.vue";
-import { useTimeTracker } from "@/composables/time-tracker";
+import TaskTimer from "./TaskTimer.vue";
+import { useTimeTracker } from "@/composables/task-time-tracker";
 import toastr from "toastr";
 import { useRoute } from "vue-router";
 
@@ -301,7 +301,6 @@ function EndTaskTimer(index: any, task_id: any) {
   });
   toastr.success("Timer end Successfully.");
 }
-//<td>{{ item.hour }}h {{ item.minit }}m {{ item.sec }}s</td>
 </script>
 
 <style scoped>

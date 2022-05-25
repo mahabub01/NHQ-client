@@ -247,7 +247,7 @@
             </li>
 
             <li class="nav-item dropdown" v-else>
-              <router-link class="nav-link" to="`${viewmodulelist.action}`">
+              <router-link class="nav-link" :to="`${viewmodulelist.action}`">
                 {{ viewmodulelist.professional_name }}
               </router-link>
             </li>

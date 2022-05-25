@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { ref, defineEmits, defineExpose, defineProps, onMounted } from "vue";
-import { useTimeTracker } from "@/composables/time-tracker";
+import { useTimeTracker } from "@/composables/task-time-tracker";
 
 const isStartTimer = ref(false);
 

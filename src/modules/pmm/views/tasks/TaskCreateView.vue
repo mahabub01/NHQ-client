@@ -4,7 +4,12 @@
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
-            <router-link :to="`/pmm/tasks/${route.params.submilestone_id}`"
+            <router-link
+              v-if="route.params.submilestone_id != ''"
+              :to="`/pmm/tasks/${route.params.submilestone_id}`"
+              >Task List <i class="fas fa-chevron-right"></i
+            ></router-link>
+            <router-link v-else to="`/pmm/tasks"
               >Task List <i class="fas fa-chevron-right"></i
             ></router-link>
             <router-link to="#">Create</router-link>

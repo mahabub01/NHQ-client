@@ -393,7 +393,7 @@ async function handleSubmit() {
             "Created Sub Milestone Successfully!",
             "success"
           );
-          router.push("/pmm/submilestones");
+          router.push("/pmm/sub-milestones");
         } else {
           savingSpinner.value = false;
           //Show Error message

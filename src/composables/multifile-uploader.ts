@@ -25,6 +25,7 @@ export function useMultiFileUploader(
     for (let i = 0; i < selectedFiles.length; i++) {
       let ex = null;
       ex = selectedFiles[i].name.split(".");
+      let getError = 0;
       if (fileValidation.extension.indexOf(ex[1]) == -1) {
         toastr.warning(
           "Your file formate is not Valid. Your selected file extension is <b>'" +
@@ -34,10 +35,12 @@ export function useMultiFileUploader(
             "'</b>",
           "Warning!"
         );
+        getError++;
         break;
       }
 
       if (selectedFiles[i].size / 1024 > fileValidation.size) {
+        alert("size check...");
         toastr.warning(
           "Your file size is geather then validation file size. Your selected file size is <b>'" +
             selectedFiles[i].size +
@@ -47,9 +50,12 @@ export function useMultiFileUploader(
           "Warning!"
         );
         break;
+        getError++;
       }
 
-      uploadFile(i, selectedFiles[i]);
+      if (getError == 0) {
+        uploadFile(i, selectedFiles[i]);
+      }
     }
   }
 
@@ -61,12 +67,16 @@ export function useMultiFileUploader(
       getFileName: "",
     };
 
-    upload(file, (event: any) => {
-      const per_cal = Math.round((100 * event.loaded) / event.total);
-      if (per_cal != 0) {
-        progressInfos[idx].percentage = per_cal;
-      }
-    })
+    upload(
+      file,
+      (event: any) => {
+        const per_cal = Math.round((100 * event.loaded) / event.total);
+        if (per_cal != 0) {
+          progressInfos[idx].percentage = per_cal;
+        }
+      },
+      idx
+    )
       .then(
         (response: { data: { message: string; data: any; code: number } }) => {
           const prevMessage = message.value ? message.value + "\n" : "";
@@ -85,11 +95,12 @@ export function useMultiFileUploader(
       });
   }
 
-  function upload(file: any, onUploadProgress: any) {
+  function upload(file: any, onUploadProgress: any, idx: number) {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("field_name", field_name);
     formData.append("token", store.state.currentUser.token);
+    formData.append("idx", String(idx));
     return Axios.post(process.env.VUE_APP_API_URL + "/" + api_url, formData, {
       headers: {
         "Content-Type": "multipart/form-data",

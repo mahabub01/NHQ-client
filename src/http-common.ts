@@ -11,6 +11,7 @@ export const Axios = axios.create({
 
 Axios.interceptors.request.use(
   async (config) => {
+    config.withCredentials = true;
     config.headers = {
       Authorization: "Bearer " + localStorage.getItem("token"),
     };

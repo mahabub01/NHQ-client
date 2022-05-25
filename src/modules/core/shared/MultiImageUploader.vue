@@ -73,12 +73,15 @@ const props = defineProps({
 
 //const fileValidation: any = ["pdf", "xlsx", "csv"];
 const fileValidation = {
-  extension: ["pdf", "xlsx", "csv"],
+  extension: ["png", "PNG", "jpeg", "JPEG", "jpg", "JPG"],
   size: 1024, //File size is KB
 };
 
-const { progressInfos, message, selectedFiles, files, filePicker, removeFile } =
-  useMultiFileUploader(props.field_name, "demo-attachment", fileValidation);
+const { progressInfos, files, filePicker, removeFile } = useMultiFileUploader(
+  props.field_name,
+  "demo-image-attachment",
+  fileValidation
+);
 
 const label = ref(props.label);
 
@@ -92,9 +95,6 @@ function RemoveUploadedFile(index: number, fileName: string) {
 
 //for drag and drop option using
 const active = ref(false);
-const toggleActive = () => {
-  active.value = !active.value;
-};
 </script>
 
 <style scoped>

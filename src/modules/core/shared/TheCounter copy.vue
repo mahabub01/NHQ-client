@@ -47,12 +47,12 @@ const props = defineProps({
 
 onMounted(() => {
   let running = localStorage.getItem(
-    "sub_r_t_" + props.taskid + "_" + props.userid
+    "r_t_" + props.taskid + "_" + props.userid
   );
 
   //when start from time tracker page
   let exits_time_tracker = localStorage.getItem(
-    "sub_r_t_counter_" + props.taskid + "_" + props.userid
+    "r_t_counter_" + props.taskid + "_" + props.userid
   );
 
   if (exits_time_tracker != null) {

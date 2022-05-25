@@ -200,6 +200,16 @@ export const PmmModuleRoute = [
           ),
         meta: { middleware: "auth" },
       },
+
+      {
+        path: "sub-milestones/:id/edit",
+        name: "sub-milestones-edit",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/sub-milestones/SubMilestoneEditView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
       {
         path: "submilestone-categories",
         name: "submilestone-categories",
@@ -251,11 +261,61 @@ export const PmmModuleRoute = [
       },
 
       {
-        path: "submilestones/time-tracker/:submilestone_id",
-        name: "submilestones-time-tracker",
+        path: "sub-miletone-time-tracker/:submilestone_id",
+        name: "sub-milestones-time-tracker",
         component: () =>
           import(
             /* webpackChunkName: "time-tracker" */ "./views/submilestones/TimeTrackerView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "tasks/:submilestone_id?",
+        name: "tasks",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/tasks/TaskIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "tasks/:submilestone_id?/create",
+        name: "tasks-create",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/tasks/TaskCreateView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "tasks/:submilestone_id/:id/edit",
+        name: "tasks-edit",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/tasks/TaskEditView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "tasks/:submilestone_id?/details/:id",
+        name: "tasksdetails",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/tasks/TaskDetailsView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "task-time-tracker/:submilestone_id?/:task_id",
+        name: "task-time-tracker",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/tasks/TaskTimeTrackerView.vue"
           ),
         meta: { middleware: "auth" },
       },

@@ -9,10 +9,17 @@
     <div class="form-bootcamp">
       <div class="row">
         <div class="col-md-4">
-          <router-link to="/pmm/submilestones"
-            >Submilestone List <i class="fas fa-chevron-right"></i
+          <router-link
+            v-if="route.params.submilestone_id != null"
+            :to="`/pmm/tasks/${route.params.submilestone_id}`"
+            >Task List <i class="fas fa-chevron-right"></i
           ></router-link>
-          <router-link to="#">Submilestone Details</router-link>
+
+          <router-link to="/pmm/tasks" v-else
+            >Task List <i class="fas fa-chevron-right"></i
+          ></router-link>
+
+          <router-link to="#">Task Details</router-link>
         </div>
         <div class="col-md-8"></div>
       </div>
@@ -21,9 +28,7 @@
       <div class="container">
         <div class="row">
           <div class="col-md-6 offset-md-3">
-            <h4 class="form-page-title details-header-title">
-              Submilestone Details
-            </h4>
+            <h4 class="form-page-title details-header-title">Task Details</h4>
             <div class="row">
               <div class="col-md-6">
                 <!--start-->
@@ -48,7 +53,7 @@
                 <div>
                   <h5 class="data-label">Task Name</h5>
                   <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.submilestone_name }}
+                    {{ getInformation.task_name }}
                   </p>
                 </div>
                 <!--end-->
@@ -57,7 +62,7 @@
                 <div>
                   <h5 class="data-label">Task Id</h5>
                   <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.submilestone_unique_id }}
+                    {{ getInformation.task_unique_id }}
                   </p>
                 </div>
                 <!--end-->
@@ -66,25 +71,16 @@
                 <div>
                   <h5 class="data-label">Status</h5>
                   <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.status }}
+                    {{ getInformation.task_status }}
                   </p>
                 </div>
                 <!--end-->
 
                 <!--start-->
                 <div>
-                  <h5 class="data-label">Category</h5>
+                  <h5 class="data-label">Sub Milestone</h5>
                   <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.category }}
-                  </p>
-                </div>
-                <!--end-->
-
-                <!--start-->
-                <div>
-                  <h5 class="data-label">Priority</h5>
-                  <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.priority }}
+                    {{ getInformation.submilestone }}
                   </p>
                 </div>
                 <!--end-->
@@ -149,15 +145,6 @@
 
                 <!--start-->
                 <div>
-                  <h5 class="data-label">Follow Up</h5>
-                  <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.follow_up }}
-                  </p>
-                </div>
-                <!--end-->
-
-                <!--start-->
-                <div>
                   <h5 class="data-label">Assign Member</h5>
                   <template v-if="getInformation != null">
                     <p
@@ -177,12 +164,31 @@
                   <a
                     target="_blank"
                     v-if="getInformation != null"
-                    :href="`${getInformation.files}`"
+                    :href="`${getInformation.file}`"
                     >Download File</a
                   >
                 </div>
                 <!--end-->
               </div>
+            </div>
+            <div class="row margin-top">
+              <h5 class="data-label margin-bottom-10">Task Snapshots</h5>
+              <template v-if="getInformation != null">
+                <div
+                  class="col-md-4"
+                  v-for="snapshot in getInformation.task_snapshots"
+                  :key="snapshot.id"
+                >
+                  <div class="snapshot-container">
+                    <a :href="`${snapshot}`" target="_blank"
+                      ><img
+                        :src="`${snapshot}`"
+                        alt="task snapshot"
+                        class="img-design"
+                    /></a>
+                  </div>
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -219,16 +225,15 @@ onMounted(() => {
 });
 
 //get Files
-const getInformation = ref(null);
+const getInformation = ref();
 
 //Load Single Data
 async function loadSingleData() {
   loadingSpinner.value = true;
-  await Axios.get("/submilestones/" + route.params.id).then((response) => {
+  await Axios.get("/tasks/" + route.params.id).then((response) => {
     loadingSpinner.value = false;
     if (response.data.code === 200) {
       getInformation.value = response.data.data;
-      console.log(response.data.data);
     } else {
       toastr.error(response.data.message);
     }
@@ -256,5 +261,25 @@ async function loadSingleData() {
 .des p {
   color: #6b778c;
   font-size: 12px;
+}
+
+.snapshot-container {
+  width: 100%;
+  min-height: 146px;
+  border: 1px solid rgb(223, 223, 223);
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.img-design {
+  width: 100%;
+  height: 140px;
+}
+
+.margin-top {
+  margin-top: 20px;
+}
+.margin-bottom-10 {
+  margin-bottom: 10px;
 }
 </style>

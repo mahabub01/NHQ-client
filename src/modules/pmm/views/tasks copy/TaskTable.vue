@@ -9,10 +9,8 @@
           </th>
           <th class="col-serial" style="width: 50px !important"></th>
           <th>Time</th>
-          <th style="width: 280px">Sub Milestone Name</th>
-          <th>Sub Milestone ID</th>
-          <th style="width: 80px !important">Project ID</th>
-          <th>Milestone ID</th>
+          <th style="width: 280px">Task Name</th>
+          <th>Task ID</th>
           <th>Expected</th>
           <th>Actual</th>
           <th>Start Date</th>
@@ -113,15 +111,6 @@
                   >
                 </li>
 
-                <!-- <li>
-                  <router-link
-                    :to="`/pmm/tasks/${item.id}/edit`"
-                    class="dropdown-item"
-                  >
-                    Edit</router-link
-                  >
-                </li> -->
-
                 <li>
                   <a
                     href="#"
@@ -129,16 +118,6 @@
                     class="dropdown-item"
                   >
                     Delete</a
-                  >
-                </li>
-
-                <li style="text-align: center; margin-top: 10px">
-                  <router-link
-                    :to="`/pmm/tasks/${item.id}`"
-                    class="btn btn-info icon_btn"
-                    style="width: 80%"
-                  >
-                    <i class="fas fa-plus"></i> Add Sub Task</router-link
                   >
                 </li>
               </ul>
@@ -153,8 +132,6 @@
           </td>
           <td style="width: 280px">{{ item.task_name }}</td>
           <td>{{ item.task_unique_id }}</td>
-          <td style="width: 80px !important">{{ item.project_ID }}</td>
-          <td>{{ item.milestone_ID }}</td>
           <td>{{ item.expected_duration }}</td>
           <td>{{ item.actual_duration }}</td>
           <td>{{ item.start_date }}</td>

@@ -247,7 +247,7 @@
             </li>
 
             <li class="nav-item dropdown" v-else>
-              <router-link class="nav-link" to="/pmm/projects">
+              <router-link class="nav-link" to="`${viewmodulelist.action}`">
                 {{ viewmodulelist.professional_name }}
               </router-link>
             </li>
@@ -487,7 +487,6 @@ async function loadFirstComponent() {
   let user_id = localStorage.getItem("user_id");
   await Axios.get("/get-first-module-component/" + user_id).then((response) => {
     userComponents.value = response.data.data.components;
-    console.log(userComponents.value);
   });
 }
 

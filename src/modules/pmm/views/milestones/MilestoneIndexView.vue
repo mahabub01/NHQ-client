@@ -65,14 +65,16 @@
                       </button>
 
                       <router-link
-                        v-if="userInfo.role_id != 9"
+                        v-if="getPermission(`create_milestone_list`)"
                         to="/pmm/milestones/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
                       >
+
                       <div class="btn-group">
                         <button
+                          v-if="getPermission(`bulk_delete_milestone_list`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"
@@ -211,6 +213,9 @@ import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import FilterModal from "../../../core/shared/FilterModal.vue";
 import { useStore } from "vuex";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 //create store
 const store = useStore();

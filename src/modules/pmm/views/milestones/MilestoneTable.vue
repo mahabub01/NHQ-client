@@ -15,7 +15,12 @@
           <th>Extended</th>
           <!-- <th>Status</th> -->
           <th>Milestone Progress</th>
-          <th class="col-icon align-center">Edit</th>
+          <th
+            class="col-icon align-center"
+            v-if="getPermission(`edit_milestone_list`)"
+          >
+            Edit
+          </th>
           <th class="col-icon align-center">File</th>
           <th class="col-serial">Action</th>
         </tr>
@@ -65,7 +70,11 @@
             </div>
           </td>
 
-          <td class="action-field" style="text-align: center">
+          <td
+            class="action-field"
+            style="text-align: center"
+            v-if="getPermission(`edit_milestone_list`)"
+          >
             <router-link
               :to="`/pmm/milestones/${td.id}/edit`"
               title="Edit Project"
@@ -97,7 +106,7 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li>
+                <li v-if="getPermission(`status_milestone_list`)">
                   <a
                     href="#"
                     v-if="td.is_active == 1"
@@ -114,13 +123,16 @@
                     @click.prevent="changeStatus(td.id, td.is_active)"
                     ><i class="far fa-check-circle"></i> Complete</a
                   >
-
+                </li>
+                <li v-if="getPermission(`delete_milestone_list`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(td.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
                   >
+                </li>
+                <li v-if="getPermission(`details_milestone_list`)">
                   <router-link
                     :to="`/pmm/milestones/details/${td.slug}`"
                     class="dropdown-item"
@@ -138,6 +150,9 @@
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 const attrs = useAttrs();
 

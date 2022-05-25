@@ -15,7 +15,12 @@
           <th>Project Progress</th>
           <th>Status</th>
           <th>Milestone Progress</th>
-          <th class="action-field align-center">Edit</th>
+          <th
+            class="action-field align-center"
+            v-if="getPermission(`edit_project_list`)"
+          >
+            Edit
+          </th>
           <th class="action-field align-center">File</th>
 
           <th class="col-serial">Action</th>
@@ -66,7 +71,11 @@
               </div>
             </div>
           </td>
-          <td class="action-field" style="text-align: center">
+          <td
+            class="action-field"
+            style="text-align: center"
+            v-if="getPermission(`edit_project_list`)"
+          >
             <router-link
               :to="`/pmm/projects/${item.id}/edit`"
               title="Edit Project"
@@ -96,7 +105,7 @@
                 class="dropdown-menu table-dropdown dropdown-menu-lg-end"
                 style="width: 165px"
               >
-                <li>
+                <li v-if="getPermission(`display_poc_document`)">
                   <router-link
                     :to="`/pmm/pocs/${item.id}`"
                     class="dropdown-item"
@@ -104,7 +113,7 @@
                     Document</router-link
                   >
                 </li>
-                <li>
+                <li v-if="getPermission(`display_boq`)">
                   <router-link
                     :to="`/pmm/boqs/${item.id}`"
                     class="dropdown-item"
@@ -112,7 +121,7 @@
                   >
                 </li>
 
-                <li>
+                <li v-if="getPermission(`display_oem_communication`)">
                   <router-link
                     :to="`/pmm/oems/${item.id}`"
                     class="dropdown-item"
@@ -120,21 +129,21 @@
                     Communication</router-link
                   >
                 </li>
-                <li>
+                <li v-if="getPermission(`display_customer_po`)">
                   <router-link
                     :to="`/pmm/customer-pos/${item.id}`"
                     class="dropdown-item"
                     ><i class="far fa-plus-square"></i> Customer PO</router-link
                   >
                 </li>
-                <li>
+                <li v-if="getPermission(`display_disti_order`)">
                   <router-link
                     :to="`/pmm/disti-orders/${item.id}`"
                     class="dropdown-item"
                     ><i class="far fa-plus-square"></i> Disti Order</router-link
                   >
                 </li>
-                <li>
+                <li v-if="getPermission(`display_delivery_timeline`)">
                   <router-link
                     :to="`/pmm/delivery-timelines/${item.id}`"
                     class="dropdown-item"
@@ -143,7 +152,7 @@
                   >
                 </li>
 
-                <li>
+                <li v-if="getPermission(`display_delivery_challan`)">
                   <router-link
                     :to="`/pmm/delivery-challans/${item.id}`"
                     class="dropdown-item"
@@ -151,14 +160,14 @@
                     Challan</router-link
                   >
                 </li>
-                <li>
+                <li v-if="getPermission(`details_project_list`)">
                   <router-link
                     :to="`/pmm/projects/${item.slug}`"
                     class="dropdown-item"
                     ><i class="fas fa-eye"></i> Details</router-link
                   >
                 </li>
-                <li>
+                <li v-if="getPermission(`delete_project_list`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
@@ -167,7 +176,10 @@
                   >
                 </li>
 
-                <li style="text-align: center; margin-top: 10px">
+                <li
+                  style="text-align: center; margin-top: 10px"
+                  v-if="getPermission(`export_milestone_project_list`)"
+                >
                   <button
                     @click="exportMileStone(item.id, item.project_name)"
                     class="btn btn-info icon_btn"
@@ -192,6 +204,9 @@ import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useExcelExport } from "@/composables/export-excel";
 import Axios from "@/http-common";
 import toastr from "toastr";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 const attrs = useAttrs();
 

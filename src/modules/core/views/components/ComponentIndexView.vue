@@ -594,7 +594,6 @@ const rules: any = {
   action: { required },
   module_id: { required },
   professional_name: { required },
-  is_dropdown: { required },
 };
 
 const v$ = useVuelidate(rules, state);

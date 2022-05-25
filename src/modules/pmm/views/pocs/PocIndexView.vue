@@ -70,6 +70,7 @@
                       </button>
 
                       <button
+                        v-if="getPermission(`edit_oem_communication`)"
                         type="button"
                         class="link_btn"
                         style="margin-right: 7px"
@@ -82,6 +83,7 @@
                       </button>
 
                       <input
+                        v-if="getPermission(`create_poc_document`)"
                         id="importId"
                         type="file"
                         ref="excelImporter"
@@ -89,6 +91,7 @@
                         style="display: none"
                       />
                       <label
+                        v-if="getPermission(`import_poc_document`)"
                         for="importId"
                         class="theme-color-btn"
                         style="margin-right: 7px; cursor: pointer"
@@ -96,6 +99,7 @@
                       >
 
                       <button
+                        v-if="getPermission(`export_poc_document`)"
                         type="button"
                         @click="exportPoc()"
                         class="theme-color-btn"
@@ -106,6 +110,10 @@
 
                       <div class="btn-group">
                         <button
+                          v-if="
+                            getPermission(`bulk_delete_poc_document
+`)
+                          "
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"
@@ -451,7 +459,9 @@ import { useRoute } from "vue-router";
 import toastr from "toastr";
 import { useExcelExport } from "@/composables/export-excel";
 import { useExcelImport } from "@/composables/excel-import";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 //get route information using route
 const route = useRoute();
 

@@ -15,7 +15,9 @@
           <th>Contact Person Phone Number</th>
           <th>Number of Projects</th>
           <th>Status</th>
-          <th class="action-field">Edit</th>
+          <th class="action-field" v-if="getPermission(`edit_client_list`)">
+            Edit
+          </th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -47,7 +49,11 @@
               {{ isActive(td.is_active) }}</span
             >
           </td>
-          <td class="action-field" style="text-align: center">
+          <td
+            class="action-field"
+            style="text-align: center"
+            v-if="getPermission(`edit_client_list`)"
+          >
             <router-link :to="`/pmm/clients/${td.id}/edit`" title="Edit Project"
               ><i class="fa fa-pen action-icon"></i
             ></router-link>
@@ -65,7 +71,7 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li>
+                <li v-if="getPermission(`status_client_list`)">
                   <a
                     href="#"
                     v-if="td.is_active == 1"
@@ -83,7 +89,7 @@
                     ><i class="far fa-check-circle"></i> Active</a
                   >
                 </li>
-                <li>
+                <li v-if="getPermission(`details_client_list`)">
                   <router-link
                     :to="`/pmm/clients/${td.id}`"
                     title="Client Details"
@@ -91,7 +97,7 @@
                     ><i class="fas fa-eye"></i> Details</router-link
                   >
                 </li>
-                <li>
+                <li v-if="getPermission(`delete_client_list`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(td.id)"
@@ -110,7 +116,9 @@
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 const attrs = useAttrs();
 
 const multiselect = ref([]);

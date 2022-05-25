@@ -58,7 +58,7 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li>
+                <li v-if="getPermission(`status_employee`)">
                   <a
                     href="#"
                     v-if="td.is_active == 1"
@@ -75,12 +75,15 @@
                     @click.prevent="changeStatus(td.id, td.is_active)"
                     ><i class="far fa-check-circle"></i> Active</a
                   >
-
+                </li>
+                <li v-if="getPermission(`edit_employee`)">
                   <router-link
                     :to="`/pmm/employees/${td.id}/edit`"
                     class="dropdown-item"
                     ><i class="fas fa-edit"></i> Edit</router-link
                   >
+                </li>
+                <li v-if="getPermission(`delete_employee`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(td.id)"
@@ -99,6 +102,9 @@
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 const attrs = useAttrs();
 

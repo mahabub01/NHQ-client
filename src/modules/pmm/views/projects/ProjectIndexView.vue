@@ -55,12 +55,14 @@
                       />
 
                       <router-link
+                        v-if="getPermission(`create_project_list`)"
                         to="/pmm/projects/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
                       >
                       <router-link
+                        v-if="getPermission(`import_project_list`)"
                         to="#"
                         class="theme-color-btn"
                         style="margin-right: 7px"
@@ -69,6 +71,7 @@
                       >
 
                       <router-link
+                        v-if="getPermission(`export_project_list`)"
                         to="#"
                         class="theme-color-btn"
                         style="margin-right: 7px"
@@ -77,6 +80,7 @@
 
                       <div class="btn-group">
                         <button
+                          v-if="getPermission(`bulk_delete_project_list`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"
@@ -149,6 +153,9 @@ import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import toastr from "toastr";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 //create store
 const store = useStore();

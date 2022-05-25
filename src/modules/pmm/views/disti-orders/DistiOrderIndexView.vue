@@ -60,6 +60,7 @@
                       />
 
                       <button
+                        v-if="getPermission(`create_disti_order`)"
                         type="button"
                         class="link_btn"
                         style="margin-right: 7px"
@@ -73,6 +74,7 @@
 
                       <div class="btn-group">
                         <button
+                          v-if="getPermission(`bulk_delete_disti_order`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"
@@ -305,7 +307,9 @@ import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUpl
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import { useRoute } from "vue-router";
 import toastr from "toastr";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 //get route information using route
 const route = useRoute();
 

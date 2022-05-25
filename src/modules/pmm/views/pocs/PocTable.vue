@@ -12,7 +12,12 @@
           <th>Updated Date</th>
           <th style="width: 40% !important">List of Requirement</th>
           <th>POC Category</th>
-          <th class="action-field align-center">Edit</th>
+          <th
+            class="action-field align-center"
+            v-if="getPermission(`edit_poc_document`)"
+          >
+            Edit
+          </th>
           <th class="action-field align-center">File</th>
           <th class="col-serial">Action</th>
         </tr>
@@ -33,7 +38,11 @@
           <td>{{ item.updated_at }}</td>
           <td style="width: 40% !important">{{ item.poc_title }}</td>
           <td>{{ item.category }}</td>
-          <td class="action-field" style="text-align: center">
+          <td
+            class="action-field"
+            style="text-align: center"
+            v-if="getPermission(`edit_poc_document`)"
+          >
             <a href="#" @click.prevent="getEdit(item.id)" title="Edit POC"
               ><i class="fa fa-pen action-icon"></i
             ></a>
@@ -58,13 +67,15 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li>
+                <li v-if="getPermission(`delete_poc_document`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
                   >
+                </li>
+                <li v-if="getPermission(`details_poc_document`)">
                   <router-link
                     :to="`/pmm/pocs/details/${item.slug}`"
                     class="dropdown-item"
@@ -82,7 +93,9 @@
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 const attrs = useAttrs();
 
 const multiselect = ref([]);

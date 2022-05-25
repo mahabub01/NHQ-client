@@ -19,7 +19,12 @@
           <th>End Date</th>
           <th>Task Progress</th>
           <th>Status</th>
-          <th class="col-icon align-center">Edit</th>
+          <th
+            class="col-icon align-center"
+            v-if="getPermission(`edit_submilestone_list`)"
+          >
+            Edit
+          </th>
           <th class="col-icon align-center">File</th>
         </tr>
       </thead>
@@ -97,7 +102,7 @@
                     Start Time
                   </button>
                 </li>
-                <li>
+                <li v-if="getPermission(`time_tracker_submilestone_list`)">
                   <router-link
                     :to="`/pmm/submilestones/time-tracker/${item.id}`"
                     class="dropdown-item"
@@ -105,7 +110,7 @@
                   >
                 </li>
 
-                <li>
+                <li v-if="getPermission(`details_submilestone_list`)">
                   <router-link
                     :to="`/pmm/submilestones/details/${item.id}`"
                     class="dropdown-item"
@@ -122,7 +127,7 @@
                   >
                 </li> -->
 
-                <li>
+                <li v-if="getPermission(`delete_submilestone_list`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
@@ -132,7 +137,10 @@
                   >
                 </li>
 
-                <li style="text-align: center; margin-top: 10px">
+                <li
+                  style="text-align: center; margin-top: 10px"
+                  v-if="getPermission(`add_sub_task_submilestone_list`)"
+                >
                   <router-link
                     :to="`/pmm/milestones/${item.id}`"
                     class="btn btn-info icon_btn"
@@ -174,7 +182,11 @@
             </div>
           </td>
           <td>{{ item.task_status }}</td>
-          <td class="action-field" style="text-align: center">
+          <td
+            class="action-field"
+            style="text-align: center"
+            v-if="getPermission(`edit_submilestone_list`)"
+          >
             <router-link :to="`/pmm/tasks/${item.id}/edit`" title="Edit Task"
               ><i class="fa fa-pen action-icon"></i
             ></router-link>
@@ -209,8 +221,11 @@ import {
   onUpdated,
 } from "vue";
 import TheTimer from "./TheTimer.vue";
-import { useTimeTracker } from "@/composables/time-tracker";
 import toastr from "toastr";
+import { useTimeTracker } from "@/composables/time-tracker";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 const store = useStore();
 const user_id = computed(() => store.state.currentUser.user.id);

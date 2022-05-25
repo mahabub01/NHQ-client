@@ -64,7 +64,7 @@
                       ></router-link> -->
 
                       <router-link
-                        v-if="userInfo.role_id != 9"
+                        v-if="getPermission(`create_submilestone_list`)"
                         to="/pmm/submilestones/create"
                         class="link_btn"
                         style="margin-right: 7px"
@@ -79,7 +79,7 @@
                         style="display: none"
                       />
                       <label
-                        v-if="user.role_id != 9"
+                        v-if="getPermission(`import_submilestone_list`)"
                         for="importId"
                         class="theme-color-btn"
                         style="margin-right: 7px; cursor: pointer"
@@ -88,6 +88,7 @@
 
                       <div class="btn-group">
                         <button
+                          v-if="getPermission(`bulk_delete_submilestone_list`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"
@@ -163,7 +164,9 @@ import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import { useExcelImport } from "@/composables/excel-import";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 //create store
 const store = useStore();
 
@@ -197,7 +200,7 @@ let search = ref("");
 watch([search], async () => {
   //fetchData("/tasks", search.value);
   filterData(
-    "/tasks",
+    "/submilestones",
     "&user_id=" +
       user.value.id +
       "&role_id=" +

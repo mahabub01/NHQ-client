@@ -4,15 +4,10 @@
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
-            <router-link
-              v-if="route.params.submilestone_id != ''"
-              :to="`/pmm/tasks/${route.params.submilestone_id}`"
-              >Task List <i class="fas fa-chevron-right"></i
+            <router-link to="/pmm/sub-milestones"
+              >Sub Milestone <i class="fas fa-chevron-right"></i
             ></router-link>
-            <router-link v-else to="`/pmm/tasks"
-              >Task List <i class="fas fa-chevron-right"></i
-            ></router-link>
-            <router-link to="#">Edit</router-link>
+            <router-link to="/pmm/sub-milestones/create">Create</router-link>
           </div>
           <div class="col-md-8">
             <div class="float-right">
@@ -20,17 +15,9 @@
                 <i class="far fa-save"></i> Submit
               </button>
               <router-link
-                v-if="route.params.submilestone_id != ''"
                 class="form-button-danger"
                 style="color: white"
-                :to="`/pmm/tasks/${route.params.submilestone_id}`"
-                ><i class="far fa-times-circle"></i> Discard
-              </router-link>
-              <router-link
-                v-else
-                class="form-button-danger"
-                style="color: white"
-                to="/pmm/tasks"
+                to="/pmm/sub-milestones"
                 ><i class="far fa-times-circle"></i> Discard
               </router-link>
             </div>
@@ -39,7 +26,7 @@
       </div>
       <div class="form-design-body">
         <div class="container">
-          <h4 class="form-page-title">Create Tasks</h4>
+          <h4 class="form-page-title">Create Sub Milestone</h4>
           <div class="row">
             <div class="col-md-4 offset-md-1">
               <!--start field -->
@@ -87,38 +74,17 @@
               <!--start field -->
               <div class="form-row">
                 <label class="form-label"
-                  >Sub Milestone<span class="mandatory">*</span></label
-                >
-                <Select2
-                  v-model="v$.submilestone_id.$model"
-                  :options="submileStoneSelectable"
-                  :settings="{ placeholder: 'Choose' }"
-                />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.submilestone_id.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
-              </div>
-              <!--end field -->
-
-              <!--start field -->
-              <div class="form-row">
-                <label class="form-label"
-                  >Task Name<span class="mandatory">*</span></label
+                  >Sub Milestone Name<span class="mandatory">*</span></label
                 >
                 <input
                   type="text"
                   class="form-input"
-                  :class="{ isInvalid: v$.task_name.$error }"
-                  v-model.lazy="v$.task_name.$model"
+                  :class="{ isInvalid: v$.submilestone_name.$error }"
+                  v-model.lazy="v$.submilestone_name.$model"
                 />
                 <p
                   class="error-mgs"
-                  v-for="(error, index) in v$.task_name.$errors"
+                  v-for="(error, index) in v$.submilestone_name.$errors"
                   :key="index"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
@@ -140,10 +106,21 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Task Status</label>
+                <label class="form-label">Follow Up</label>
                 <Select2
-                  v-model="formState.task_status"
-                  :options="taskStatusSelectable"
+                  v-model="formState.followup_id"
+                  :options="followupSelectable"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+              <!--end field -->
+
+              <!--start field -->
+              <div class="form-row">
+                <label class="form-label">Category</label>
+                <Select2
+                  v-model="formState.submilestone_category_id"
+                  :options="taskCategorySelectable"
                   :settings="{ placeholder: 'Choose' }"
                 />
               </div>
@@ -192,11 +169,33 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Task Point</label>
+                <label class="form-label">Sub Milestone Point</label>
                 <input
                   type="number"
                   class="form-input"
-                  v-model.lazy="formState.task_point"
+                  v-model.lazy="formState.submilestone_point"
+                />
+              </div>
+              <!--end field -->
+
+              <!--start field -->
+              <div class="form-row">
+                <label class="form-label">Status</label>
+                <Select2
+                  v-model="formState.status"
+                  :options="taskStatusSelectable"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+              <!--end field -->
+
+              <!--start field -->
+              <div class="form-row">
+                <label class="form-label">Priority</label>
+                <Select2
+                  v-model="formState.priority_id"
+                  :options="prioritySelectable"
+                  :settings="{ placeholder: 'Choose' }"
                 />
               </div>
               <!--end field -->
@@ -216,17 +215,8 @@
               <div class="form-row">
                 <label class="form-label">Choose File</label>
                 <single-file-uploader
-                  field_name="create_task"
+                  field_name="create_submilestone"
                 ></single-file-uploader>
-              </div>
-              <!--end field -->
-
-              <!--start field -->
-              <div class="form-row">
-                <multi-image-uploader
-                  label="Implementation Snapshot"
-                  field_name="task_snapshot"
-                ></multi-image-uploader>
               </div>
               <!--end field -->
             </div>
@@ -250,45 +240,47 @@ import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
 import toastr from "toastr";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
-import { useRouter, useRoute } from "vue-router";
-import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
+const store = useStore();
 const router = useRouter();
-const route = useRoute();
 
 const formState = reactive({
   project_id: "",
-  task_name: "",
+  submilestone_name: "",
   milestone_id: "",
-  submilestone_id: "",
   team_member_id: "",
-  task_status: "",
-  project_description: "",
+  status: "",
+  followup_id: "",
+  submilestone_category_id: "",
+  description: "",
   start_date: "",
   end_date: "",
   extended_date: "",
-  task_point: 0,
+  submilestone_point: 0,
+  priority_id: "",
   duration: "",
-  token: localStorage.getItem("token"),
-  user_id: localStorage.getItem("user_id"),
+  token: store.state.currentUser.token,
 });
 
 const rules: any = {
   project_id: { required },
-  task_name: { required },
+  submilestone_name: { required },
   milestone_id: { required },
-  submilestone_id: { required },
 };
 
 const setDescription = (value: any) => {
-  formState.project_description = value;
+  formState.description = value;
 };
 
 //projects selectable
 const projectsSelectable = ref([]);
 const milestoneSelectable = ref([]);
 const teamSelectable = ref([]); //Team Members
-const submileStoneSelectable = ref([]);
+const followupSelectable = ref([]);
+const taskCategorySelectable = ref([]);
+const prioritySelectable = ref([]);
 const taskStatusSelectable = reactive([
   { id: "1", text: "In Progress" },
   { id: "2", text: "Completed" },
@@ -301,27 +293,10 @@ let savingSpinner = ref(false);
 onMounted(() => {
   getProjects();
   getMilestones();
-  getSubmilestones();
+  getCategories();
+  getPriorities();
   getTeamMembers();
-
-  loadEditData();
 });
-
-async function loadEditData() {
-  await Axios.get("/task/" + route.params.submilestone_id)
-    .then((response) => {
-      if (response.data.code === 200) {
-        formState.milestone_id = String(response.data.data.milestone_id);
-        formState.project_id = String(response.data.data.project_id);
-        formState.submilestone_id = String(route.params.submilestone_id);
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
 
 //get projects for Selectable
 async function getProjects() {
@@ -354,11 +329,26 @@ async function getMilestones() {
 }
 
 //get categories for Selectable
-async function getSubmilestones() {
-  await Axios.get("/submilestones-selectable")
+async function getCategories() {
+  await Axios.get("/submilestone-categories-selectable")
     .then((response) => {
       if (response.data.code === 200) {
-        submileStoneSelectable.value = response.data.data;
+        taskCategorySelectable.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+//get Priorities for Selectable
+async function getPriorities() {
+  await Axios.get("/priority-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        prioritySelectable.value = response.data.data;
       } else {
         toastr.error(response.data.message);
       }
@@ -374,6 +364,7 @@ async function getTeamMembers() {
     .then((response) => {
       if (response.data.code === 200) {
         teamSelectable.value = response.data.data;
+        followupSelectable.value = response.data.data;
       } else {
         toastr.error(response.data.message);
       }
@@ -390,16 +381,19 @@ async function handleSubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     savingSpinner.value = true;
-    await Axios.post("tasks", formState)
+    await Axios.post("submilestones", formState)
       .then((response) => {
+        console.log(response);
         if (response.data.code === 200) {
+          resetForm();
           //Stop Saving Spinner
           savingSpinner.value = false;
-          swal("Success Job!", "Updated task Successfully!", "success");
-          router.push({
-            name: "tasks",
-            params: { submilestone_id: route.params.submilestone_id },
-          });
+          swal(
+            "Success Job!",
+            "Created Sub Milestone Successfully!",
+            "success"
+          );
+          router.push("/pmm/sub-milestones");
         } else {
           savingSpinner.value = false;
           //Show Error message
@@ -410,6 +404,13 @@ async function handleSubmit() {
         console.log("problem Here" + error);
       });
   }
+}
+
+//reset all property
+function resetForm() {
+  // state.title = "";
+  // state.description = "";
+  // v$.value.$reset();
 }
 </script>
 

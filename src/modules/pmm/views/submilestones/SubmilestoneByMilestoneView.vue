@@ -15,9 +15,9 @@
                   </button>
                   <div class="page-bootcamp-left">
                     <router-link
-                      to="/pmm/sub-milestones"
+                      to="/pmm/submilestones"
                       class="rev-underline-subtitle"
-                      >Sub Milestone List</router-link
+                      >Submilestone List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -65,7 +65,7 @@
 
                       <router-link
                         v-if="userInfo.role_id != 9"
-                        to="/pmm/sub-milestones/create"
+                        to="/pmm/submilestones/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
@@ -116,7 +116,7 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <sub-milestone-table
+                    <submilestone-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       v-model:nameSearch.lazy="nameSearch"
@@ -124,7 +124,7 @@
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       ref="multiselected"
-                    ></sub-milestone-table>
+                    ></submilestone-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -156,7 +156,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
 import Axios from "@/http-common";
-import SubMilestoneTable from "./SubMilestoneTable.vue";
+import SubmilestoneTable from "./SubmilestoneTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";

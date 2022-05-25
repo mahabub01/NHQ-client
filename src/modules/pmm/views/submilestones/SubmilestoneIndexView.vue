@@ -15,9 +15,9 @@
                   </button>
                   <div class="page-bootcamp-left">
                     <router-link
-                      to="/pmm/sub-milestones"
+                      to="/pmm/submilestones"
                       class="rev-underline-subtitle"
-                      >Sub Milestone List</router-link
+                      >Submilestone List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -64,8 +64,8 @@
                       ></router-link> -->
 
                       <router-link
-                        v-if="user.role_id != 9"
-                        to="/pmm/sub-milestones/create"
+                        v-if="getPermission(`create_submilestone_list`)"
+                        to="/pmm/submilestones/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
@@ -79,7 +79,7 @@
                         style="display: none"
                       />
                       <label
-                        v-if="user.role_id != 9"
+                        v-if="getPermission(`import_submilestone_list`)"
                         for="importId"
                         class="theme-color-btn"
                         style="margin-right: 7px; cursor: pointer"
@@ -88,6 +88,7 @@
 
                       <div class="btn-group">
                         <button
+                          v-if="getPermission(`bulk_delete_submilestone_list`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"
@@ -116,7 +117,7 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <sub-milestone-table
+                    <submilestone-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       v-model:nameSearch.lazy="nameSearch"
@@ -124,7 +125,7 @@
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       ref="multiselected"
-                    ></sub-milestone-table>
+                    ></submilestone-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -156,14 +157,16 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
 import Axios from "@/http-common";
-import SubMilestoneTable from "./SubMilestoneTable.vue";
+import SubmilestoneTable from "./SubmilestoneTable.vue";
 import swal from "sweetalert";
 import { useDatatable } from "@/composables/datatables";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import { useExcelImport } from "@/composables/excel-import";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 //create store
 const store = useStore();
 
@@ -197,7 +200,7 @@ let search = ref("");
 watch([search], async () => {
   //fetchData("/tasks", search.value);
   filterData(
-    "/tasks",
+    "/submilestones",
     "&user_id=" +
       user.value.id +
       "&role_id=" +

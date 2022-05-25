@@ -10,7 +10,12 @@
           <th>Title</th>
           <th style="width: 30% !important">Description</th>
           <th>File</th>
-          <th class="action-field align-center">Edit</th>
+          <th
+            class="action-field align-center"
+            v-if="getPermission(`edit_delivery_timeline`)"
+          >
+            Edit
+          </th>
           <th class="action-field align-center">File</th>
           <th class="col-serial">Action</th>
         </tr>
@@ -29,7 +34,11 @@
           <td>{{ item.title }}</td>
           <td style="width: 30% !important">{{ item.description }}</td>
           <td>f</td>
-          <td class="action-field" style="text-align: center">
+          <td
+            class="action-field"
+            style="text-align: center"
+            v-if="getPermission(`edit_delivery_timeline`)"
+          >
             <a
               href="#"
               @click.prevent="getEdit(item.id)"
@@ -57,7 +66,7 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li>
+                <li v-if="getPermission(`delete_delivery_timeline`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
@@ -76,7 +85,9 @@
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 const attrs = useAttrs();
 
 const multiselect = ref([]);

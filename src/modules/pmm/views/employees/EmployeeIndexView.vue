@@ -59,6 +59,7 @@
                       </button>
 
                       <router-link
+                        v-if="getPermission(`create_employee`)"
                         to="/pmm/employees/create"
                         class="link_btn"
                         style="margin-right: 7px"
@@ -66,6 +67,7 @@
                       >
                       <div class="btn-group">
                         <button
+                          v-if="getPermission(`bulk_delete_employee`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"
@@ -215,6 +217,9 @@ import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import FilterModal from "../../../core/shared/FilterModal.vue";
 import { useStore } from "vuex";
 import Select2 from "vue3-select2-component";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 //create store
 const store = useStore();

@@ -54,6 +54,7 @@
                       />
 
                       <button
+                        v-if="getPermission(`create_boq_category_item`)"
                         type="button"
                         class="link_btn"
                         style="margin-right: 7px"
@@ -66,6 +67,7 @@
                       </button>
                       <div class="btn-group">
                         <button
+                          v-if="getPermission(`bulk_delete_boq_category_item`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"
@@ -311,6 +313,9 @@ import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import toastr from "toastr";
 import Select2 from "vue3-select2-component";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 //create store
 const store = useStore();

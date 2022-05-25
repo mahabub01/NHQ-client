@@ -65,12 +65,14 @@
                       </button>
 
                       <router-link
+                        v-if="getPermission(`create_client_list`)"
                         to="/pmm/clients/create"
                         class="link_btn"
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
                       >
                       <router-link
+                        v-if="getPermission(`import_client_list`)"
                         to="#"
                         class="theme-color-btn"
                         style="margin-right: 7px"
@@ -79,6 +81,7 @@
                       >
 
                       <router-link
+                        v-if="getPermission(`export_client_list`)"
                         to="#"
                         class="theme-color-btn"
                         style="margin-right: 7px"
@@ -87,6 +90,7 @@
 
                       <div class="btn-group">
                         <button
+                          v-if="getPermission(`bulk_delete_client_list`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"
@@ -210,7 +214,9 @@ import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import FilterModal from "../../../core/shared/FilterModal.vue";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 //create store
 const store = useStore();
 

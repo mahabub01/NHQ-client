@@ -56,7 +56,7 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown">
-                <li>
+                <li v-if="getPermission(`status_team`)">
                   <a
                     href="#"
                     v-if="td.is_active == 1"
@@ -73,13 +73,16 @@
                     @click.prevent="changeStatus(td.id, td.is_active)"
                     ><i class="far fa-check-circle"></i> Active</a
                   >
-
+                </li>
+                <li v-if="getPermission(`edit_team`)">
                   <a
                     href="#"
                     @click.prevent="getId(td.id)"
                     class="dropdown-item"
                     ><i class="fas fa-edit"></i> Edit</a
                   >
+                </li>
+                <li v-if="getPermission(`delete_team`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(td.id)"
@@ -99,6 +102,9 @@
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
 import { useStore } from "vuex";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 //use store
 const store = useStore();

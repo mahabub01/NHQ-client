@@ -4,10 +4,10 @@
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
-            <router-link to="/pmm/sub-milestones"
-              >Sub Milestone <i class="fas fa-chevron-right"></i
+            <router-link to="/pmm/submilestones"
+              >Submilestone <i class="fas fa-chevron-right"></i
             ></router-link>
-            <router-link to="/pmm/sub-milestones/create">Create</router-link>
+            <router-link to="/pmm/submilestones/create">Create</router-link>
           </div>
           <div class="col-md-8">
             <div class="float-right">
@@ -17,7 +17,7 @@
               <router-link
                 class="form-button-danger"
                 style="color: white"
-                to="/pmm/sub-milestones"
+                to="/pmm/submilestones"
                 ><i class="far fa-times-circle"></i> Discard
               </router-link>
             </div>
@@ -26,7 +26,7 @@
       </div>
       <div class="form-design-body">
         <div class="container">
-          <h4 class="form-page-title">Create Sub Milestone</h4>
+          <h4 class="form-page-title">Create Submilestone</h4>
           <div class="row">
             <div class="col-md-4 offset-md-1">
               <!--start field -->
@@ -393,7 +393,7 @@ async function handleSubmit() {
             "Created Sub Milestone Successfully!",
             "success"
           );
-          router.push("/pmm/sub-milestones");
+          router.push("/pmm/submilestones");
         } else {
           savingSpinner.value = false;
           //Show Error message

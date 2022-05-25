@@ -13,7 +13,12 @@
           <th style="width: 40% !important">Scope of Work List</th>
           <th>Latest Version</th>
           <th>Point</th>
-          <th class="action-field">Edit</th>
+          <th
+            class="action-field"
+            v-if="getPermission(`edit_oem_communication`)"
+          >
+            Edit
+          </th>
           <th class="action-field">File</th>
           <th class="col-serial">Action</th>
         </tr>
@@ -35,7 +40,11 @@
           <td style="width: 40% !important">{{ item.oem_title }}</td>
           <td>{{ item.version }}</td>
           <td>{{ item.point }}</td>
-          <td class="action-field" style="text-align: center">
+          <td
+            class="action-field"
+            style="text-align: center"
+            v-if="getPermission(`edit_oem_communication`)"
+          >
             <a href="#" @click.prevent="getEdit(item.id)" title="Edit OEM"
               ><i class="fa fa-pen action-icon"></i
             ></a>
@@ -60,13 +69,15 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li>
+                <li v-if="getPermission(`delete_oem_communication`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
                   >
+                </li>
+                <li v-if="getPermission(`details_oem_communication`)">
                   <router-link
                     :to="`/pmm/oems/details/${item.slug}`"
                     class="dropdown-item"
@@ -84,7 +95,9 @@
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 const attrs = useAttrs();
 
 const multiselect = ref([]);

@@ -12,7 +12,7 @@
           <th>Updated Date</th>
           <th style="width: 40% !important">Scope of Work List</th>
           <th>Section Category</th>
-          <th class="action-field">Edit</th>
+          <th class="action-field" v-if="getPermission(`edit_boq`)">Edit</th>
           <th class="action-field">File</th>
           <th class="col-serial">Action</th>
         </tr>
@@ -33,7 +33,11 @@
           <td>{{ item.updated_at }}</td>
           <td style="width: 40% !important">{{ item.boq_title }}</td>
           <td>{{ item.category }}</td>
-          <td class="action-field" style="text-align: center">
+          <td
+            class="action-field"
+            style="text-align: center"
+            v-if="getPermission(`edit_boq`)"
+          >
             <a href="#" @click.prevent="getEdit(item.id)" title="Edit Boq"
               ><i class="fa fa-pen action-icon"></i
             ></a>
@@ -58,36 +62,15 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li>
-                  <!-- <a
-                    href="#"
-                    v-if="td.is_active == 1"
-                    class="dropdown-item inactiveStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-times-circle"></i> In-Active</a
-                  >
-
-                  <a
-                    href="#"
-                    v-else 
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item activeStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-check-circle"></i> Active</a
-                  >
-
-                  <router-link
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item"
-                    ><i class="fas fa-edit"></i> Edit</router-link
-                  >
-                  -->
+                <li v-if="getPermission(`delete_boq`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
                     class="dropdown-item"
                     ><i class="fas fa-trash-alt"></i> Delete</a
                   >
+                </li>
+                <li v-if="getPermission(`details_boq`)">
                   <router-link
                     :to="`/pmm/boqs/details/${item.slug}`"
                     class="dropdown-item"
@@ -105,7 +88,9 @@
 
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 const attrs = useAttrs();
 
 const multiselect = ref([]);

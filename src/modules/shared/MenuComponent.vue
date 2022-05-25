@@ -275,8 +275,8 @@
 
           <!-- Sub Milestone ar poriborte hobe Task  -->
           <li class="nav-item dropdown">
-            <router-link class="nav-link" to="/pmm/sub-milestones">
-              Sub Milestone
+            <router-link class="nav-link" to="/pmm/submilestones">
+              Submilestone
             </router-link>
           </li>
 
@@ -381,8 +381,11 @@
                 >
               </li>
               <li>
-                <router-link class="dropdown-item" to="/pmm/task-categories"
-                  ><i class="fas fa-table"></i> Task Category list</router-link
+                <router-link
+                  class="dropdown-item"
+                  to="/pmm/submilestone-categories"
+                  ><i class="fas fa-table"></i> Submilestone Category
+                  list</router-link
                 >
               </li>
               <li>

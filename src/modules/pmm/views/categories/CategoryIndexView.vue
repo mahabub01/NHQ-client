@@ -72,6 +72,7 @@
                       </button>
                       <div class="btn-group">
                         <button
+                          v-if="getPermission(`bulk_delete_project_category`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"

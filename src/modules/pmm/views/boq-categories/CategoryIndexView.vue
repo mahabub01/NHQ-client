@@ -54,6 +54,7 @@
                       />
 
                       <button
+                        v-if="getPermission(`create_boq_category`)"
                         type="button"
                         class="link_btn"
                         style="margin-right: 7px"
@@ -66,6 +67,7 @@
                       </button>
                       <div class="btn-group">
                         <button
+                          v-if="getPermission(`bulk_delete_boq_category`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"
@@ -266,7 +268,9 @@ import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import toastr from "toastr";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 //create store
 const store = useStore();
 
@@ -312,7 +316,7 @@ async function createSubmit() {
           savingSpinner.value = false;
           swal(
             "Success Job!",
-            "Your poc category created successfully!",
+            "Your boq category created successfully!",
             "success"
           );
         } else {

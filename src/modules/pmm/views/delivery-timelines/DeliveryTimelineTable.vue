@@ -9,14 +9,15 @@
           </th>
           <th>Title</th>
           <th style="width: 30% !important">Description</th>
-          <th>File</th>
+          <th>Uploaded File</th>
+
           <th
             class="action-field align-center"
             v-if="getPermission(`edit_delivery_timeline`)"
           >
             Edit
           </th>
-          <th class="action-field align-center">File</th>
+          <th>File</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -33,7 +34,12 @@
           </td>
           <td>{{ item.title }}</td>
           <td style="width: 30% !important">{{ item.description }}</td>
-          <td>f</td>
+          <td>
+            <template v-if="item.file != 0">
+              {{ item.file.length }} Files
+            </template>
+            <template v-else>N/A</template>
+          </td>
           <td
             class="action-field"
             style="text-align: center"
@@ -46,14 +52,18 @@
               ><i class="fa fa-pen action-icon"></i
             ></a>
           </td>
-          <td class="action-field" style="text-align: center">
-            <a v-if="item.file != null" :href="`${item.file}`" target="_blank"
+          <td>
+            <a
+              v-if="item.file.length != 0"
+              @click.prevent="file_id(item.id)"
+              href="#"
               ><i class="fa fa-paperclip action-icon"></i
             ></a>
             <a href="#" onclick="alert('File not uploaded')" v-else
               ><i class="fa fa-paperclip action-icon" style="opacity: 0.6"></i
             ></a>
           </td>
+
           <td class="col-serial">
             <div class="btn-group">
               <button
@@ -100,6 +110,7 @@ const emit = defineEmits([
   "activation",
   "getFiles",
   "edit",
+  "file",
 ]);
 
 const props = defineProps({
@@ -143,6 +154,11 @@ function getFile(pid: number) {
 //Get Id Emit use for update
 function getEdit(id: number) {
   emit("edit", id);
+}
+
+//Get Id Emit use for file show
+function file_id(id: number) {
+  emit("file", id);
 }
 </script>
 

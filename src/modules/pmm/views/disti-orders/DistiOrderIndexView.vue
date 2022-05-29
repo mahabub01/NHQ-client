@@ -111,6 +111,7 @@
                       @activation="changeStatus($event)"
                       @getFiles="downloadFile($event)"
                       @edit="editModal($event)"
+                      @file="fileModal($event)"
                       ref="multiselected"
                     ></disti-order-table>
 
@@ -173,20 +174,18 @@
             <div class="row form-row">
               <div class="col-md-12" style="min-height: 267px">
                 <label class="form-label">Description</label>
-                <!-- :content="" use for set default Data-->
                 <TheCKEditor @sendContent="setDescription" />
               </div>
             </div>
 
             <div class="row form-row">
               <div class="col-md-12">
-                <label class="form-label">Choose File</label>
-                <single-file-uploader
+                <multi-file-uploader
+                  label="Choose File"
                   field_name="create_disti_order"
-                ></single-file-uploader>
+                ></multi-file-uploader>
               </div>
             </div>
-
             <div class="modal-footer">
               <button
                 type="button"
@@ -252,17 +251,24 @@
 
           <div class="row form-row">
             <div class="col-md-12">
-              <label class="form-label">Choose File</label>
-              <single-file-uploader
+              <multi-file-uploader
+                label="Choose File"
                 field_name="create_disti_order"
-              ></single-file-uploader>
-
-              <a
-                target="_blank"
-                v-if="editable_file != null"
-                :href="`${editable_file}`"
-                >Download File</a
-              >
+              ></multi-file-uploader>
+              <template v-if="editable_file.length > 0">
+                <a
+                  v-for="(file, idx) in editable_file"
+                  :key="idx"
+                  target="_blank"
+                  :href="`${file}`"
+                  style="
+                    margin-right: 20px;
+                    display: inline-block;
+                    margin-top: 10px;
+                  "
+                  >Download File</a
+                >
+              </template>
             </div>
           </div>
 
@@ -285,6 +291,35 @@
       </template>
     </EditModal>
     <!--end Edit Modal -->
+
+    <!--start file Modal -->
+    <FileModal :modalsize="modalsm" v-if="fileModalState">
+      <template v-slot:fileheader
+        ><i class="fas fa-plus-square"></i> Disti Order All File
+      </template>
+      <template v-slot:filebody>
+        <div class="row">
+          <div class="col-md-4 mb-1" v-for="file in show_file" :key="file.id">
+            <a :href="`${file}`" class="text-decoration-none"
+              ><i class="fa fa-download"></i> Download File
+            </a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            @click.prevent="
+              store.commit('modalModule/CHNAGE_FILE_MODAL', false)
+            "
+          >
+            <i class="far fa-times-circle"></i> Close
+          </button>
+        </div>
+      </template>
+    </FileModal>
+    <!--end file Modal -->
   </div>
 </template>
 
@@ -298,6 +333,7 @@ import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import CreateModal from "../../../core/shared/CreateModal.vue";
 import EditModal from "../../../core/shared/EditModal.vue";
+import FileModal from "../../../core/shared/FileModal.vue";
 import FilterModal from "../../../core/shared/FilterModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
@@ -308,6 +344,7 @@ import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import { useRoute } from "vue-router";
 import toastr from "toastr";
 import { usePermission } from "@/composables/permissions";
+import MultiFileUploader from "@/modules/core/shared/file-uploader/MultifileUploader.vue";
 
 const { getPermission } = usePermission();
 //get route information using route
@@ -326,6 +363,7 @@ const multiselected = ref([]);
 
 //modal size
 const modalSize = ref("modal-lg");
+const modalsm = ref("modal-md");
 
 //use datatable composables
 const {
@@ -380,7 +418,6 @@ onMounted(() => {
 
 //filter by DistiOrder ID/ DistiOrder title
 watch([search], async () => {
-  // alert(search.value);
   filterData(
     "/projects/disti-orders",
     "&project_id=" + route.params.project_id + "&search=" + search.value
@@ -396,32 +433,29 @@ const editModalState = computed(() => {
   return store.state.modalModule.editModal;
 });
 
+const fileModalState = computed(() => {
+  return store.state.modalModule.fileModal;
+});
+
 async function submitHandler() {
-  //check validation
   v$.value.$validate();
   v$.value.$touch();
 
   if (!v$.value.$error) {
-    //Start data saving spinner
     savingSpinner.value = true;
     await Axios.post("projects/disti-orders", formState)
       .then((response) => {
         if (response.data.code === 200) {
-          //get Data using api
           filterData(
             "/projects/disti-orders",
             "&project_id=" + route.params.project_id
           );
-          //Close Create Modal
           store.commit("modalModule/CHNAGE_CREATE_MODAL", false);
-          //reset form field
           resetForm();
-          //Stop Saving Spinner
           savingSpinner.value = false;
           swal("Success Job!", "Created record successfully!", "success");
         } else {
           savingSpinner.value = false;
-          //Show Error message
           toastr.error(response.data.message);
         }
       })
@@ -438,7 +472,8 @@ const loadCKEditor = computed(() => {
 
 //editable Id
 const editable_id = ref();
-const editable_file = ref(null);
+const editable_file = ref([]);
+const show_file = ref([]);
 
 //Load Single data for Edit
 async function editModal(id: number) {
@@ -460,34 +495,40 @@ async function editModal(id: number) {
   });
 }
 
+//Load Single data for Edit
+async function fileModal(id: number) {
+  store.commit("modalModule/CHNAGE_FILE_MODAL", true);
+  await Axios.get("/projects/disti-orders/" + id).then((response) => {
+    loadingSpinner.value = false;
+    if (response.data.code === 200) {
+      show_file.value = response.data.data.file;
+    } else {
+      toastr.error(response.data.message);
+    }
+  });
+}
+
 //update data
 async function updateHandler() {
-  //check validation
   v$.value.$validate();
   v$.value.$touch();
   console.log(formState);
 
   if (!v$.value.$error) {
-    //Start data saving spinner
     savingSpinner.value = true;
     await Axios.put("projects/disti-orders/" + editable_id.value, formState)
       .then((response) => {
         if (response.data.code === 200) {
-          //get Data using api
           filterData(
             "/projects/disti-orders",
             "&project_id=" + route.params.project_id
           );
-          //Close Create Modal
           store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-          //reset form field
           resetForm();
-          //Stop Saving Spinner
           savingSpinner.value = false;
           swal("Success Job!", "Updated record successfully!", "success");
         } else {
           savingSpinner.value = false;
-          //Show Error message
           toastr.error(response.data.message);
         }
       })
@@ -562,7 +603,6 @@ function remove(id: number) {
             icon: "success",
           });
         } else {
-          //Show Error message
           toastr.error(response.data.message);
         }
       });

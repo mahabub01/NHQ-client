@@ -261,6 +261,7 @@ const formState = reactive({
   submilestone_point: 0,
   priority_id: "",
   duration: "",
+  user_id: "",
   token: store.state.currentUser.token,
 });
 

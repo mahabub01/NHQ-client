@@ -88,7 +88,7 @@
 
               <!--start field-->
               <div class="form-row">
-                <label class="form-label">Project Team/Member</label>
+                <label class="form-label">Project Member</label>
                 <Select2
                   v-model="formState.team_id"
                   :options="teamList"
@@ -226,6 +226,7 @@ const router = useRouter();
 
 //create store
 const store = useStore();
+const user_id = ref(localStorage.getItem("user_id"));
 
 const formState = reactive({
   name: "",
@@ -240,8 +241,9 @@ const formState = reactive({
   description: "",
   status: "",
   token: store.state.currentUser.token,
-  onboarding_point: "",
-  operation_point: "",
+  onboarding_point: 30,
+  operation_point: 70,
+  user_id: user_id.value,
 });
 
 const rules: any = {
@@ -402,8 +404,8 @@ function resetForm() {
   formState.tags = "";
   formState.description = "";
   formState.status = "";
-  formState.operation_point = "";
-  formState.onboarding_point = "";
+  formState.operation_point = 70;
+  formState.onboarding_point = 30;
   v$.value.$reset();
 }
 </script>

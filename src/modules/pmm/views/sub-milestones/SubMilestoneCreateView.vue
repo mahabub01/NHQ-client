@@ -246,6 +246,8 @@ import { useStore } from "vuex";
 const store = useStore();
 const router = useRouter();
 
+const user_id = ref(localStorage.getItem("user_id"));
+
 const formState = reactive({
   project_id: "",
   submilestone_name: "",
@@ -261,6 +263,7 @@ const formState = reactive({
   submilestone_point: 0,
   priority_id: "",
   duration: "",
+  user_id: user_id.value,
   token: store.state.currentUser.token,
 });
 

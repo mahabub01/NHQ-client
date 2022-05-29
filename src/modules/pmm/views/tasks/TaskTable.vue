@@ -172,10 +172,7 @@
           </td>
 
           <td class="action-field" style="text-align: center">
-            <a
-              v-if="item.file_name != null"
-              :href="`${item.file_name}`"
-              target="_blank"
+            <a v-if="item.file != ''" :href="`${item.file}`" target="_blank"
               ><i class="fa fa-paperclip action-icon"></i
             ></a>
             <a href="#" onclick="alert('File not uploaded')" v-else

@@ -39,7 +39,7 @@
       </div>
       <div class="form-design-body">
         <div class="container">
-          <h4 class="form-page-title">Create Tasks</h4>
+          <h4 class="form-page-title">Edit Tasks</h4>
           <div class="row">
             <div class="col-md-4 offset-md-1">
               <!--start field -->
@@ -152,7 +152,11 @@
               <!--start field -->
               <div class="form-row">
                 <label class="form-label">Description</label>
-                <TheCKEditor @sendContent="setDescription" />
+                <TheCKEditor
+                  @sendContent="setDescription"
+                  :content="formState.project_description"
+                  v-if="loadCKEditor"
+                />
               </div>
               <!--end field -->
             </div>
@@ -218,6 +222,9 @@
                 <single-file-uploader
                   field_name="create_task"
                 ></single-file-uploader>
+                <a target="_blank" v-if="getFiles != ''" :href="`${getFiles}`"
+                  >Download File</a
+                >
               </div>
               <!--end field -->
 
@@ -227,6 +234,20 @@
                   label="Implementation Snapshot"
                   field_name="task_snapshot"
                 ></multi-image-uploader>
+                <template v-if="snapshots.length > 0">
+                  <a
+                    v-for="(snapshot, idx) in snapshots"
+                    :key="idx"
+                    target="_blank"
+                    :href="`${snapshot}`"
+                    style="
+                      margin-right: 20px;
+                      display: inline-block;
+                      margin-top: 10px;
+                    "
+                    >Download File</a
+                  >
+                </template>
               </div>
               <!--end field -->
             </div>
@@ -240,7 +261,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";
@@ -252,10 +273,19 @@ import toastr from "toastr";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useRouter, useRoute } from "vue-router";
 import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
+import { useStore } from "vuex";
 
 const router = useRouter();
 const route = useRoute();
+const store = useStore();
 
+// Load CkEditor Data
+const loadCKEditor = computed(() => {
+  return store.state.modalModule.loadCKEditor;
+});
+
+const getFiles = ref(null);
+const snapshots = ref([]);
 const formState = reactive({
   project_id: "",
   task_name: "",
@@ -303,17 +333,26 @@ onMounted(() => {
   getMilestones();
   getSubmilestones();
   getTeamMembers();
-
   loadEditData();
 });
 
 async function loadEditData() {
-  await Axios.get("/task/" + route.params.submilestone_id)
+  await Axios.get("/tasks-select-for-edit/" + route.params.id)
     .then((response) => {
       if (response.data.code === 200) {
         formState.milestone_id = String(response.data.data.milestone_id);
         formState.project_id = String(response.data.data.project_id);
-        formState.submilestone_id = String(route.params.submilestone_id);
+        formState.submilestone_id = String(response.data.data.submilestone_id);
+        formState.task_name = response.data.data.task_name;
+        formState.start_date = response.data.data.start_date;
+        formState.end_date = response.data.data.end_date;
+        formState.extended_date = response.data.data.extended_date;
+        formState.task_status = response.data.data.task_status;
+        formState.duration = response.data.data.duration;
+        formState.team_member_id = response.data.data.team_member_id;
+        getFiles.value = response.data.data.file;
+        snapshots.value = response.data.data.task_snapshots;
+        store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
       } else {
         toastr.error(response.data.message);
       }
@@ -390,7 +429,7 @@ async function handleSubmit() {
   v$.value.$touch();
   if (!v$.value.$error) {
     savingSpinner.value = true;
-    await Axios.post("tasks", formState)
+    await Axios.put("tasks/" + route.params.id, formState)
       .then((response) => {
         if (response.data.code === 200) {
           //Stop Saving Spinner

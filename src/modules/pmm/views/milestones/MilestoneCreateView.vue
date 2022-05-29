@@ -136,10 +136,6 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Description</label>
-              <TheCKEditor @sendContent="setDescription" />
-            </div>
-            <div class="col-md-4 offset-md-2">
               <!--start row -->
               <div class="form-row">
                 <label class="form-label">Milestone Category</label>
@@ -160,6 +156,10 @@
                 />
               </div>
 
+              <label class="form-label">Description</label>
+              <TheCKEditor @sendContent="setDescription" />
+            </div>
+            <div class="col-md-4 offset-md-2">
               <!--start row -->
               <div class="row form-row">
                 <div class="col-md-12">
@@ -170,6 +170,15 @@
                 </div>
               </div>
               <!--end row -->
+
+              <!--start field -->
+              <div class="form-row">
+                <multi-image-uploader
+                  label="Implementation Snapshot"
+                  field_name="milestone_snapshot"
+                ></multi-image-uploader>
+              </div>
+              <!--end field -->
             </div>
           </div>
           <!--end row -->
@@ -191,6 +200,7 @@ import toastr from "toastr";
 import { useRouter } from "vue-router";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import { useStore } from "vuex";
+import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
 
 const router = useRouter();
 
@@ -200,6 +210,7 @@ let buttonLoading = ref(false);
 
 //use for saving preloader
 let savingSpinner = ref(false);
+let user_id = ref(localStorage.getItem("user_id"));
 
 const formState = reactive({
   project_name: "",
@@ -215,6 +226,7 @@ const formState = reactive({
   description: "",
   duration: "",
   token: store.state.currentUser.token,
+  user_id: user_id.value,
 });
 
 const rules: any = {

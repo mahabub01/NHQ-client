@@ -183,14 +183,8 @@ let savingSpinner = ref(false);
 const multiselected = ref([]);
 
 //use datatable composables
-const {
-  entries,
-  datatables,
-  showEntries,
-  currentEntries,
-  fetchData,
-  filterData,
-} = useDatatable();
+const { entries, datatables, showEntries, currentEntries, filterData } =
+  useDatatable();
 
 //Search Property
 let nameSearch = ref("");

@@ -163,7 +163,7 @@
                   <h5 class="data-label">Files</h5>
                   <a
                     target="_blank"
-                    v-if="getInformation != null"
+                    v-if="getInformation.file != ''"
                     :href="`${getInformation.file}`"
                     >Download File</a
                   >

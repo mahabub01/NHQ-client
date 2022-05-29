@@ -138,14 +138,6 @@
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
-              <label class="form-label">Description</label>
-              <TheCKEditor
-                @sendContent="setDescription"
-                :content="formState.description"
-                v-if="loadCKEditor"
-              />
-            </div>
-            <div class="col-md-4 offset-md-2">
               <!--start row -->
               <div class="form-row">
                 <label class="form-label">Milestone Category</label>
@@ -166,6 +158,14 @@
                 />
               </div>
 
+              <label class="form-label">Description</label>
+              <TheCKEditor
+                @sendContent="setDescription"
+                :content="formState.description"
+                v-if="loadCKEditor"
+              />
+            </div>
+            <div class="col-md-4 offset-md-2">
               <!--start row -->
               <div class="row form-row">
                 <div class="col-md-12">
@@ -182,6 +182,15 @@
                 </div>
               </div>
               <!--end row -->
+
+              <!--start field -->
+              <div class="form-row">
+                <multi-image-uploader
+                  label="Implementation Snapshot"
+                  field_name="milestone_snapshot"
+                ></multi-image-uploader>
+              </div>
+              <!--end field -->
             </div>
           </div>
           <!--end row -->
@@ -204,6 +213,7 @@ import toastr from "toastr";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
+import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -237,6 +247,9 @@ onMounted(() => {
 
 //get Files
 const getFiles = ref(null);
+
+const user_id = ref(localStorage.getItem("user_id"));
+const token = ref(localStorage.getItem("token"));
 
 // Load CkEditor Data
 const loadCKEditor = computed(() => {
@@ -297,8 +310,9 @@ const formState = reactive({
   extended_date: "",
   file_name: "",
   description: "",
-  token: store.state.currentUser.token,
+  token: token.value,
   duration: "",
+  user_id: user_id.value,
 });
 
 const rules: any = {
@@ -338,20 +352,19 @@ async function handleSubmit() {
 onMounted(async () => {
   loadingSpinner.value = true;
   await Axios.get("/milestones/" + route.params.id).then((response) => {
-    singleData = response.data.data;
-    if (singleData != "") {
-      formState.project_name = singleData.project_name;
-      formState.milestone_name = singleData.milestone_name;
-      formState.assign_employee = singleData.assign_employee;
-      formState.points = singleData.points;
-      formState.follow_up = singleData.follow_up;
-      formState.category = singleData.category;
-      formState.start_date = singleData.start_date;
-      formState.end_date = singleData.end_date;
-      formState.extended_date = singleData.extended_date;
-      formState.description = singleData.description;
-      formState.duration = singleData.duration;
-      getFiles.value = singleData.file_name;
+    if (response.data.data != "") {
+      formState.project_name = String(response.data.data.project_name);
+      formState.milestone_name = response.data.data.milestone_name;
+      formState.assign_employee = response.data.data.assign_employee;
+      formState.points = response.data.data.points;
+      formState.follow_up = String(response.data.data.follow_up);
+      formState.category = String(response.data.data.category);
+      formState.start_date = response.data.data.start_date;
+      formState.end_date = response.data.data.end_date;
+      formState.extended_date = response.data.data.extended_date;
+      formState.description = response.data.data.description;
+      formState.duration = response.data.data.duration;
+      getFiles.value = response.data.data.file_name;
       store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
     }
     loadingSpinner.value = false;

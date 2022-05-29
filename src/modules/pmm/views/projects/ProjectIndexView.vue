@@ -168,33 +168,58 @@ let savingSpinner = ref(false);
 const multiselected = ref([]);
 
 //use datatable composables
-const { entries, datatables, showEntries, currentEntries, fetchData } =
-  useDatatable();
+const {
+  entries,
+  datatables,
+  showEntries,
+  currentEntries,
+  fetchData,
+  filterData,
+} = useDatatable();
 
+const user_id = ref(localStorage.getItem("user_id"));
+const flag = ref(localStorage.getItem("flag"));
 //search field
 let search = ref("");
 
 //filter by POC ID/ Poc title
 watch([search], async () => {
-  fetchData("/projects/projects", search.value);
+  filterData(
+    "/projects/projects",
+    "&user_id=" +
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&search" +
+      search.value
+  );
 });
 
 //Load Data form computed onMounted
 onMounted(async () => {
-  fetchData("/projects/projects");
+  filterData(
+    "/projects/projects",
+    "&user_id=" + user_id.value + "&flag=" + flag.value
+  );
 });
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
-  fetchData("/projects/projects");
+  filterData(
+    "/projects/projects",
+    "&user_id=" + user_id.value + "&flag=" + flag.value
+  );
 }
 
 //show previous page data
 function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
-    fetchData("/projects/projects");
+    filterData(
+      "/projects/projects",
+      "&user_id=" + user_id.value + "&flag=" + flag.value
+    );
   }
 }
 
@@ -202,14 +227,20 @@ function prev() {
 function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/projects/projects");
+    filterData(
+      "/projects/projects",
+      "&user_id=" + user_id.value + "&flag=" + flag.value
+    );
   }
 }
 
 //show current Page Data
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
-  fetchData("/projects/projects");
+  filterData(
+    "/projects/projects",
+    "&user_id=" + user_id.value + "&flag=" + flag.value
+  );
 }
 
 //Delete selected Item
@@ -229,7 +260,10 @@ function remove(id: number) {
           entries.value = entries.value.filter(
             (e: { id: number }) => e.id !== id
           );
-          fetchData("/projects/projects");
+          filterData(
+            "/projects/projects",
+            "&user_id=" + user_id.value + "&flag=" + flag.value
+          );
           swal("Poof! Your data has been deleted!", {
             icon: "success",
           });
@@ -263,7 +297,10 @@ function bulkDelete() {
       }).then((response) => {
         deletingSpinner.value = false;
         if (response.data.code === 200) {
-          fetchData("/projects/projects");
+          filterData(
+            "/projects/projects",
+            "&user_id=" + user_id.value + "&flag=" + flag.value
+          );
           swal("Poof! Your data has been deleted!", {
             icon: "success",
           });

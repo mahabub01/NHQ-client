@@ -52,6 +52,16 @@
                         v-model.lazy="search"
                         class="table-search"
                       />
+                      <button
+                        type="button"
+                        class="link_btn"
+                        style="margin-right: 7px"
+                        @click="
+                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true)
+                        "
+                      >
+                        <i class="fas fa-filter"></i>
+                      </button>
 
                       <router-link
                         v-if="route.params.submilestone_id != ''"
@@ -149,10 +159,103 @@
       :isImporting="importSpinner"
     ></the-spinner>
   </div>
+
+  <!--start Filter Modal -->
+  <div>
+    <filter-modal>
+      <template v-slot:header
+        ><i class="fas fa-filter"></i> Filter Milestone
+      </template>
+      <template v-slot:body>
+        <form @submit.prevent="filterSubmit" class="form-page">
+          <div class="row">
+            <div class="col-md-4 mb_30">
+              <label class="form-label"> Name/ID </label>
+              <input
+                type="text"
+                class="form-input"
+                v-model="filterState.task_name_id"
+              />
+            </div>
+
+            <div class="col-md-4 mb_30">
+              <label class="form-label"> Project List </label>
+              <Select2
+                v-model="filterState.project_id"
+                :options="projectSelectable"
+                :settings="{ placeholder: 'Choose' }"
+              />
+            </div>
+
+            <div class="col-md-4 mb_30">
+              <label class="form-label"> Milestone List </label>
+              <Select2
+                v-model="filterState.milestone_id"
+                :options="milestoneSelectable"
+                :settings="{ placeholder: 'Choose' }"
+              />
+            </div>
+
+            <div class="col-md-4 mb_30">
+              <label class="form-label"> Submilestone List </label>
+              <Select2
+                v-model="filterState.submilestone_id"
+                :options="submilestoneSelectable"
+                :settings="{ placeholder: 'Choose' }"
+              />
+            </div>
+            <!-- -->
+
+            <div class="col-md-4 mb_30">
+              <label class="form-label"> Extend Date </label>
+              <input
+                type="date"
+                class="form-input"
+                v-model="filterState.extended_date"
+              />
+            </div>
+            <div class="col-md-4 mb_30">
+              <label class="form-label"> Start Date</label>
+              <input
+                type="date"
+                class="form-input"
+                v-model="filterState.start_date"
+              />
+            </div>
+            <div class="col-md-4 mb_30">
+              <label class="form-label"> End Date</label>
+              <input
+                type="date"
+                class="form-input"
+                v-model="filterState.end_date"
+              />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="form-button-danger"
+              data-bs-dismiss="modal"
+              @click.prevent="
+                store.commit('modalModule/CHNAGE_FILTER_MODAL', false)
+              "
+            >
+              <i class="far fa-times-circle"></i> Close
+            </button>
+            <button type="submit" class="form-button">
+              <i class="fas fa-filter"></i> Filter
+            </button>
+          </div>
+        </form>
+      </template>
+    </filter-modal>
+  </div>
+  <!--end Filter Modal -->
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, computed } from "vue";
+import { onMounted, ref, watch, computed, reactive } from "vue";
 import Axios from "@/http-common";
 import TaskTable from "./TaskTable.vue";
 import swal from "sweetalert";
@@ -162,7 +265,8 @@ import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import { useExcelImport } from "@/composables/excel-import";
 import { useRoute } from "vue-router";
-
+import FilterModal from "../../../core/shared/FilterModal.vue";
+import Select2 from "vue3-select2-component";
 //create store
 const store = useStore();
 
@@ -170,6 +274,16 @@ const route = useRoute();
 
 const userInfo = computed(() => {
   return store.state.currentUser.userPemissions;
+});
+
+const filterState = reactive({
+  project_id: "",
+  milestone_id: "",
+  submilestone_id: "",
+  task_name_id: "",
+  extended_date: "",
+  start_date: "",
+  end_date: "",
 });
 
 const user_id = ref(localStorage.getItem("user_id"));
@@ -219,7 +333,71 @@ onMounted(() => {
       "&submilestone_id=" +
       route.params.submilestone_id
   );
+  getProjects();
+  getMilestones();
+  getSubmilestones();
 });
+
+let filteringSpinner = ref(false);
+
+async function filterSubmit() {
+  store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
+  datatables.loadingState = true;
+  filteringSpinner.value = true;
+
+  await Axios.post("tasks-filter", filterState).then((response) => {
+    filteringSpinner.value = false;
+    entries.value = response.data.data;
+    datatables.totalItems = response.data.meta.total;
+    datatables.currentPage = response.data.meta.current_page;
+    datatables.allPages = response.data.meta.last_page;
+    datatables.pagination = response.data.meta.links;
+    datatables.loadingState = false;
+  });
+}
+
+const projectSelectable = ref([]);
+const milestoneSelectable = ref([]);
+const submilestoneSelectable = ref([]);
+
+//get milestones for Selectable
+async function getProjects() {
+  await Axios.get("/project-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        projectSelectable.value = response.data.data;
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+//get milestones for Selectable
+async function getMilestones() {
+  await Axios.get("/milestones-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        milestoneSelectable.value = response.data.data;
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+//get milestones for Selectable
+async function getSubmilestones() {
+  await Axios.get("/submilestones-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        submilestoneSelectable.value = response.data.data;
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
 
 //show data using show Menu
 function paginateEntries(e: any) {

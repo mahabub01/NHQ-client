@@ -14,11 +14,7 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link
-                      to="/pmm/projects"
-                      class="rev-underline-subtitle"
-                      >Project List</router-link
-                    >
+                    <a href="" class="rev-underline-subtitle">Project List</a>
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">
@@ -61,6 +57,7 @@
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
                       >
+                      <!-- v-if="getPermission(`import_project_list`)" -->
                       <router-link
                         v-if="getPermission(`import_project_list`)"
                         to="#"
@@ -183,16 +180,24 @@ const flag = ref(localStorage.getItem("flag"));
 let search = ref("");
 
 //filter by POC ID/ Poc title
+
 watch([search], async () => {
-  filterData(
-    "/projects/projects",
-    "&user_id=" +
-      user_id.value +
-      "&flag=" +
-      flag.value +
-      "&search" +
+  datatables.loadingState = true;
+  await Axios.get(
+    "/projects/projects?showEntries=" +
+      currentEntries.value +
+      "&page=" +
+      datatables.currentPage +
+      "&search=" +
       search.value
-  );
+  ).then((response) => {
+    entries.value = response.data.data;
+    datatables.totalItems = response.data.meta.total;
+    datatables.currentPage = response.data.meta.current_page;
+    datatables.allPages = response.data.meta.last_page;
+    datatables.pagination = response.data.meta.links;
+    datatables.loadingState = false;
+  });
 });
 
 //Load Data form computed onMounted

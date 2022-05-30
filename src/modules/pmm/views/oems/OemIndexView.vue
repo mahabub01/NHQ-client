@@ -21,7 +21,7 @@
                       >Project</router-link
                     >
                     >
-                    <a class="rev-underline-subtitle" href="#">Oem List</a>
+                    <a class="rev-underline-subtitle" href="">Oem List</a>
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">

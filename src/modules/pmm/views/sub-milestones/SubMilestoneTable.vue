@@ -164,7 +164,21 @@
               </div>
             </div>
           </td>
-          <td>{{ item.status }}</td>
+          <td>
+            <select
+              class="show-data-select"
+              v-model="status"
+              @change="changeStatus($event, item.id)"
+            >
+              <option
+                v-for="status in taskStatusSelectable"
+                :key="status.id"
+                :value="status.id"
+              >
+                {{ status.text }}
+              </option>
+            </select>
+          </td>
           <td class="action-field" style="text-align: center">
             <router-link
               :to="`/pmm/sub-milestones/${item.id}/edit`"
@@ -200,7 +214,11 @@ import {
 } from "vue";
 import SubMilestoneTimer from "./SubMilestoneTimer.vue";
 import { useTimeTracker } from "@/composables/time-tracker";
+import { reactive } from "vue";
+import Axios from "@/http-common";
+
 import toastr from "toastr";
+import axios from "axios";
 
 const store = useStore();
 const user_id = computed(() => store.state.currentUser.user.id);
@@ -297,7 +315,26 @@ function EndSubMilestoneTimer(index: any, task_id: any) {
   });
   toastr.success("Timer end Successfully.");
 }
-//<td>{{ item.hour }}h {{ item.minit }}m {{ item.sec }}s</td>
+
+const taskStatusSelectable = reactive([
+  { id: "1", text: "In Progress" },
+  { id: "2", text: "Completed" },
+]);
+
+//Change selected data status
+const selectedStatusId = ref("");
+async function changeStatus(event: any, id: number) {
+  let result = taskStatusSelectable.filter(
+    (item) => item.id == event.target.value
+  );
+  selectedStatusId.value = result[0].id;
+
+  await Axios.post("/submilestones-status", { id: id, status: result[0] }).then(
+    (response) => {
+      console.log(response.data);
+    }
+  );
+}
 </script>
 
 <style scoped>

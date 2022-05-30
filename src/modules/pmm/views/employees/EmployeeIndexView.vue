@@ -9,7 +9,7 @@
           <div class="card" style="border-top: none">
             <div class="page-bootcamp">
               <div class="row">
-                <div class="col-md-7">
+                <div class="col-md-5">
                   <button class="page-bootcamp-brand">
                     <i class="fas fa-address-card"></i>
                   </button>
@@ -24,7 +24,7 @@
                     </ul>
                   </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-7">
                   <div class="page-bootcamp-right">
                     <div>
                       <label class="show-data-label">Show: </label>

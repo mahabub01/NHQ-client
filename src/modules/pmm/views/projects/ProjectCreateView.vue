@@ -243,7 +243,7 @@ const formState = reactive({
   token: store.state.currentUser.token,
   onboarding_point: 30,
   operation_point: 70,
-  user_id: user_id.value,
+  created_by: user_id.value,
 });
 
 const rules: any = {
@@ -372,7 +372,9 @@ async function handleSubmit() {
     savingSpinner.value = true;
     await Axios.post("/projects/projects", formState)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
+        // console.log(response.data.message);
+
         if (response.data.code === 200) {
           resetForm();
           //Stop Saving Spinner

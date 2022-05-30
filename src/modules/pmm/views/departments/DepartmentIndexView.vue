@@ -21,10 +21,8 @@
                         style="margin-left: 6px; margin-right: 6px"
                       ></i>
                     </router-link>
-                    <router-link
-                      to="/pmm/departments"
-                      class="rev-underline-subtitle"
-                      >Department List</router-link
+                    <a href="" class="rev-underline-subtitle"
+                      >Department List</a
                     >
                   </div>
                   <div class="page-bootcamp-left">

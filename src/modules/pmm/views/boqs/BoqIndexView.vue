@@ -20,7 +20,6 @@
                       style="margin-right: 7px"
                       >NHQ Project</router-link
                     >
-                    >
                     <a class="rev-underline-subtitle" href="">Boq List</a>
                   </div>
                   <div class="page-bootcamp-left">
@@ -267,7 +266,7 @@
               <div class="col-md-6">
                 <label class="form-label"> Part Number/ Specification </label>
                 <input
-                  type="text"
+                  type="number"
                   class="form-input"
                   v-model.lazy="formState.part_number"
                 />

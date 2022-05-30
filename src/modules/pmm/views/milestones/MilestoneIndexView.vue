@@ -14,10 +14,8 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link
-                      class="rev-underline-subtitle"
-                      to="/pmm/milestones"
-                      >Milestones List</router-link
+                    <a class="rev-underline-subtitle" href=""
+                      >Milestones List</a
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -50,7 +48,7 @@
                       <input
                         type="text"
                         v-model.lazy="nameSearch"
-                        placeholder="Search Team"
+                        placeholder="Search Milestone"
                       />
 
                       <button

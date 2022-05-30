@@ -13,7 +13,6 @@
           <th>Start Date</th>
           <th>End Date</th>
           <th>Extended</th>
-          <!-- <th>Status</th> -->
           <th>Milestone Progress</th>
           <th
             class="col-icon align-center"
@@ -46,15 +45,7 @@
           <td>{{ td.start_date }}</td>
           <td>{{ td.end_date }}</td>
           <td>{{ td.extended_date }}</td>
-          <!-- <td>
-            <span v-if="td.is_active == 1" class="activeStatus"
-              ><i class="far fa-check-circle"></i> {{ isActive(td.is_active) }}
-            </span>
-            <span v-else class="inactiveStatus"
-              ><i class="far fa-times-circle"></i>
-              {{ isActive(td.is_active) }}</span
-            >
-          </td> -->
+
           <td>
             <div class="progress" style="height: 14px">
               <div

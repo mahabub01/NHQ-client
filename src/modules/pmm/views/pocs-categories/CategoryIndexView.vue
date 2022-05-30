@@ -14,10 +14,8 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link
-                      to="/pmm/pocs-categories"
-                      class="rev-underline-subtitle"
-                      >Poc Category List</router-link
+                    <a href="" class="rev-underline-subtitle"
+                      >Poc Category List</a
                     >
                   </div>
                   <div class="page-bootcamp-left">

@@ -164,7 +164,21 @@
               </div>
             </div>
           </td>
-          <td>{{ item.task_status }}</td>
+          <td>
+            <select
+              class="show-data-select"
+              v-model="task_status"
+              @change="changeStatus($event, item.id)"
+            >
+              <option
+                v-for="status in taskStatusSelectable"
+                :key="status.id"
+                :value="status.id"
+              >
+                {{ status.text }}
+              </option>
+            </select>
+          </td>
           <td class="action-field" style="text-align: center">
             <router-link :to="`/pmm/tasks/${item.id}/edit`" title="Edit Task"
               ><i class="fa fa-pen action-icon"></i
@@ -200,6 +214,8 @@ import TaskTimer from "./TaskTimer.vue";
 import { useTimeTracker } from "@/composables/task-time-tracker";
 import toastr from "toastr";
 import { useRoute } from "vue-router";
+import { reactive } from "vue";
+import Axios from "@/http-common";
 
 const route = useRoute();
 
@@ -297,6 +313,26 @@ function EndTaskTimer(index: any, task_id: any) {
     }
   });
   toastr.success("Timer end Successfully.");
+}
+
+const taskStatusSelectable = reactive([
+  { id: "1", text: "In Progress" },
+  { id: "2", text: "Completed" },
+]);
+
+//Change selected data status
+const selectedStatusId = ref("");
+async function changeStatus(event: any, id: number) {
+  let result = taskStatusSelectable.filter(
+    (item) => item.id == event.target.value
+  );
+  selectedStatusId.value = result[0].id;
+
+  await Axios.post("/tasks-status", { id: id, status: result[0] }).then(
+    (response) => {
+      console.log(response.data);
+    }
+  );
 }
 </script>
 

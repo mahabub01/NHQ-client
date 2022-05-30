@@ -14,10 +14,8 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link
-                      to="/pmm/boq-category-items"
-                      class="rev-underline-subtitle"
-                      >Boq Category Item</router-link
+                    <a href="" class="rev-underline-subtitle"
+                      >Boq Category Item</a
                     >
                   </div>
                   <div class="page-bootcamp-left">

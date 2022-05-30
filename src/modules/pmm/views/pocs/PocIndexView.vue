@@ -70,7 +70,7 @@
                       </button>
 
                       <button
-                        v-if="getPermission(`edit_oem_communication`)"
+                        v-if="getPermission(`edit_poc_document`)"
                         type="button"
                         class="link_btn"
                         style="margin-right: 7px"
@@ -110,10 +110,7 @@
 
                       <div class="btn-group">
                         <button
-                          v-if="
-                            getPermission(`bulk_delete_poc_document
-`)
-                          "
+                          v-if="getPermission(`bulk_delete_poc_document`)"
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
                           data-bs-toggle="dropdown"

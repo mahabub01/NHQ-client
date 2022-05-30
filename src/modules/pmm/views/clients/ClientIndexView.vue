@@ -14,11 +14,7 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link
-                      class="rev-underline-subtitle"
-                      to="/pmm/clients"
-                      >Clients List</router-link
-                    >
+                    <a class="rev-underline-subtitle" href="">Clients List</a>
                   </div>
                   <div class="page-bootcamp-left">
                     <ul class="page-bootcamp-list">

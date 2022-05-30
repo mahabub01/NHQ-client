@@ -178,6 +178,19 @@
 
                 <li
                   style="text-align: center; margin-top: 10px"
+                  v-if="getPermission(`display_milestone_list`)"
+                >
+                  <router-link
+                    :to="`/pmm/milestones/${item.id}`"
+                    class="btn btn-info icon_btn"
+                    style="width: 80%"
+                    ><i class="far fa-plus-square"></i> Add
+                    Milestone</router-link
+                  >
+                </li>
+
+                <li
+                  style="text-align: center; margin-top: 10px"
                   v-if="getPermission(`export_milestone_project_list`)"
                 >
                   <button

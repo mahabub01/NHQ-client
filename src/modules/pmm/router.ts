@@ -135,7 +135,7 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
-        path: "milestones",
+        path: "milestones/:project_id?",
         name: "milestones",
         component: () =>
           import(
@@ -144,7 +144,7 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
-        path: "milestones/create",
+        path: "milestones/create/:project_id?",
         name: "milestones-create",
         component: () =>
           import(
@@ -153,7 +153,7 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
-        path: "milestones/:id/edit/",
+        path: "milestones/:id/edit/:project_id?",
         name: "milestones-edit",
         component: () =>
           import(
@@ -162,7 +162,7 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
-        path: "milestones/details/:slug",
+        path: "milestones/details/:slug/:project_id?",
         name: "milestones-details",
         component: () =>
           import(

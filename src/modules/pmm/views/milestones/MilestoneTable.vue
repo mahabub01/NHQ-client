@@ -76,8 +76,16 @@
             v-if="getPermission(`edit_milestone_list`)"
           >
             <router-link
+              v-if="route.params.project_id != ''"
+              :to="`/pmm/milestones/${td.id}/edit/${route.params.project_id}`"
+              title="Edit Milestone"
+              ><i class="fa fa-pen action-icon"></i
+            ></router-link>
+
+            <router-link
               :to="`/pmm/milestones/${td.id}/edit`"
-              title="Edit Project"
+              title="Edit Milestone"
+              v-else
               ><i class="fa fa-pen action-icon"></i
             ></router-link>
           </td>
@@ -134,6 +142,13 @@
                 </li>
                 <li v-if="getPermission(`details_milestone_list`)">
                   <router-link
+                    v-if="route.params.project_id != ''"
+                    :to="`/pmm/milestones/details/${td.slug}/${route.params.project_id}`"
+                    class="dropdown-item"
+                    ><i class="fas fa-eye"></i> Details</router-link
+                  >
+                  <router-link
+                    v-else
                     :to="`/pmm/milestones/details/${td.slug}`"
                     class="dropdown-item"
                     ><i class="fas fa-eye"></i> Details</router-link
@@ -151,10 +166,12 @@
 <script setup lang="ts">
 import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
 import { usePermission } from "@/composables/permissions";
+import { useRoute } from "vue-router";
 
 const { getPermission } = usePermission();
 
 const attrs = useAttrs();
+const route = useRoute();
 
 const multiselect = ref([]);
 let isCheckAll = ref(false);

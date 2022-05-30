@@ -52,7 +52,6 @@ export function useUploader(field_name = "default_field", api_url: string) {
     await Axios.post(url, {
       filename: store.state.fileuploader.filename_one,
     }).then((response) => {
-      console.log(response);
       isUploading.value = false;
       isDoneUploading.value = false;
       store.dispatch("addFileNameOne", null);

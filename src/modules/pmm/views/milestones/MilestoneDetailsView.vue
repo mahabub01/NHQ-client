@@ -9,9 +9,15 @@
     <div class="form-bootcamp">
       <div class="row">
         <div class="col-md-4">
-          <router-link to="/pmm/milestones"
+          <router-link
+            v-if="route.params.project_id != ''"
+            :to="`/pmm/milestones/${route.params.project_id}`"
             >Milestone List <i class="fas fa-chevron-right"></i
           ></router-link>
+          <router-link v-else to="/pmm/milestones"
+            >Milestone List <i class="fas fa-chevron-right"></i
+          ></router-link>
+
           <router-link to="#">Milestone Details</router-link>
         </div>
         <div class="col-md-8"></div>
@@ -79,9 +85,18 @@
                 <!--end-->
                 <!--start-->
                 <div>
-                  <h5 class="data-label">Points</h5>
+                  <h5 class="data-label">Weightage</h5>
                   <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.points }}
+                    {{ getInformation.weightage }}
+                  </p>
+                </div>
+                <!--end-->
+
+                <!--start-->
+                <div>
+                  <h5 class="data-label">Project Weightage</h5>
+                  <p class="data-text" v-if="getInformation != null">
+                    {{ getInformation.project_weightage }}
                   </p>
                 </div>
                 <!--end-->
@@ -189,7 +204,6 @@ async function loadSingleData() {
   loadingSpinner.value = true;
   await Axios.get("/milestones-details/" + route.params.slug).then(
     (response) => {
-      console.log(response);
       loadingSpinner.value = false;
       if (response.data.code === 200) {
         getInformation.value = response.data.data;

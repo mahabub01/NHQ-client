@@ -48,11 +48,14 @@
 <script setup lang="ts">
 import { useUploader } from "@/composables/file-uploader";
 import { defineProps, ref } from "vue";
+import toastr from "toastr";
 
 const props = defineProps({
   field_name: String,
   versionId: String,
 });
+
+const singleFileValidation = ref(["xlsx"]);
 
 const progress_bar_filename = ref("");
 const fileUploader = ref();
@@ -66,9 +69,20 @@ const {
 } = useUploader(props.field_name, "demo-attachment");
 
 function fileUploaded() {
-  //fileuploader(fileUploader.value.files[0]);
-  fileuploader(fileUploader.value.files[0], props.versionId);
-  progress_bar_filename.value = fileUploader.value.files[0].name;
+  let ex = fileUploader.value.files[0].name.split(".");
+  if (singleFileValidation.value.indexOf(ex[1]) == -1) {
+    toastr.warning(
+      "Your file formate is not Valid. Your selected file extension is <b>'" +
+        ex[1] +
+        "'</b> but requied file formate is <b>'" +
+        singleFileValidation.value.toString() +
+        "'</b>",
+      "Warning!"
+    );
+  } else {
+    fileuploader(fileUploader.value.files[0], props.versionId);
+    progress_bar_filename.value = fileUploader.value.files[0].name;
+  }
 }
 
 function removeFile() {

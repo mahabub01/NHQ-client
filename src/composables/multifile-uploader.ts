@@ -121,6 +121,7 @@ export function useMultiFileUploader(
       formData
     )
       .then((response) => {
+        console.log(response);
         if (response.data.code == 200) {
           progressInfos.splice(index, 1);
           toastr.success("File remove successfully.", "Success!");

@@ -64,13 +64,24 @@
                         <i class="fas fa-filter"></i>
                       </button>
 
-                      <router-link
-                        v-if="getPermission(`create_milestone_list`)"
-                        to="/pmm/milestones/create"
-                        class="link_btn"
-                        style="margin-right: 7px"
-                        ><i class="fas fa-plus"></i> Create</router-link
-                      >
+                      <template v-if="route.params.project_id != ''">
+                        <router-link
+                          v-if="getPermission(`create_milestone_list`)"
+                          :to="`/pmm/milestones/create/${route.params.project_id}`"
+                          class="link_btn"
+                          style="margin-right: 7px"
+                          ><i class="fas fa-plus"></i> Create</router-link
+                        >
+                      </template>
+                      <template v-else>
+                        <router-link
+                          v-if="getPermission(`create_milestone_list`)"
+                          to="/pmm/milestones/create"
+                          class="link_btn"
+                          style="margin-right: 7px"
+                          ><i class="fas fa-plus"></i> Create</router-link
+                        >
+                      </template>
 
                       <div class="btn-group">
                         <button
@@ -204,7 +215,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, reactive, computed } from "vue";
+import { onMounted, ref, watch, reactive } from "vue";
 import Axios from "@/http-common";
 import MilestoneTable from "./MilestoneTable.vue";
 import swal from "sweetalert";
@@ -214,15 +225,15 @@ import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import FilterModal from "../../../core/shared/FilterModal.vue";
 import { useStore } from "vuex";
 import { usePermission } from "@/composables/permissions";
+import { useRoute } from "vue-router";
 
 const { getPermission } = usePermission();
 
 //create store
 const store = useStore();
 
-const userInfo = computed(() => {
-  return store.state.currentUser.userPemissions;
-});
+//use for route
+const route = useRoute();
 
 //use for deleting spenner
 let deletingSpinner = ref(false);
@@ -231,15 +242,12 @@ let savingSpinner = ref(false);
 //use for multiselected
 const multiselected = ref([]);
 
+const user_id = ref(localStorage.getItem("user_id"));
+const flag = ref(localStorage.getItem("flag"));
+
 //use datatable composables
-const {
-  entries,
-  datatables,
-  showEntries,
-  currentEntries,
-  fetchData,
-  filterData,
-} = useDatatable();
+const { entries, datatables, showEntries, currentEntries, filterData } =
+  useDatatable();
 
 //Search Property
 let nameSearch = ref(null);
@@ -254,9 +262,11 @@ watch([nameSearch], async () => {
       "&searchName=" +
       nameSearch.value +
       "&user_id=" +
-      userInfo.value.id +
-      "&role_id=" +
-      userInfo.value.role_id
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&project_id=" +
+      route.params.project_id
   ).then((response) => {
     entries.value = response.data.data;
     datatables.totalItems = response.data.meta.total;
@@ -272,11 +282,12 @@ onMounted(() => {
   filterData(
     "/milestones",
     "&user_id=" +
-      store.state.currentUser.userPemissions.id +
-      "&role_id=" +
-      store.state.currentUser.userPemissions.role_id
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&project_id=" +
+      route.params.project_id
   );
-  console.log(store.state.currentUser.userPemissions.id);
 });
 
 //show data using show Menu
@@ -284,7 +295,12 @@ function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
   filterData(
     "/milestones",
-    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+    "&user_id=" +
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&project_id=" +
+      route.params.project_id
   );
 }
 
@@ -294,7 +310,12 @@ function prev() {
     datatables.currentPage = datatables.currentPage - 1;
     filterData(
       "/milestones",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+      "&user_id=" +
+        user_id.value +
+        "&flag=" +
+        flag.value +
+        "&project_id=" +
+        route.params.project_id
     );
   }
 }
@@ -305,7 +326,12 @@ function next() {
     datatables.currentPage = datatables.currentPage + 1;
     filterData(
       "/milestones",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+      "&user_id=" +
+        user_id.value +
+        "&flag=" +
+        flag.value +
+        "&project_id=" +
+        route.params.project_id
     );
   }
 }
@@ -315,7 +341,12 @@ function currentPage(currentp: number) {
   datatables.currentPage = currentp;
   filterData(
     "/milestones",
-    "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+    "&user_id=" +
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&project_id=" +
+      route.params.project_id
   );
 }
 
@@ -334,7 +365,15 @@ function remove(id: number) {
         entries.value = entries.value.filter(
           (e: { id: number }) => e.id !== id
         );
-        fetchData("/milestones");
+        filterData(
+          "/milestones",
+          "&user_id=" +
+            user_id.value +
+            "&flag=" +
+            flag.value +
+            "&project_id=" +
+            route.params.project_id
+        );
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
           icon: "success",
@@ -365,7 +404,12 @@ function bulkDelete() {
       }).then((response) => {
         filterData(
           "/milestones",
-          "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
+          "&user_id=" +
+            user_id.value +
+            "&flag=" +
+            flag.value +
+            "&project_id=" +
+            route.params.project_id
         );
         deletingSpinner.value = false;
         swal("Poof! Your data has been deleted!", {
@@ -376,21 +420,6 @@ function bulkDelete() {
   });
 }
 
-//Change selected data status
-async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/milestones-status", status).then((response) => {
-    swal("Your data status changed", {
-      icon: "success",
-    });
-    filterData(
-      "/milestones",
-      "&user_id=" + userInfo.value.id + "&role_id=" + userInfo.value.role_id
-    );
-  });
-}
-
-// Filter Pert
-
 // use for filter
 let filteringSpinner = ref(false);
 
@@ -399,7 +428,9 @@ const filterState = reactive({
   extended_date: "",
   start_date: "",
   end_date: "",
-  user_id: userInfo.value.id,
+  user_id: user_id.value,
+  flag: flag.value,
+  project_id: route.params.project_id,
 });
 
 async function filterSubmit() {

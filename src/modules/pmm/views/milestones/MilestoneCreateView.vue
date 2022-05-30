@@ -14,12 +14,22 @@
               <button type="submit" class="form-button margin-right-10">
                 <i class="far fa-save"></i> Submit
               </button>
-              <router-link
-                class="form-button-danger"
-                style="color: white"
-                to="/pmm/milestones"
-                ><i class="far fa-times-circle"></i> Discard
-              </router-link>
+              <template v-if="route.params.project_id != ''">
+                <router-link
+                  class="form-button-danger"
+                  style="color: white"
+                  :to="`/pmm/milestones/${route.params.project_id}`"
+                  ><i class="far fa-times-circle"></i> Discard
+                </router-link>
+              </template>
+              <template v-else>
+                <router-link
+                  class="form-button-danger"
+                  style="color: white"
+                  to="/pmm/milestones"
+                  ><i class="far fa-times-circle"></i> Discard
+                </router-link>
+              </template>
             </div>
           </div>
         </div>
@@ -36,7 +46,17 @@
               <Select2
                 v-model="v$.project_name.$model"
                 :options="project_names"
+                :settings="{ placeholder: 'Choose', disabled: 'readonly' }"
+                @select="projectChangeEvent($event)"
+                :class="{ isInvalid: v$.project_name.$error }"
+                v-if="route.params.project_id != ''"
+              />
+              <Select2
+                v-else
+                v-model="v$.project_name.$model"
+                :options="project_names"
                 :settings="{ placeholder: 'Choose' }"
+                @select="projectChangeEvent($event)"
                 :class="{ isInvalid: v$.project_name.$error }"
               />
               <p
@@ -124,11 +144,38 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Milestone Points</label>
-              <input
-                type="number"
-                class="form-input"
-                v-model.lazy="formState.points"
-              />
+              <span
+                v-if="
+                  formState.is_auto_point == '2' ||
+                  formState.is_auto_point == '1'
+                "
+              >
+                <input
+                  type="number"
+                  class="form-input"
+                  v-model.lazy="formState.points"
+                  readonly
+                />
+              </span>
+              <span v-else>
+                <input
+                  type="number"
+                  class="form-input"
+                  v-model.lazy="formState.points"
+                />
+              </span>
+
+              <label
+                v-if="is_view_point_show == 'yes'"
+                class="form-label"
+                style="margin-top: 10px"
+                ><input type="checkbox" @change="autoPoint($event)" checked />
+                Auto set point</label
+              >
+
+              <p class="error-mgs" v-if="max_ele_error != ''">
+                <i class="fas fa-exclamation-triangle"></i> {{ max_ele_error }}
+              </p>
             </div>
           </div>
           <!--end row -->
@@ -185,11 +232,12 @@
         </div>
       </div>
     </form>
+    <the-spinner :isLoading="loadingSpinner"></the-spinner>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, defineEmits, onMounted } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";
@@ -197,20 +245,36 @@ import swal from "sweetalert";
 import Select2 from "vue3-select2-component";
 import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
 import toastr from "toastr";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import { useStore } from "vuex";
 import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
+import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 
 const router = useRouter();
+const route = useRoute();
 
 const store = useStore();
 
-let buttonLoading = ref(false);
+const loadingSpinner = ref(false);
+
+//use for point
+const is_view_point_show = ref("");
+function autoPoint(event: any) {
+  if (event.target.checked) {
+    formState.is_auto_point = "2";
+  } else {
+    formState.is_auto_point = "3";
+  }
+}
+
+//max type able value
+const max_ele = ref(100);
+const max_ele_error = ref("");
 
 //use for saving preloader
-let savingSpinner = ref(false);
-let user_id = ref(localStorage.getItem("user_id"));
+const user_id = ref(localStorage.getItem("user_id"));
+const flag = ref(localStorage.getItem("flag"));
 
 const formState = reactive({
   project_name: "",
@@ -226,7 +290,8 @@ const formState = reactive({
   description: "",
   duration: "",
   token: store.state.currentUser.token,
-  user_id: user_id.value,
+  user_id: String(user_id.value),
+  is_auto_point: "2", //default autometic created point
 });
 
 const rules: any = {
@@ -238,8 +303,6 @@ const rules: any = {
 const setDescription = (value: any) => {
   formState.description = value;
 };
-
-const emit = defineEmits(["select"]);
 
 //employee list for assain employee Select
 const assign_employees = ref([]);
@@ -255,10 +318,53 @@ onMounted(() => {
   getAssignEmployees();
   getCategories();
   getProjectNames();
+  if (route.params.project_id != "") {
+    getWeigttageSum(String(route.params.project_id));
+    formState.project_name = String(route.params.project_id);
+  }
 });
 
+//changing weighttage by project Id
+function projectChangeEvent({ id, text }) {
+  getWeigttageSum(id);
+}
+
+async function getWeigttageSum(project_id: string) {
+  loadingSpinner.value = true;
+  await Axios.get("/get-milestone-weightage/" + project_id)
+    .then((response) => {
+      if (response.data.code === 200) {
+        loadingSpinner.value = false;
+        let project_weightage_way = response.data.data.is_milestone_point_auto;
+        if (project_weightage_way == "1") {
+          formState.points = 0;
+          formState.is_auto_point = "2";
+          is_view_point_show.value = "yes";
+        } else if (project_weightage_way == "2") {
+          formState.points = 0;
+          formState.is_auto_point = "2";
+          is_view_point_show.value = "no";
+        } else if (project_weightage_way == "3") {
+          formState.points = 100 - response.data.data.weightage;
+          is_view_point_show.value = "no";
+          formState.is_auto_point = "3";
+          max_ele.value = 100 - response.data.data.weightage;
+        }
+        // formState.points = response.data.data.weightage;
+        // is_view_point_show.value = response.data.data.is_milestone_point_auto;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
 async function getProjectNames() {
-  await Axios.get("/project-selectable")
+  await Axios.get(
+    "/project-selectable?flag=" + flag.value + "&user_id=" + user_id.value
+  )
     .then((response) => {
       if (response.data.code === 200) {
         project_names.value = response.data.data;
@@ -305,16 +411,27 @@ async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
 
+  if (formState.points > max_ele.value) {
+    max_ele_error.value = "It's not posible. Your point is over total point.";
+    return false;
+  } else if (formState.points == 0 && formState.is_auto_point == "3") {
+    max_ele_error.value = "It's not posible. Your point is over total point.";
+    return false;
+  } else {
+    max_ele_error.value = "";
+  }
+
   if (!v$.value.$error) {
-    buttonLoading.value = true;
     await Axios.post("/milestones", formState)
       .then((response) => {
-        console.log(response);
-        buttonLoading.value = false;
         if (response.data.code === 200) {
           reset();
           swal("Success Job!", "Created record successfully!", "success");
-          router.push("/pmm/milestones");
+          if (route.params.project_id != "") {
+            router.push("/pmm/milestones/" + route.params.project_id);
+          } else {
+            router.push("/pmm/milestones");
+          }
         } else {
           toastr.error(response.data.message);
         }

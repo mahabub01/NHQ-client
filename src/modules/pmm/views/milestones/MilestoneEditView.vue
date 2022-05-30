@@ -17,12 +17,23 @@
               <button type="submit" class="form-button margin-right-10">
                 <i class="far fa-save"></i> Submit
               </button>
-              <router-link
-                class="form-button-danger"
-                style="color: white"
-                to="/pmm/milestones"
-                ><i class="far fa-times-circle"></i> Discard
-              </router-link>
+
+              <template v-if="route.params.project_id != ''">
+                <router-link
+                  class="form-button-danger"
+                  style="color: white"
+                  :to="`/pmm/milestones/${route.params.project_id}`"
+                  ><i class="far fa-times-circle"></i> Discard
+                </router-link>
+              </template>
+              <template v-else>
+                <router-link
+                  class="form-button-danger"
+                  style="color: white"
+                  to="/pmm/milestones"
+                  ><i class="far fa-times-circle"></i> Discard
+                </router-link>
+              </template>
             </div>
           </div>
         </div>
@@ -40,7 +51,7 @@
               <Select2
                 v-model="v$.project_name.$model"
                 :options="project_names"
-                :settings="{ placeholder: 'Choose' }"
+                :settings="{ placeholder: 'Choose', disabled: 'readonly' }"
                 :class="{ isInvalid: v$.project_name.$error }"
               />
               <p
@@ -126,11 +137,25 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Milestone Points</label>
-              <input
-                type="number"
-                class="form-input"
-                v-model.lazy="formState.points"
-              />
+              <template v-if="is_milestone_point_auto == '3'">
+                <input
+                  type="number"
+                  class="form-input"
+                  v-model.lazy="formState.points"
+                />
+              </template>
+              <template v-else>
+                <input
+                  type="number"
+                  class="form-input"
+                  v-model.lazy="formState.points"
+                  readonly
+                />
+              </template>
+
+              <p class="error-mgs" v-if="max_ele_error != ''">
+                <i class="fas fa-exclamation-triangle"></i> {{ max_ele_error }}
+              </p>
             </div>
           </div>
           <!--end row -->
@@ -217,7 +242,6 @@ import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
 
 const route = useRoute();
 const router = useRouter();
-let singleData = "";
 
 const store = useStore();
 
@@ -250,6 +274,7 @@ const getFiles = ref(null);
 
 const user_id = ref(localStorage.getItem("user_id"));
 const token = ref(localStorage.getItem("token"));
+const flag = ref(localStorage.getItem("flag"));
 
 // Load CkEditor Data
 const loadCKEditor = computed(() => {
@@ -257,7 +282,9 @@ const loadCKEditor = computed(() => {
 });
 
 async function getProjectNames() {
-  await Axios.get("/project-selectable")
+  await Axios.get(
+    "/project-selectable?flag=" + flag.value + "&user_id=" + user_id.value
+  )
     .then((response) => {
       if (response.data.code === 200) {
         project_names.value = response.data.data;
@@ -302,7 +329,7 @@ const formState = reactive({
   project_name: "",
   milestone_name: "",
   assign_employee: "",
-  points: "",
+  points: 0,
   follow_up: "",
   category: "",
   start_date: "",
@@ -313,6 +340,8 @@ const formState = reactive({
   token: token.value,
   duration: "",
   user_id: user_id.value,
+  is_auto_point: "",
+  flag: flag.value,
 });
 
 const rules: any = {
@@ -324,10 +353,54 @@ const emit = defineEmits(["select"]);
 
 const v$ = useVuelidate(rules, formState);
 
+const old_weightage = ref(0);
+const max_ele_error = ref("");
+const is_milestone_point_auto = ref("");
+
+onMounted(async () => {
+  loadingSpinner.value = true;
+  await Axios.get("/milestones/" + route.params.id).then((response) => {
+    if (response.data.data != "") {
+      formState.project_name = String(response.data.data.project_name);
+      is_milestone_point_auto.value = String(
+        response.data.data.is_milestone_point_auto
+      );
+      formState.milestone_name = response.data.data.milestone_name;
+      formState.assign_employee = response.data.data.assign_employee;
+      formState.points = Number(response.data.data.points);
+      formState.follow_up = response.data.data.follow_up;
+      formState.category = response.data.data.category;
+      formState.start_date = response.data.data.start_date;
+      formState.end_date = response.data.data.end_date;
+      formState.extended_date = response.data.data.extended_date;
+      formState.description = response.data.data.description;
+      formState.duration = response.data.data.duration;
+      getFiles.value = response.data.data.file_name;
+      store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
+      old_weightage.value = response.data.data.points;
+      formState.is_auto_point = response.data.data.is_milestone_point_auto;
+    }
+    loadingSpinner.value = false;
+  });
+});
+
 //Updated Data
 async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
+  if (Number(formState.points) < 0) {
+    max_ele_error.value =
+      "It's not posible. Negative value is possible for Weightage.";
+  } else if (Number(formState.points) > Number(old_weightage.value)) {
+    max_ele_error.value = "It's not posible. Your point is over total point.";
+    return false;
+  } else if (formState.points == 0 && formState.is_auto_point == "3") {
+    max_ele_error.value = "It's not posible. Your point is over total point.";
+    return false;
+  } else {
+    max_ele_error.value = "";
+  }
+
   if (!v$.value.$error) {
     await Axios.put("milestones/" + route.params.id, formState)
       .then((response) => {
@@ -338,7 +411,11 @@ async function handleSubmit() {
             "Your milestones update successfully!",
             "success"
           );
-          router.push("/pmm/milestones");
+          if (route.params.project_id != "") {
+            router.push("/pmm/milestones/" + route.params.project_id);
+          } else {
+            router.push("/pmm/milestones");
+          }
         } else {
           toastr.error(response.data.message);
         }
@@ -349,34 +426,12 @@ async function handleSubmit() {
   }
 }
 
-onMounted(async () => {
-  loadingSpinner.value = true;
-  await Axios.get("/milestones/" + route.params.id).then((response) => {
-    if (response.data.data != "") {
-      formState.project_name = String(response.data.data.project_name);
-      formState.milestone_name = response.data.data.milestone_name;
-      formState.assign_employee = response.data.data.assign_employee;
-      formState.points = response.data.data.points;
-      formState.follow_up = String(response.data.data.follow_up);
-      formState.category = String(response.data.data.category);
-      formState.start_date = response.data.data.start_date;
-      formState.end_date = response.data.data.end_date;
-      formState.extended_date = response.data.data.extended_date;
-      formState.description = response.data.data.description;
-      formState.duration = response.data.data.duration;
-      getFiles.value = response.data.data.file_name;
-      store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
-    }
-    loadingSpinner.value = false;
-  });
-});
-
 //reset all property
 function reset() {
   formState.project_name = "";
   formState.milestone_name = "";
   formState.assign_employee = "";
-  formState.points = "";
+  formState.points = 0;
   formState.follow_up = "";
   formState.category = "";
   formState.start_date = "";

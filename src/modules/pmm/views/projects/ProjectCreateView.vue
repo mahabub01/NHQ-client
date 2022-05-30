@@ -243,7 +243,7 @@ const formState = reactive({
   token: store.state.currentUser.token,
   onboarding_point: 30,
   operation_point: 70,
-  user_id: user_id.value,
+  created_by: user_id.value,
 });
 
 const rules: any = {

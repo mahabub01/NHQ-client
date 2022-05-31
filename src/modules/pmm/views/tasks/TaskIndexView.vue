@@ -57,7 +57,10 @@
                         class="link_btn"
                         style="margin-right: 7px"
                         @click="
-                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true)
+                          store.commit('modalModule/CHNAGE_FILTER_MODAL', true),
+                            getProjects();
+                          getMilestones();
+                          getSubmilestones();
                         "
                       >
                         <i class="fas fa-filter"></i>
@@ -164,7 +167,7 @@
   <div>
     <filter-modal>
       <template v-slot:header
-        ><i class="fas fa-filter"></i> Filter Milestone
+        ><i class="fas fa-filter"></i> Filter Task
       </template>
       <template v-slot:body>
         <form @submit.prevent="filterSubmit" class="form-page">
@@ -333,9 +336,6 @@ onMounted(() => {
       "&submilestone_id=" +
       route.params.submilestone_id
   );
-  getProjects();
-  getMilestones();
-  getSubmilestones();
 });
 
 let filteringSpinner = ref(false);

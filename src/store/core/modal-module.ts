@@ -3,6 +3,7 @@ export default {
   state: {
     creatModal: false,
     editModal: false,
+    passwordModal: false,
     filterModal: false,
     fileViewModal: false,
     fileModal: false,
@@ -16,6 +17,9 @@ export default {
     },
     CHNAGE_EDIT_MODAL(state: any, data: boolean) {
       state.editModal = data;
+    },
+    CHNAGE_PASSWORD_MODAL(state: any, data: boolean) {
+      state.passwordModal = data;
     },
     CHNAGE_FILE_MODAL(state: any, data: boolean) {
       state.fileModal = data;

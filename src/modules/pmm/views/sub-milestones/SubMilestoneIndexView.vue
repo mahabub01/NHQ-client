@@ -159,7 +159,7 @@
   <div>
     <filter-modal>
       <template v-slot:header
-        ><i class="fas fa-filter"></i> Filter Milestone
+        ><i class="fas fa-filter"></i> Filter Submilestone
       </template>
       <template v-slot:body>
         <form @submit.prevent="filterSubmit" class="form-page">

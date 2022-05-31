@@ -66,7 +66,7 @@
                 <div>
                   <h5 class="data-label">Number Of Project</h5>
                   <p class="data-text" v-if="getInformation != null">
-                    {{ getInformation.client }}
+                    {{ getInformation.number_of_project }}
                   </p>
                 </div>
                 <!--end-->
@@ -184,7 +184,7 @@ onMounted(() => {
 });
 
 //get Files
-const getInformation = ref(null);
+const getInformation = ref("");
 
 //Load Single Data
 async function loadSingleData() {

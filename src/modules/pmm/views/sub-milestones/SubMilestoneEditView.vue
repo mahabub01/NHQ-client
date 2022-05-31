@@ -4,9 +4,15 @@
       <div class="form-bootcamp">
         <div class="row">
           <div class="col-md-4">
-            <router-link to="/pmm/sub-milestones"
+            <router-link
+              v-if="route.params.milestone_id != ''"
+              :to="`/pmm/sub-milestones/${route.params.milestone_id}`"
               >Sub Milestone <i class="fas fa-chevron-right"></i
             ></router-link>
+            <router-link v-else to="/pmm/sub-milestones"
+              >Sub Milestone <i class="fas fa-chevron-right"></i
+            ></router-link>
+
             <router-link to="#">Edit</router-link>
           </div>
           <div class="col-md-8">
@@ -15,6 +21,14 @@
                 <i class="far fa-save"></i> Submit
               </button>
               <router-link
+                v-if="route.params.milestone_id != ''"
+                class="form-button-danger"
+                style="color: white"
+                :to="`/pmm/sub-milestones/${route.params.milestone_id}`"
+                ><i class="far fa-times-circle"></i> Discard
+              </router-link>
+              <router-link
+                v-else
                 class="form-button-danger"
                 style="color: white"
                 to="/pmm/sub-milestones"
@@ -37,7 +51,7 @@
                 <Select2
                   v-model="v$.project_id.$model"
                   :options="projectsSelectable"
-                  :settings="{ placeholder: 'Choose' }"
+                  :settings="{ placeholder: 'Choose', disabled: 'readonly' }"
                 />
                 <p
                   class="error-mgs"
@@ -58,7 +72,7 @@
                 <Select2
                   v-model="v$.milestone_id.$model"
                   :options="milestoneSelectable"
-                  :settings="{ placeholder: 'Choose' }"
+                  :settings="{ placeholder: 'Choose', disabled: 'readonly' }"
                 />
                 <p
                   class="error-mgs"
@@ -128,6 +142,17 @@
 
               <!--start field -->
               <div class="form-row">
+                <label class="form-label">Priority</label>
+                <Select2
+                  v-model="formState.priority_id"
+                  :options="prioritySelectable"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+              <!--end field -->
+
+              <!--start field -->
+              <div class="form-row">
                 <label class="form-label">Description</label>
                 <TheCKEditor
                   @sendContent="setDescription"
@@ -174,11 +199,30 @@
               <!--start field -->
               <div class="form-row">
                 <label class="form-label">Sub Milestone Point</label>
-                <input
-                  type="number"
-                  class="form-input"
-                  v-model.lazy="formState.submilestone_point"
-                />
+                <template v-if="is_submilestone_point_auto == '3'">
+                  <input
+                    type="number"
+                    class="form-input"
+                    v-model.lazy="formState.points"
+                  />
+                </template>
+                <template v-else>
+                  <input
+                    type="number"
+                    class="form-input"
+                    v-model.lazy="formState.points"
+                    readonly
+                  />
+                </template>
+
+                <span style="color: silver; font-size: 11px"
+                  >Max editable weightage : {{ max_ele }}</span
+                >
+
+                <p class="error-mgs" v-if="max_ele_error != ''">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ max_ele_error }}
+                </p>
               </div>
               <!--end field -->
 
@@ -188,17 +232,6 @@
                 <Select2
                   v-model="formState.status"
                   :options="taskStatusSelectable"
-                  :settings="{ placeholder: 'Choose' }"
-                />
-              </div>
-              <!--end field -->
-
-              <!--start field -->
-              <div class="form-row">
-                <label class="form-label">Priority</label>
-                <Select2
-                  v-model="formState.priority_id"
-                  :options="prioritySelectable"
                   :settings="{ placeholder: 'Choose' }"
                 />
               </div>
@@ -224,6 +257,29 @@
                 <a target="_blank" v-if="getFiles != null" :href="`${getFiles}`"
                   >Download File</a
                 >
+              </div>
+              <!--end field -->
+
+              <!--start field -->
+              <div class="form-row">
+                <multi-image-uploader
+                  label="Implementation Snapshot"
+                  field_name="submilestone_snapshot"
+                ></multi-image-uploader>
+                <template v-if="snapshots.length > 0">
+                  <a
+                    v-for="(snapshot, idx) in snapshots"
+                    :key="idx"
+                    target="_blank"
+                    :href="`${snapshot}`"
+                    style="
+                      margin-right: 20px;
+                      display: inline-block;
+                      margin-top: 10px;
+                    "
+                    >Download File</a
+                  >
+                </template>
               </div>
               <!--end field -->
             </div>
@@ -253,6 +309,7 @@ import toastr from "toastr";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
+import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -267,6 +324,18 @@ const loadCKEditor = computed(() => {
 //Data Loading Spinner
 let loadingSpinner = ref(false);
 
+//for show max element value
+const max_ele_error = ref("");
+const max_ele = ref(100); // use for set max value
+
+//use for point
+const is_view_point_show = ref("");
+
+const user_id = ref(localStorage.getItem("user_id"));
+const flag = ref(localStorage.getItem("flag"));
+
+const is_submilestone_point_auto = ref("");
+
 const formState = reactive({
   project_id: "",
   submilestone_name: "",
@@ -279,10 +348,11 @@ const formState = reactive({
   start_date: "",
   end_date: "",
   extended_date: "",
-  submilestone_point: 0,
+  points: 0,
   priority_id: "",
   duration: "",
   token: store.state.currentUser.token,
+  is_auto_point: "2",
 });
 
 const rules: any = {
@@ -312,6 +382,9 @@ const taskStatusSelectable = reactive([
 let savingSpinner = ref(false);
 
 let getFiles = ref("");
+const snapshots = ref([]);
+
+const old_weightage = ref(0);
 
 //Load Data form computed onMounted
 onMounted(async () => {
@@ -326,6 +399,11 @@ onMounted(async () => {
     (response) => {
       if (response.data.data != "") {
         formState.project_id = String(response.data.data.project_id);
+
+        is_submilestone_point_auto.value = String(
+          response.data.data.is_sub_milestone_point_auto
+        );
+
         formState.submilestone_name = response.data.data.submilestone_name;
         formState.milestone_id = String(response.data.data.milestone_id);
         formState.team_member_id = response.data.data.team_member_id;
@@ -338,20 +416,48 @@ onMounted(async () => {
         formState.start_date = response.data.data.start_date;
         formState.end_date = response.data.data.end_date;
         formState.extended_date = response.data.data.extended_date;
-        formState.submilestone_point = response.data.data.submilestone_point;
+        formState.points = response.data.data.weightage;
         formState.priority_id = String(response.data.data.priority_id);
         formState.duration = response.data.data.duration;
         getFiles.value = response.data.data.files;
+        snapshots.value = response.data.data.snapshotFiles;
+        old_weightage.value = response.data.data.weightage;
         store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
+        getWeigttageSum(String(response.data.data.milestone_id));
       }
       loadingSpinner.value = false;
     }
   );
 });
 
+async function getWeigttageSum(milestone_id: string) {
+  loadingSpinner.value = true;
+  await Axios.get("/get-submilestone-weightage/" + milestone_id)
+    .then((response) => {
+      if (response.data.code === 200) {
+        loadingSpinner.value = false;
+        let project_weightage_way =
+          response.data.data.is_sub_milestone_point_auto;
+        if (project_weightage_way == "3") {
+          formState.is_auto_point = "3";
+          max_ele.value = 100 - response.data.data.weightage;
+        }
+        // formState.points = response.data.data.weightage;
+        // is_view_point_show.value = response.data.data.is_milestone_point_auto;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
 //get projects for Selectable
 async function getProjects() {
-  await Axios.get("/project-selectable")
+  await Axios.get(
+    "/project-selectable?user_id=" + user_id.value + "&flag=" + flag.value
+  )
     .then((response) => {
       if (response.data.code === 200) {
         projectsSelectable.value = response.data.data;
@@ -366,7 +472,9 @@ async function getProjects() {
 
 //get milestones for Selectable
 async function getMilestones() {
-  await Axios.get("/milestones-selectable")
+  await Axios.get(
+    "/milestones-selectable?user_id=" + user_id.value + "&flag=" + flag.value
+  )
     .then((response) => {
       if (response.data.code === 200) {
         milestoneSelectable.value = response.data.data;
@@ -430,6 +538,17 @@ const v$ = useVuelidate(rules, formState);
 async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
+
+  if (formState.points > max_ele.value) {
+    max_ele_error.value = "It's not posible. Your point is over total point.";
+    return false;
+  } else if (formState.points == 0 && formState.is_auto_point == "3") {
+    max_ele_error.value = "It's not posible. Your point is over total point.";
+    return false;
+  } else {
+    max_ele_error.value = "";
+  }
+
   if (!v$.value.$error) {
     savingSpinner.value = true;
     await Axios.put("submilestones/" + route.params.id, formState)
@@ -443,7 +562,11 @@ async function handleSubmit() {
             "Updated Sub Milestone Successfully!",
             "success"
           );
-          router.push("/pmm/sub-milestones");
+          if (route.params.milestone_id != "") {
+            router.push("/pmm/sub-milestones/" + route.params.milestone_id);
+          } else {
+            router.push("/pmm/sub-milestones");
+          }
         } else {
           savingSpinner.value = false;
           //Show Error message

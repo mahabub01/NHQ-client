@@ -167,16 +167,20 @@
           <td>
             <select
               class="show-data-select"
-              v-model="task_status"
               @change="changeStatus($event, item.id)"
             >
-              <option
-                v-for="status in taskStatusSelectable"
-                :key="status.id"
-                :value="status.id"
-              >
-                {{ status.text }}
-              </option>
+              <template v-for="status in taskStatusSelectable" :key="status.id">
+                <option
+                  v-if="status.id == item.task_status"
+                  :value="status.id"
+                  selected
+                >
+                  {{ status.text }}
+                </option>
+                <option v-else :value="status.id">
+                  {{ status.text }}
+                </option>
+              </template>
             </select>
           </td>
           <td class="action-field" style="text-align: center">
@@ -330,7 +334,7 @@ async function changeStatus(event: any, id: number) {
 
   await Axios.post("/tasks-status", { id: id, status: result[0] }).then(
     (response) => {
-      console.log(response.data);
+      toastr.success("Change status Successfully.");
     }
   );
 }

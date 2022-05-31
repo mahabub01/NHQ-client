@@ -93,6 +93,15 @@
                   </p>
                 </div>
                 <!--end-->
+
+                <!--start-->
+                <div>
+                  <h5 class="data-label">Weightage</h5>
+                  <p class="data-text" v-if="getInformation != null">
+                    {{ getInformation.weightage }}
+                  </p>
+                </div>
+                <!--end-->
               </div>
               <div class="col-md-6">
                 <!--start-->
@@ -147,26 +156,43 @@
                 <div>
                   <h5 class="data-label">Assign Member</h5>
                   <template v-if="getInformation != null">
-                    <p
-                      class="data-text"
-                      v-for="(item, index) in getInformation.assign_member"
-                      :key="index"
-                    >
-                      {{ item.member.name }},
-                    </p>
+                    <template v-if="getInformation.assign_member.length != 0">
+                      <p
+                        class="data-text"
+                        v-for="(item, index) in getInformation.assign_member"
+                        :key="index"
+                      >
+                        {{ item.member.name }},
+                      </p>
+                    </template>
+                    <template v-else>
+                      <p class="data-text">N/A</p>
+                    </template>
                   </template>
                 </div>
                 <!--end-->
 
                 <!--start-->
                 <div>
+                  <h5 class="data-label">Project Weightage</h5>
+                  <p class="data-text" v-if="getInformation != null">
+                    {{ getInformation.project_weightage }}
+                  </p>
+                </div>
+                <!--end-->
+
+                <!--start-->
+                <div>
                   <h5 class="data-label">Files</h5>
-                  <a
-                    target="_blank"
-                    v-if="getInformation.file != ''"
-                    :href="`${getInformation.file}`"
-                    >Download File</a
-                  >
+                  <template v-if="getInformation != null">
+                    <a
+                      target="_blank"
+                      v-if="getInformation.file != ''"
+                      :href="`${getInformation.file}`"
+                      >Download File</a
+                    >
+                    <p v-else class="data-text">N/A</p>
+                  </template>
                 </div>
                 <!--end-->
               </div>
@@ -233,6 +259,7 @@ async function loadSingleData() {
   await Axios.get("/tasks/" + route.params.id).then((response) => {
     loadingSpinner.value = false;
     if (response.data.code === 200) {
+      console.log(response);
       getInformation.value = response.data.data;
     } else {
       toastr.error(response.data.message);

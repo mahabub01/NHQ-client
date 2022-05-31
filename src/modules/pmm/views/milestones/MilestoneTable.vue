@@ -36,7 +36,7 @@
             {{ index + 1 }}
           </td>
           <td style="width: 220px">
-            <router-link :to="`/pmm/tasks-by-milestone/${td.id}`">{{
+            <router-link :to="`/pmm/sub-milestones/${td.id}`">{{
               td.milestone_name
             }}</router-link>
           </td>
@@ -131,6 +131,7 @@
                     ><i class="fas fa-trash-alt"></i> Delete</a
                   >
                 </li>
+
                 <li v-if="getPermission(`details_milestone_list`)">
                   <router-link
                     v-if="route.params.project_id != ''"
@@ -143,6 +144,19 @@
                     :to="`/pmm/milestones/details/${td.slug}`"
                     class="dropdown-item"
                     ><i class="fas fa-eye"></i> Details</router-link
+                  >
+                </li>
+
+                <li
+                  style="text-align: center; margin-top: 10px"
+                  v-if="getPermission(`display_submilestone_list`)"
+                >
+                  <router-link
+                    :to="`/pmm/sub-milestones/${td.id}`"
+                    class="btn btn-info icon_btn"
+                    style="width: 80%; font-size: 11px"
+                    ><i class="far fa-plus-square"></i> Add Sub
+                    Milestone</router-link
                   >
                 </li>
               </ul>

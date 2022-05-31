@@ -182,7 +182,7 @@ export const PmmModuleRoute = [
       },
 
       {
-        path: "sub-milestones",
+        path: "sub-milestones/:milestone_id?",
         name: "submilestones",
         component: () =>
           import(
@@ -192,7 +192,7 @@ export const PmmModuleRoute = [
       },
 
       {
-        path: "sub-milestones/create",
+        path: "sub-milestones/create/:milestone_id?",
         name: "submilestones-create",
         component: () =>
           import(
@@ -202,7 +202,7 @@ export const PmmModuleRoute = [
       },
 
       {
-        path: "sub-milestones/:id/edit",
+        path: "sub-milestones/:id/edit/:milestone_id?",
         name: "sub-milestones-edit",
         component: () =>
           import(
@@ -241,31 +241,21 @@ export const PmmModuleRoute = [
       },
 
       {
-        path: "sub-milestones/details/:id",
+        path: "sub-milestones/:milestone_id?/details/:id",
         name: "submilestones-details",
         component: () =>
           import(
-            /* webpackChunkName: "submilestones" */ "./views/submilestones/SubmilestoneDetailsView.vue"
+            /* webpackChunkName: "submilestones" */ "./views/sub-milestones/SubMilestoneDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },
 
       {
-        path: "submilestones-by-milestone/:id",
-        name: "submilestoneby-milestone",
-        component: () =>
-          import(
-            /* webpackChunkName: "submilestones" */ "./views/submilestones/SubmilestoneByMilestoneView.vue"
-          ),
-        meta: { middleware: "auth" },
-      },
-
-      {
-        path: "sub-miletone-time-tracker/:submilestone_id",
+        path: "sub-miletone-time-tracker/:milestone_id?/:submilestone_id",
         name: "sub-milestones-time-tracker",
         component: () =>
           import(
-            /* webpackChunkName: "time-tracker" */ "./views/submilestones/TimeTrackerView.vue"
+            /* webpackChunkName: "time-tracker" */ "./views/sub-milestones/TimeTrackerView.vue"
           ),
         meta: { middleware: "auth" },
       },

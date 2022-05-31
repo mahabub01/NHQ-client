@@ -130,7 +130,6 @@
                       v-model:nameSearch.lazy="nameSearch"
                       v-model:isActiveSearch.lazy="isActiveSearch"
                       @delete="remove($event)"
-                      @activation="changeStatus($event)"
                       ref="multiselected"
                     ></task-table>
 
@@ -333,9 +332,6 @@ onMounted(() => {
       "&submilestone_id=" +
       route.params.submilestone_id
   );
-  getProjects();
-  getMilestones();
-  getSubmilestones();
 });
 
 let filteringSpinner = ref(false);

@@ -11,8 +11,6 @@
           <th>Time</th>
           <th style="width: 280px">Sub Milestone Name</th>
           <th>Sub Milestone ID</th>
-          <th style="width: 80px !important">Project ID</th>
-          <th>Milestone ID</th>
           <th>Expected</th>
           <th>Actual</th>
           <th>Start Date</th>
@@ -99,6 +97,13 @@
                 </li>
                 <li>
                   <router-link
+                    v-if="route.params.milestone_id != ''"
+                    :to="`/pmm/sub-miletone-time-tracker/${route.params.milestone_id}/${item.id}`"
+                    class="dropdown-item"
+                    >Time Tracker</router-link
+                  >
+                  <router-link
+                    v-else
                     :to="`/pmm/sub-miletone-time-tracker/${item.id}`"
                     class="dropdown-item"
                     >Time Tracker</router-link
@@ -107,6 +112,13 @@
 
                 <li>
                   <router-link
+                    v-if="route.params.milestone_id != ''"
+                    :to="`/pmm/sub-milestones/${route.params.milestone_id}/details/${item.id}`"
+                    class="dropdown-item"
+                    >Sub Milestone Details</router-link
+                  >
+                  <router-link
+                    v-else
                     :to="`/pmm/sub-milestones/details/${item.id}`"
                     class="dropdown-item"
                     >Sub Milestone Details</router-link
@@ -142,10 +154,12 @@
               ref="timerRef"
             ></sub-milestone-timer>
           </td>
-          <td style="width: 280px">{{ item.submilestone_name }}</td>
+          <td style="width: 280px">
+            <router-link :to="`/pmm/tasks/${item.id}`">
+              {{ item.submilestone_name }}
+            </router-link>
+          </td>
           <td>{{ item.submilestone_unique_id }}</td>
-          <td style="width: 80px !important">{{ item.project_ID }}</td>
-          <td>{{ item.milestone_ID }}</td>
           <td>{{ item.expected_duration }}</td>
           <td>{{ item.actual_duration }}</td>
           <td>{{ item.start_date }}</td>
@@ -167,20 +181,31 @@
           <td>
             <select
               class="show-data-select"
-              v-model="status"
               @change="changeStatus($event, item.id)"
             >
-              <option
-                v-for="status in taskStatusSelectable"
-                :key="status.id"
-                :value="status.id"
-              >
-                {{ status.text }}
-              </option>
+              <template v-for="status in taskStatusSelectable" :key="status.id">
+                <option
+                  v-if="status.id == item.status"
+                  :value="status.id"
+                  selected
+                >
+                  {{ status.text }}
+                </option>
+                <option v-else :value="status.id">
+                  {{ status.text }}
+                </option>
+              </template>
             </select>
           </td>
           <td class="action-field" style="text-align: center">
             <router-link
+              v-if="route.params.milestone_id != ''"
+              :to="`/pmm/sub-milestones/${item.id}/edit/${route.params.milestone_id}`"
+              title="Edit Sub Milestone"
+              ><i class="fa fa-pen action-icon"></i
+            ></router-link>
+            <router-link
+              v-else
               :to="`/pmm/sub-milestones/${item.id}/edit`"
               title="Edit Sub Milestone"
               ><i class="fa fa-pen action-icon"></i
@@ -216,12 +241,13 @@ import SubMilestoneTimer from "./SubMilestoneTimer.vue";
 import { useTimeTracker } from "@/composables/time-tracker";
 import { reactive } from "vue";
 import Axios from "@/http-common";
-
 import toastr from "toastr";
-import axios from "axios";
+import { useRoute } from "vue-router";
 
 const store = useStore();
 const user_id = computed(() => store.state.currentUser.user.id);
+
+const route = useRoute();
 
 const attrs = useAttrs();
 
@@ -331,7 +357,11 @@ async function changeStatus(event: any, id: number) {
 
   await Axios.post("/submilestones-status", { id: id, status: result[0] }).then(
     (response) => {
-      console.log(response.data);
+      if (response.data.code == 200) {
+        toastr.success("Change Status Successfully");
+      } else {
+        toastr.error(response.data.message);
+      }
     }
   );
 }

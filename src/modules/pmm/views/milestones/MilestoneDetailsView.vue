@@ -155,12 +155,31 @@
                   <a
                     target="_blank"
                     v-if="getInformation != null"
-                    :href="`${getInformation.files}`"
+                    :href="`${getInformation.file_name}`"
                     >Download File</a
                   >
                 </div>
                 <!--end-->
               </div>
+            </div>
+            <div class="row margin-top">
+              <h5 class="data-label margin-bottom-10">Milestone Snapshots</h5>
+              <template v-if="getInformation != null">
+                <div
+                  class="col-md-4"
+                  v-for="snapshot in getInformation.snapshotFiles"
+                  :key="snapshot.id"
+                >
+                  <div class="snapshot-container">
+                    <a :href="`${snapshot}`" target="_blank"
+                      ><img
+                        :src="`${snapshot}`"
+                        alt="task snapshot"
+                        class="img-design"
+                    /></a>
+                  </div>
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -235,5 +254,25 @@ async function loadSingleData() {
 .des p {
   color: #6b778c;
   font-size: 12px;
+}
+
+.snapshot-container {
+  width: 100%;
+  min-height: 146px;
+  border: 1px solid rgb(223, 223, 223);
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.img-design {
+  width: 100%;
+  height: 140px;
+}
+
+.margin-top {
+  margin-top: 20px;
+}
+.margin-bottom-10 {
+  margin-bottom: 10px;
 }
 </style>

@@ -47,11 +47,23 @@
                 <label class="form-label"
                   >Project Name<span class="mandatory">*</span></label
                 >
+
                 <Select2
+                  v-if="route.params.submilestone_id != ''"
+                  v-model="v$.project_id.$model"
+                  :options="projectsSelectable"
+                  :settings="{ placeholder: 'Choose', disabled: 'readonly' }"
+                  @select="loadMilestoneByProject($event)"
+                />
+
+                <Select2
+                  v-else
                   v-model="v$.project_id.$model"
                   :options="projectsSelectable"
                   :settings="{ placeholder: 'Choose' }"
+                  @select="loadMilestoneByProject($event)"
                 />
+
                 <p
                   class="error-mgs"
                   v-for="(error, index) in v$.project_id.$errors"
@@ -69,9 +81,19 @@
                   >Milestone<span class="mandatory">*</span></label
                 >
                 <Select2
+                  v-if="route.params.submilestone_id != ''"
+                  v-model="v$.milestone_id.$model"
+                  :options="milestoneSelectable"
+                  :settings="{ placeholder: 'Choose', disabled: 'readonly' }"
+                  @select="loadSubmileStoneByMileId($event)"
+                />
+
+                <Select2
+                  v-else
                   v-model="v$.milestone_id.$model"
                   :options="milestoneSelectable"
                   :settings="{ placeholder: 'Choose' }"
+                  @select="loadSubmileStoneByMileId($event)"
                 />
                 <p
                   class="error-mgs"
@@ -90,9 +112,19 @@
                   >Sub Milestone<span class="mandatory">*</span></label
                 >
                 <Select2
+                  v-if="route.params.submilestone_id != ''"
+                  v-model="v$.submilestone_id.$model"
+                  :options="submileStoneSelectable"
+                  :settings="{ placeholder: 'Choose', disabled: 'readonly' }"
+                  @select="changeSubmilestone($event)"
+                />
+
+                <Select2
+                  v-else
                   v-model="v$.submilestone_id.$model"
                   :options="submileStoneSelectable"
                   :settings="{ placeholder: 'Choose' }"
+                  @select="changeSubmilestone($event)"
                 />
                 <p
                   class="error-mgs"
@@ -193,11 +225,37 @@
               <!--start field -->
               <div class="form-row">
                 <label class="form-label">Task Point</label>
-                <input
-                  type="number"
-                  class="form-input"
-                  v-model.lazy="formState.task_point"
-                />
+                <span
+                  v-if="
+                    formState.is_auto_point == '2' ||
+                    formState.is_auto_point == '1'
+                  "
+                >
+                  <input
+                    type="number"
+                    class="form-input"
+                    v-model.lazy="formState.points"
+                    readonly
+                  />
+                </span>
+                <span v-else>
+                  <input
+                    type="number"
+                    class="form-input"
+                    v-model.lazy="formState.points"
+                  />
+                </span>
+                <label
+                  v-if="is_view_point_show == 'yes'"
+                  class="form-label"
+                  style="margin-top: 10px"
+                  ><input type="checkbox" @change="autoPoint($event)" checked />
+                  Auto set point</label
+                >
+                <p class="error-mgs" v-if="max_ele_error != ''">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ max_ele_error }}
+                </p>
               </div>
               <!--end field -->
 
@@ -234,7 +292,10 @@
         </div>
       </div>
       <!--start Spinner -->
-      <the-spinner :isSaving="savingSpinner"></the-spinner>
+      <the-spinner
+        :isSaving="savingSpinner"
+        :isLoading="loadingSpinner"
+      ></the-spinner>
     </form>
   </div>
 </template>
@@ -256,6 +317,9 @@ import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
 const router = useRouter();
 const route = useRoute();
 
+const user_id = ref(localStorage.getItem("user_id"));
+const flag = ref(localStorage.getItem("flag"));
+
 const formState = reactive({
   project_id: "",
   task_name: "",
@@ -267,10 +331,11 @@ const formState = reactive({
   start_date: "",
   end_date: "",
   extended_date: "",
-  task_point: 0,
+  points: 0,
+  is_auto_point: "2",
   duration: "",
   token: localStorage.getItem("token"),
-  user_id: localStorage.getItem("user_id"),
+  user_id: user_id.value,
 });
 
 const rules: any = {
@@ -294,27 +359,46 @@ const taskStatusSelectable = reactive([
   { id: "2", text: "Completed" },
 ]);
 
+//for show max element value
+const max_ele_error = ref("");
+const max_ele = ref(100); // use for set max value
+
+//use for point
+const is_view_point_show = ref("");
+function autoPoint(event: any) {
+  if (event.target.checked) {
+    formState.is_auto_point = "2";
+  } else {
+    formState.is_auto_point = "3";
+  }
+}
+
 //use for saving preloader
 let savingSpinner = ref(false);
+let loadingSpinner = ref(false);
 
 //Load Data form computed onMounted
 onMounted(() => {
   getProjects();
-  getMilestones();
-  getSubmilestones();
+  //getSubmilestones();
   getTeamMembers();
   if (route.params.submilestone_id != "") {
     loadIds();
+    getMilestones(formState.project_id);
+    getSubmilestones(formState.milestone_id);
+    getWeigttageSum(String(route.params.submilestone_id));
   }
 });
 
 async function loadIds() {
+  loadingSpinner.value = true;
   await Axios.get("/get-pro-mile-ids/" + route.params.submilestone_id)
     .then((response) => {
       if (response.data.code === 200) {
         formState.milestone_id = String(response.data.data.milestone_id);
         formState.project_id = String(response.data.data.project_id);
         formState.submilestone_id = String(route.params.submilestone_id);
+        loadingSpinner.value = false;
       } else {
         toastr.error(response.data.message);
       }
@@ -326,8 +410,11 @@ async function loadIds() {
 
 //get projects for Selectable
 async function getProjects() {
-  await Axios.get("/project-selectable")
+  await Axios.get(
+    "/project-selectable?user_id=" + user_id.value + "&flag=" + flag.value
+  )
     .then((response) => {
+      console.log(response);
       if (response.data.code === 200) {
         projectsSelectable.value = response.data.data;
       } else {
@@ -339,11 +426,24 @@ async function getProjects() {
     });
 }
 
+function loadMilestoneByProject({ id, text }) {
+  getMilestones(id);
+}
+
 //get milestones for Selectable
-async function getMilestones() {
-  await Axios.get("/milestones-selectable")
+async function getMilestones(project_id: string) {
+  loadingSpinner.value = true;
+  await Axios.get(
+    "/milestones-selectable?user_id=" +
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&project_id=" +
+      project_id
+  )
     .then((response) => {
       if (response.data.code === 200) {
+        loadingSpinner.value = false;
         milestoneSelectable.value = response.data.data;
       } else {
         toastr.error(response.data.message);
@@ -354,12 +454,58 @@ async function getMilestones() {
     });
 }
 
+function loadSubmileStoneByMileId({ id, text }) {
+  getSubmilestones(id);
+}
 //get categories for Selectable
-async function getSubmilestones() {
-  await Axios.get("/submilestones-selectable")
+async function getSubmilestones(milestone_id: string) {
+  loadingSpinner.value = true;
+  await Axios.get(
+    "/submilestones-selectable?user_id=" +
+      user_id.value +
+      "&flag=" +
+      flag.value +
+      "&milestone_id=" +
+      milestone_id
+  )
     .then((response) => {
       if (response.data.code === 200) {
+        loadingSpinner.value = false;
         submileStoneSelectable.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+function changeSubmilestone({ id, text }) {
+  getWeigttageSum(id);
+}
+
+async function getWeigttageSum(submilestone_id: string) {
+  loadingSpinner.value = true;
+  await Axios.get("/get-tasks-weightage/" + submilestone_id)
+    .then((response) => {
+      if (response.data.code == 200) {
+        loadingSpinner.value = false;
+        let project_weightage_way = response.data.data.is_task_point_auto;
+        if (project_weightage_way == "1") {
+          formState.points = 0;
+          formState.is_auto_point = "2";
+          is_view_point_show.value = "yes";
+        } else if (project_weightage_way == "2") {
+          formState.points = 0;
+          formState.is_auto_point = "2";
+          is_view_point_show.value = "no";
+        } else if (project_weightage_way == "3") {
+          formState.points = 100 - response.data.data.weightage;
+          is_view_point_show.value = "no";
+          formState.is_auto_point = "3";
+          max_ele.value = 100 - response.data.data.weightage;
+        }
       } else {
         toastr.error(response.data.message);
       }
@@ -389,6 +535,17 @@ const v$ = useVuelidate(rules, formState);
 async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
+
+  if (formState.points > max_ele.value) {
+    max_ele_error.value = "It's not posible. Your point is over total point.";
+    return false;
+  } else if (formState.points == 0 && formState.is_auto_point == "3") {
+    max_ele_error.value = "It's not posible. Your point is over total point.";
+    return false;
+  } else {
+    max_ele_error.value = "";
+  }
+
   if (!v$.value.$error) {
     savingSpinner.value = true;
     await Axios.post("tasks", formState)

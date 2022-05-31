@@ -283,7 +283,6 @@ async function handleSubmit() {
     savingSpinner.value = true;
     await Axios.post("employees", formState)
       .then((response) => {
-        console.log(response);
         savingSpinner.value = false;
         if (response.data.code == 200) {
           swal(

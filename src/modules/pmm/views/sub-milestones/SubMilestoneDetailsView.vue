@@ -9,7 +9,12 @@
     <div class="form-bootcamp">
       <div class="row">
         <div class="col-md-4">
-          <router-link to="/pmm/sub-milestones"
+          <router-link
+            v-if="route.params.milestone_id != ''"
+            :to="`/pmm/sub-milestones/${route.params.milestone_id}`"
+            >Sub Milestone List <i class="fas fa-chevron-right"></i
+          ></router-link>
+          <router-link v-else to="/pmm/sub-milestones"
             >Sub Milestone List <i class="fas fa-chevron-right"></i
           ></router-link>
           <router-link to="#">Sub Milestone Details</router-link>
@@ -97,6 +102,14 @@
                   </p>
                 </div>
                 <!--end-->
+                <!--start-->
+                <div>
+                  <h5 class="data-label">Weightage</h5>
+                  <p class="data-text" v-if="getInformation != null">
+                    {{ getInformation.weightage }}
+                  </p>
+                </div>
+                <!--end-->
               </div>
               <div class="col-md-6">
                 <!--start-->
@@ -160,14 +173,28 @@
                 <div>
                   <h5 class="data-label">Assign Member</h5>
                   <template v-if="getInformation != null">
-                    <p
-                      class="data-text"
-                      v-for="(item, index) in getInformation.assign_member"
-                      :key="index"
-                    >
-                      {{ item.member.name }},
-                    </p>
+                    <template v-if="getInformation.assign_member.length != 0">
+                      <p
+                        class="data-text"
+                        v-for="(item, index) in getInformation.assign_member"
+                        :key="index"
+                      >
+                        {{ item.member.name }},
+                      </p>
+                    </template>
+                    <template v-else>
+                      <p class="data-text">N/A</p>
+                    </template>
                   </template>
+                </div>
+                <!--end-->
+
+                <!--start-->
+                <div>
+                  <h5 class="data-label">Project Weightage</h5>
+                  <p class="data-text" v-if="getInformation != null">
+                    {{ getInformation.project_weightage }}
+                  </p>
                 </div>
                 <!--end-->
 
@@ -183,6 +210,27 @@
                 </div>
                 <!--end-->
               </div>
+            </div>
+            <div class="row margin-top">
+              <h5 class="data-label margin-bottom-10">
+                Submilestone Snapshots
+              </h5>
+              <template v-if="getInformation != null">
+                <div
+                  class="col-md-4"
+                  v-for="snapshot in getInformation.snapshotFiles"
+                  :key="snapshot.id"
+                >
+                  <div class="snapshot-container">
+                    <a :href="`${snapshot}`" target="_blank"
+                      ><img
+                        :src="`${snapshot}`"
+                        alt="task snapshot"
+                        class="img-design"
+                    /></a>
+                  </div>
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -256,5 +304,25 @@ async function loadSingleData() {
 .des p {
   color: #6b778c;
   font-size: 12px;
+}
+
+.snapshot-container {
+  width: 100%;
+  min-height: 146px;
+  border: 1px solid rgb(223, 223, 223);
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.img-design {
+  width: 100%;
+  height: 140px;
+}
+
+.margin-top {
+  margin-top: 20px;
+}
+.margin-bottom-10 {
+  margin-bottom: 10px;
 }
 </style>

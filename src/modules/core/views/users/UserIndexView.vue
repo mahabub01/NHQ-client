@@ -106,6 +106,7 @@
                       @delete="remove($event)"
                       @activation="changeStatus($event)"
                       @editId="showEdit($event)"
+                      @passwordId="openChangePassword($event)"
                       ref="multiselected"
                     ></user-table>
 
@@ -290,7 +291,7 @@
     <!--start Edit Modal -->
     <EditModal :modalsize="modalSize" v-if="editModalState">
       <template v-slot:editheader
-        ><i class="fas fa-plus-square"></i> Edit Component
+        ><i class="fas fa-plus-square"></i> Edit User
       </template>
       <template v-slot:editbody>
         <form @submit.prevent="updateHandler" class="form-page">
@@ -303,12 +304,12 @@
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.name.$error }"
-                v-model.lazy="v$.name.$model"
+                :class="{ isInvalid: vEdit$.name.$error }"
+                v-model.lazy="vEdit$.name.$model"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.name.$errors"
+                v-for="(error, index) in vEdit$.name.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i>
@@ -322,11 +323,11 @@
               <input
                 type="text"
                 class="form-input"
-                v-model.lazy="v$.email.$model"
+                v-model.lazy="vEdit$.email.$model"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.email.$errors"
+                v-for="(error, index) in vEdit$.email.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i>
@@ -344,12 +345,12 @@
               <input
                 type="text"
                 class="form-input"
-                :class="{ isInvalid: v$.phone.$error }"
-                v-model.lazy="v$.phone.$model"
+                :class="{ isInvalid: vEdit$.phone.$error }"
+                v-model.lazy="vEdit$.phone.$model"
               />
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.phone.$errors"
+                v-for="(error, index) in vEdit$.phone.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i>
@@ -362,55 +363,15 @@
                 <span class="mandatory">*</span>
               </label>
               <Select2
-                v-model="v$.role_id.$model"
+                v-model="vEdit$.role_id.$model"
                 :options="roleList"
                 :settings="{ placeholder: 'Choose' }"
-                :class="{ isInvalid: v$.role_id.$error }"
+                :class="{ isInvalid: vEdit$.role_id.$error }"
               />
 
               <p
                 class="error-mgs"
-                v-for="(error, index) in v$.role_id.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i>
-                {{ error.$message }}
-              </p>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <label class="form-label">
-                Password <span class="mandatory">*</span></label
-              >
-              <input
-                type="password"
-                class="form-input"
-                :class="{ isInvalid: v$.password.$error }"
-                v-model.lazy="v$.password.$model"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.password.$errors"
-                :key="index"
-              >
-                <i class="fas fa-exclamation-triangle"></i>
-                {{ error.$message }}
-              </p>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">
-                Confirm Password <span class="mandatory">*</span></label
-              >
-              <input
-                type="password"
-                class="form-input"
-                :class="{ isInvalid: v$.confirm_password.$error }"
-                v-model.lazy="v$.confirm_password.$model"
-              />
-              <p
-                class="error-mgs"
-                v-for="(error, index) in v$.confirm_password.$errors"
+                v-for="(error, index) in vEdit$.role_id.$errors"
                 :key="index"
               >
                 <i class="fas fa-exclamation-triangle"></i>
@@ -438,6 +399,79 @@
       </template>
     </EditModal>
     <!--end Edit Modal -->
+
+    <!--start Password Modal -->
+    <PasswordModal :modalsize="modalSm" v-if="passwordModalState">
+      <template v-slot:passwordheader
+        ><i class="fas fa-plus-square"></i> Password Change
+      </template>
+      <template v-slot:passwordbody>
+        <form @submit.prevent="passwordUpdate" class="form-page">
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label class="form-label">
+                Password
+                <span class="mandatory">*</span>
+              </label>
+              <input
+                type="password"
+                class="form-input"
+                :class="{ isInvalid: vPassword$.password.$error }"
+                v-model.lazy="vPassword$.password.$model"
+              />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in vPassword$.password.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label class="form-label">
+                Confirm Password
+                <span class="mandatory">*</span>
+              </label>
+              <input
+                type="password"
+                class="form-input"
+                :class="{ isInvalid: vPassword$.confirm_password.$error }"
+                v-model.lazy="vPassword$.confirm_password.$model"
+              />
+              <p
+                class="error-mgs"
+                v-for="(error, index) in vPassword$.confirm_password.$errors"
+                :key="index"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error.$message }}
+              </p>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              @click.prevent="
+                store.commit('modalModule/CHNAGE_PASSWORD_MODAL', false)
+              "
+            >
+              <i class="far fa-times-circle"></i> Close
+            </button>
+            <button type="submit" class="btn pro-button">
+              <i class="fas fa-save"></i> Save
+            </button>
+          </div>
+        </form>
+      </template>
+    </PasswordModal>
+    <!--end Password Modal -->
     <h1 v-if="getPermission(`project displaysadflkjsd`)">Test Data Here</h1>
   </div>
 </template>
@@ -452,17 +486,23 @@ import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import CreateModal from "../../../core/shared/CreateModal.vue";
 import EditModal from "../../../core/shared/EditModal.vue";
+import PasswordModal from "../../../core/shared/PasswordModal.vue";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Select2 from "vue3-select2-component";
 import toastr from "toastr";
 import { usePermission } from "@/composables/permissions";
+import { useRoute } from "vue-router";
+
+//get route information using route
+const route = useRoute();
 
 const { getPermission } = usePermission();
 
 //modal size
 const modalSize = ref("modal-lg");
+const modalSm = ref("modal-md");
 
 //modal setting
 const createModalState = computed(() => {
@@ -471,6 +511,10 @@ const createModalState = computed(() => {
 
 const editModalState = computed(() => {
   return store.state.modalModule.editModal;
+});
+
+const passwordModalState = computed(() => {
+  return store.state.modalModule.passwordModal;
 });
 
 //create store
@@ -535,8 +579,117 @@ async function createSubmit() {
       });
   }
 }
+
+//========== edit pert  ==============
+
+const rulesEdit: any = {
+  name: { required },
+  email: { required },
+  phone: { required },
+  role_id: { required },
+};
+
+const vEdit$ = useVuelidate(rulesEdit, state);
+
+// recive editable data all value
+const single_datas = ref([]);
+
+let editableId = "";
+
+async function getEditData(id: number) {
+  await Axios.get("/users/" + id).then((response) => {
+    single_datas.value = response.data.data;
+    state.name = single_datas.value.name;
+    state.phone = single_datas.value.phone;
+    state.email = single_datas.value.email;
+    state.role_id = single_datas.value.role_id;
+  });
+}
+
+async function updateHandler() {
+  vEdit$.value.$validate();
+  vEdit$.value.$touch();
+  console.log(vEdit$.value.$error);
+  if (!v$.value.$error) {
+    savingSpinner.value = true;
+    await Axios.put("users/" + editableId, state)
+      .then((response) => {
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
+          fetchData("/users");
+          resetForm();
+          savingSpinner.value = false;
+          swal("Success Job!", "Your user updated successfully!", "success");
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.log("problem Here" + error);
+      });
+  }
+}
+
+function showEdit(id) {
+  editableId = id;
+  getEditData(id);
+  store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
+}
+//=========== Change Password  ===============
+
+let passwordChangeId = "";
+
+const rulespassword: any = {
+  password: { required },
+  confirm_password: { required },
+};
+
+const vPassword$ = useVuelidate(rulespassword, state);
+// const single_datas = ref([]);
+let passwordableId = "";
+
+function openChangePassword(id) {
+  passwordableId = id;
+  store.commit("modalModule/CHNAGE_PASSWORD_MODAL", true);
+}
+
+//Change selected data status
+async function passwordUpdate() {
+  vPassword$.value.$validate();
+  vPassword$.value.$touch();
+
+  if (!vPassword$.value.$error) {
+    savingSpinner.value = true;
+
+    await Axios.post("/users-password-change", {
+      id: passwordableId,
+      password: state.password,
+      password_confirmation: state.confirm_password,
+    })
+      .then((response) => {
+        if (response.data.code == 200) {
+          console.log(response.data);
+
+          store.commit("modalModule/CHNAGE_PASSWORD_MODAL", false);
+          fetchData("users");
+          resetForm();
+          savingSpinner.value = false;
+          swal("Success Job!", "User password update successfully!", "success");
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.log("problem Here" + error);
+      });
+  }
+}
+
 const roleList = ref([]);
 
+// User role_id
 async function getRoles() {
   await Axios.get("role-selectable")
     .then((response) => {
@@ -681,57 +834,6 @@ async function changeStatus(status: { id: number; status: number }) {
     fetchData("users");
   });
 }
-
-// edit pert
-const single_datas = ref([]);
-let editableId = "";
-
-// async function getEditData(id: number) {
-//   await Axios.get("/components/" + id).then((response) => {
-//     single_datas.value = response.data.data;
-//     state.title = single_datas.value.title;
-//     state.slug = single_datas.value.slug;
-//     state.action = single_datas.value.action;
-//     state.icons = single_datas.value.icons;
-//     state.comments = single_datas.value.comments;
-//     state.module_id = single_datas.value.module_id;
-//     store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
-//   });
-// }
-
-async function updateHandler() {
-  v$.value.$validate();
-  v$.value.$touch();
-  if (!v$.value.$error) {
-    savingSpinner.value = true;
-    await Axios.put("users/" + editableId, state)
-      .then((response) => {
-        if (response.data.code == 200) {
-          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-          fetchData("/users");
-          resetForm();
-          savingSpinner.value = false;
-          swal(
-            "Success Job!",
-            "Your component updated successfully!",
-            "success"
-          );
-        } else {
-          savingSpinner.value = false;
-          toastr.error(response.data.message);
-        }
-      })
-      .catch((error) => {
-        console.log("problem Here" + error);
-      });
-  }
-}
-
-// function showEdit(id) {
-//   editableId = id;
-//   getEditData(id);
-//   store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
-// }
 </script>
 
 <style scoped></style>

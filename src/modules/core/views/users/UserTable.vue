@@ -12,6 +12,7 @@
           <th>Phone</th>
           <th>Role</th>
           <th>Status</th>
+          <th>Edit</th>
           <th class="col-serial">Action</th>
         </tr>
       </thead>
@@ -39,6 +40,11 @@
               ><i class="far fa-times-circle"></i>
               {{ isActive(td.is_active) }}</span
             >
+          </td>
+          <td>
+            <a href="#" @click.prevent="getId(td.id)"
+              ><i class="fa fa-pen action-icon"></i
+            ></a>
           </td>
           <td class="col-serial">
             <div class="btn-group">
@@ -71,12 +77,15 @@
                   >
                 </li>
 
-                <!-- <a
+                <li>
+                  <a
                     href="#"
-                    @click.prevent="getId(td.id)"
+                    @click.prevent="getIdPassword(td.id)"
                     class="dropdown-item"
-                    ><i class="fas fa-edit"></i> Edit</a
-                  > -->
+                    ><i class="fas fa-key"></i> Change Password</a
+                  >
+                </li>
+
                 <li>
                   <a
                     href="#"
@@ -120,6 +129,7 @@ const emit = defineEmits([
   "update:isActiveSearch",
   "activation",
   "editId",
+  "passwordId",
 ]);
 
 const props = defineProps({
@@ -162,6 +172,11 @@ function isActive(val: number) {
 //Get Id Emit use for update
 function getId(id: number) {
   emit("editId", id);
+}
+
+//Get Id Emit use for change Password
+function getIdPassword(id: number) {
+  emit("passwordId", id);
 }
 
 //Delete Emit use for Delete

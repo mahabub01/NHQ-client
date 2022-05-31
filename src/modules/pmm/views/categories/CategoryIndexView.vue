@@ -275,23 +275,27 @@ import { required } from "@vuelidate/validators";
 import toastr from "toastr";
 import { usePermission } from "@/composables/permissions";
 
+//use datatable composables
+const { entries, datatables, showEntries, currentEntries, fetchData } =
+  useDatatable();
+
+//use for Permission
 const { getPermission } = usePermission();
 
 //create store
 const store = useStore();
 
+//use for multiselected
+const multiselected = ref([]);
+
 //use for deleting spenner
 let deletingSpinner = ref(false);
 let savingSpinner = ref(false);
 
-//use for multiselected
-const multiselected = ref([]);
-
-let singleData = "";
-
-//use datatable composables
-const { entries, datatables, showEntries, currentEntries, fetchData } =
-  useDatatable();
+//Load Data form computed onMounted
+onMounted(() => {
+  fetchData("/projects/categories");
+});
 
 /**********************
  * Create Category
@@ -301,6 +305,7 @@ const state = reactive({
   description: "",
 });
 
+// validation item
 const rules: any = {
   title: { required },
 };
@@ -335,17 +340,66 @@ async function createSubmit() {
   }
 }
 
-//reset all property
-function resetForm() {
-  state.title = "";
-  state.description = "";
-  v$.value.$reset();
-}
 /**********************
  * End Create Category
  ***********************/
 
-//Search Property
+/************* Start Edit Category ****************/
+
+// recived all editable data
+const single_datas = ref([]);
+
+// Selected id for edit
+let editableId = "";
+
+// open edit modal
+function showEdit(id) {
+  editableId = id;
+  getEditData(id);
+  store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
+}
+
+// Selected Edit id's get all data
+async function getEditData(id: number) {
+  await Axios.get("/projects/categories/" + id).then((response) => {
+    single_datas.value = response.data.data;
+    state.title = single_datas.value.title;
+    state.description = single_datas.value.description;
+  });
+}
+
+// Edit Submit
+async function editSubmit() {
+  v$.value.$validate();
+  v$.value.$touch();
+  if (!v$.value.$error) {
+    savingSpinner.value = true;
+    await Axios.put("projects/categories/" + editableId, state)
+      .then((response) => {
+        if (response.data.code == 200) {
+          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
+          fetchData("/projects/categories");
+          resetForm();
+          savingSpinner.value = false;
+          swal(
+            "Success Job!",
+            "Your category updated successfully!",
+            "success"
+          );
+        } else {
+          savingSpinner.value = false;
+          toastr.error(response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.log("problem Here" + error);
+      });
+  }
+}
+
+/************* End Edit Category ****************/
+
+//Input Search Property
 let titleSearch = ref("");
 
 watch([titleSearch], async () => {
@@ -367,37 +421,14 @@ watch([titleSearch], async () => {
   });
 });
 
-//Load Data form computed onMounted
-onMounted(() => {
-  fetchData("/projects/categories");
-});
-
-//show data using show Menu
-function paginateEntries(e: any) {
-  currentEntries.value = e.target.value;
-  fetchData("/projects/categories");
-}
-
-//show previous page data
-function prev() {
-  if (datatables.currentPage > 1) {
-    datatables.currentPage = datatables.currentPage - 1;
+//Change selected data status
+async function changeStatus(status: { id: number; status: number }) {
+  await Axios.post("/projects/categories-status", status).then((response) => {
+    swal("Your data status changed", {
+      icon: "success",
+    });
     fetchData("/projects/categories");
-  }
-}
-
-//show next page data
-function next() {
-  if (datatables.currentPage != datatables.allPages) {
-    datatables.currentPage = datatables.currentPage + 1;
-    fetchData("/projects/categories");
-  }
-}
-
-//show current Page Data
-function currentPage(currentp: number) {
-  datatables.currentPage = currentp;
-  fetchData("/projects/categories");
+  });
 }
 
 //Delete selected Item
@@ -454,60 +485,39 @@ function bulkDelete() {
   });
 }
 
-//Change selected data status
-async function changeStatus(status: { id: number; status: number }) {
-  await Axios.post("/projects/categories-status", status).then((response) => {
-    swal("Your data status changed", {
-      icon: "success",
-    });
+//reset all property
+function resetForm() {
+  state.title = "";
+  state.description = "";
+  v$.value.$reset();
+}
+
+//show data using show Menu
+function paginateEntries(e: any) {
+  currentEntries.value = e.target.value;
+  fetchData("/projects/categories");
+}
+
+//show previous page data
+function prev() {
+  if (datatables.currentPage > 1) {
+    datatables.currentPage = datatables.currentPage - 1;
     fetchData("/projects/categories");
-  });
-}
-
-// edit pert
-const single_datas = ref([]);
-let editableId = "";
-
-async function getEditData(id: number) {
-  await Axios.get("/projects/categories/" + id).then((response) => {
-    single_datas.value = response.data.data;
-    state.title = single_datas.value.title;
-    state.description = single_datas.value.description;
-  });
-}
-
-async function editSubmit() {
-  v$.value.$validate();
-  v$.value.$touch();
-  if (!v$.value.$error) {
-    savingSpinner.value = true;
-    await Axios.put("projects/categories/" + editableId, state)
-      .then((response) => {
-        if (response.data.code == 200) {
-          store.commit("modalModule/CHNAGE_EDIT_MODAL", false);
-          fetchData("/projects/categories");
-          resetForm();
-          savingSpinner.value = false;
-          swal(
-            "Success Job!",
-            "Your category updated successfully!",
-            "success"
-          );
-        } else {
-          savingSpinner.value = false;
-          toastr.error(response.data.message);
-        }
-      })
-      .catch((error) => {
-        console.log("problem Here" + error);
-      });
   }
 }
 
-function showEdit(id) {
-  editableId = id;
-  getEditData(id);
-  store.commit("modalModule/CHNAGE_EDIT_MODAL", true);
+//show next page data
+function next() {
+  if (datatables.currentPage != datatables.allPages) {
+    datatables.currentPage = datatables.currentPage + 1;
+    fetchData("/projects/categories");
+  }
+}
+
+//show current Page Data
+function currentPage(currentp: number) {
+  datatables.currentPage = currentp;
+  fetchData("/projects/categories");
 }
 </script>
 

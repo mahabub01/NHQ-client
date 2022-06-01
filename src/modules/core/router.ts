@@ -82,6 +82,14 @@ export const CoreModuleRoute = [
           ),
       },
       {
+        path: "roles/:id/edit",
+        name: "roles_edit",
+        component: () =>
+          import(
+            /* webpackChunkName: "authentication" */ "./views/roles/RoleEditView.vue"
+          ),
+      },
+      {
         path: "users/create",
         name: "users_create",
         component: () =>

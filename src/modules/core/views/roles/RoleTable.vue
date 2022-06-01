@@ -69,11 +69,10 @@
                   >
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    @click.prevent="getId(td.id)"
+                  <router-link
+                    :to="`/core/roles/${td.id}/edit`"
                     class="dropdown-item"
-                    ><i class="fas fa-edit"></i> Edit</a
+                    ><i class="fas fa-edit"></i> Edit</router-link
                   >
                 </li>
 

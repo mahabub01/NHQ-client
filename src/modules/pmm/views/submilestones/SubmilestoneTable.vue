@@ -18,7 +18,7 @@
           <th>Start Date</th>
           <th>End Date</th>
           <th>Task Progress</th>
-          <th>Status</th>
+          <th v-if="getPermission(`status_submilestone_list`)">Status</th>
           <th
             class="col-icon align-center"
             v-if="getPermission(`edit_submilestone_list`)"

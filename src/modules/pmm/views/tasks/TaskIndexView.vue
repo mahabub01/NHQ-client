@@ -65,22 +65,23 @@
                       >
                         <i class="fas fa-filter"></i>
                       </button>
+                      <template v-if="getPermission(`create_task`)">
+                        <router-link
+                          v-if="route.params.submilestone_id != ''"
+                          :to="`/pmm/tasks/${route.params.submilestone_id}/create`"
+                          class="link_btn"
+                          style="margin-right: 7px"
+                          ><i class="fas fa-plus"></i> Create</router-link
+                        >
 
-                      <router-link
-                        v-if="route.params.submilestone_id != ''"
-                        :to="`/pmm/tasks/${route.params.submilestone_id}/create`"
-                        class="link_btn"
-                        style="margin-right: 7px"
-                        ><i class="fas fa-plus"></i> Create</router-link
-                      >
-
-                      <router-link
-                        v-else
-                        :to="`/pmm/tasks/create`"
-                        class="link_btn"
-                        style="margin-right: 7px"
-                        ><i class="fas fa-plus"></i> Create</router-link
-                      >
+                        <router-link
+                          v-else
+                          :to="`/pmm/tasks/create`"
+                          class="link_btn"
+                          style="margin-right: 7px"
+                          ><i class="fas fa-plus"></i> Create</router-link
+                        >
+                      </template>
 
                       <input
                         id="importId"
@@ -89,15 +90,21 @@
                         @change="importExcel()"
                         style="display: none"
                       />
-                      <label
-                        v-if="userInfo.role_id != 9"
-                        for="importId"
-                        class="theme-color-btn"
-                        style="margin-right: 7px; cursor: pointer"
-                        ><i class="fas fa-cloud-upload-alt"></i> Import</label
-                      >
 
-                      <div class="btn-group">
+                      <template v-if="getPermission(`import_task`)">
+                        <label
+                          v-if="userInfo.role_id != 9"
+                          for="importId"
+                          class="theme-color-btn"
+                          style="margin-right: 7px; cursor: pointer"
+                          ><i class="fas fa-cloud-upload-alt"></i> Import</label
+                        >
+                      </template>
+
+                      <div
+                        class="btn-group"
+                        v-if="getPermission(`bulk_delete_task`)"
+                      >
                         <button
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
@@ -269,6 +276,9 @@ import { useExcelImport } from "@/composables/excel-import";
 import { useRoute } from "vue-router";
 import FilterModal from "../../../core/shared/FilterModal.vue";
 import Select2 from "vue3-select2-component";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 //create store
 const store = useStore();
 

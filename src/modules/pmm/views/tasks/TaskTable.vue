@@ -16,8 +16,10 @@
           <th>Start Date</th>
           <th>End Date</th>
           <th>Task Progress</th>
-          <th>Status</th>
-          <th class="col-icon align-center">Edit</th>
+          <th v-if="getPermission(`status_task`)">Status</th>
+          <th class="col-icon align-center" v-if="getPermission(`edit_task`)">
+            Edit
+          </th>
           <th class="col-icon align-center">File</th>
         </tr>
       </thead>
@@ -45,57 +47,60 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu">
-                <li
-                  style="
-                    text-align: center;
-                    margin-top: 10px;
-                    margin-bottom: 10px;
-                  "
-                  v-if="checkAlreadyExit(`${item.id}`)"
-                >
-                  <button
-                    type="button"
-                    @click="EndTaskTimer(`${index}`, `${item.id}`)"
-                    class="btn btn-info icon_btn btn-weight stop-btn-color"
+                <template v-if="getPermission(`time_status_task`)">
+                  <li
+                    style="
+                      text-align: center;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                    v-if="checkAlreadyExit(`${item.id}`)"
                   >
-                    End Time
-                  </button>
-                </li>
+                    <button
+                      type="button"
+                      @click="EndTaskTimer(`${index}`, `${item.id}`)"
+                      class="btn btn-info icon_btn btn-weight stop-btn-color"
+                    >
+                      End Time
+                    </button>
+                  </li>
 
-                <li
-                  style="
-                    text-align: center;
-                    margin-top: 10px;
-                    margin-bottom: 10px;
-                  "
-                  v-else-if="timerBtnCond.includes(`${item.id}`)"
-                >
-                  <button
-                    type="button"
-                    @click="EndTaskTimer(`${index}`, `${item.id}`)"
-                    class="btn btn-info icon_btn btn-weight stop-btn-color"
+                  <li
+                    style="
+                      text-align: center;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                    v-else-if="timerBtnCond.includes(`${item.id}`)"
                   >
-                    End Time
-                  </button>
-                </li>
+                    <button
+                      type="button"
+                      @click="EndTaskTimer(`${index}`, `${item.id}`)"
+                      class="btn btn-info icon_btn btn-weight stop-btn-color"
+                    >
+                      End Time
+                    </button>
+                  </li>
 
-                <li
-                  style="
-                    text-align: center;
-                    margin-top: 10px;
-                    margin-bottom: 10px;
-                  "
-                  v-else
-                >
-                  <button
-                    type="button"
-                    @click="StartTaskTimer(`${index}`, `${item.id}`)"
-                    class="btn btn-info icon_btn btn-weight"
+                  <li
+                    style="
+                      text-align: center;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                    v-else
                   >
-                    Start Time
-                  </button>
-                </li>
-                <li>
+                    <button
+                      type="button"
+                      @click="StartTaskTimer(`${index}`, `${item.id}`)"
+                      class="btn btn-info icon_btn btn-weight"
+                    >
+                      Start Time
+                    </button>
+                  </li>
+                </template>
+
+                <li v-if="getPermission(`time_tracker_task`)">
                   <router-link
                     v-if="route.params.submilestone_id != ''"
                     :to="`/pmm/task-time-tracker/${route.params.submilestone_id}/${item.id}`"
@@ -110,7 +115,7 @@
                   >
                 </li>
 
-                <li>
+                <li v-if="getPermission(`details_task`)">
                   <router-link
                     v-if="route.params.submilestone_id != ''"
                     :to="`/pmm/tasks/${route.params.submilestone_id}/details/${item.id}`"
@@ -125,7 +130,7 @@
                   >
                 </li>
 
-                <li>
+                <li v-if="getPermission(`delete_task`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
@@ -164,7 +169,7 @@
               </div>
             </div>
           </td>
-          <td>
+          <td v-if="getPermission(`status_task`)">
             <select
               class="show-data-select"
               @change="changeStatus($event, item.id)"
@@ -183,7 +188,11 @@
               </template>
             </select>
           </td>
-          <td class="action-field" style="text-align: center">
+          <td
+            class="action-field"
+            style="text-align: center"
+            v-if="getPermission(`edit_task`)"
+          >
             <router-link :to="`/pmm/tasks/${item.id}/edit`" title="Edit Task"
               ><i class="fa fa-pen action-icon"></i
             ></router-link>
@@ -220,6 +229,9 @@ import toastr from "toastr";
 import { useRoute } from "vue-router";
 import { reactive } from "vue";
 import Axios from "@/http-common";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 const route = useRoute();
 

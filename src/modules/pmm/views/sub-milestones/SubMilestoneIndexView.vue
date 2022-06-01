@@ -73,21 +73,26 @@
                         <i class="fas fa-filter"></i>
                       </button>
 
-                      <router-link
-                        v-if="route.params.milestone_id != ''"
-                        :to="`/pmm/sub-milestones/create/${route.params.milestone_id}`"
-                        class="link_btn"
-                        style="margin-right: 7px"
-                        ><i class="fas fa-plus"></i> Create</router-link
+                      <template
+                        v-if="getPermission(`create_submilestone_list`)"
                       >
+                        <router-link
+                          v-if="route.params.milestone_id != ''"
+                          :to="`/pmm/sub-milestones/create/${route.params.milestone_id}`"
+                          class="link_btn"
+                          style="margin-right: 7px"
+                          ><i class="fas fa-plus"></i> Create</router-link
+                        >
 
-                      <router-link
-                        v-else
-                        to="/pmm/sub-milestones/create"
-                        class="link_btn"
-                        style="margin-right: 7px"
-                        ><i class="fas fa-plus"></i> Create</router-link
-                      >
+                        <router-link
+                          v-else
+                          to="/pmm/sub-milestones/create"
+                          class="link_btn"
+                          style="margin-right: 7px"
+                          ><i class="fas fa-plus"></i> Create</router-link
+                        >
+                      </template>
+
                       <input
                         id="importId"
                         type="file"
@@ -96,14 +101,17 @@
                         style="display: none"
                       />
                       <label
-                        v-if="user.role_id != 9"
+                        v-if="getPermission(`import_submilestone_list`)"
                         for="importId"
                         class="theme-color-btn"
                         style="margin-right: 7px; cursor: pointer"
                         ><i class="fas fa-cloud-upload-alt"></i> Import</label
                       >
 
-                      <div class="btn-group">
+                      <div
+                        class="btn-group"
+                        v-if="getPermission(`bulk_delete_submilestone_list`)"
+                      >
                         <button
                           type="button"
                           class="icon_btn page-bootcamp-group-btn"
@@ -274,7 +282,9 @@ import { useExcelImport } from "@/composables/excel-import";
 import FilterModal from "../../../core/shared/FilterModal.vue";
 import Select2 from "vue3-select2-component";
 import { useRoute } from "vue-router";
+import { usePermission } from "@/composables/permissions";
 
+const { getPermission } = usePermission();
 //create store
 const store = useStore();
 

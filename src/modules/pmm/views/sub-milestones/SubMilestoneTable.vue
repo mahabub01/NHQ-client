@@ -16,8 +16,13 @@
           <th>Start Date</th>
           <th>End Date</th>
           <th>Task Progress</th>
-          <th>Status</th>
-          <th class="col-icon align-center">Edit</th>
+          <th v-if="getPermission(`status_submilestone_list`)">Status</th>
+          <th
+            class="col-icon align-center"
+            v-if="getPermission(`edit_submilestone_list`)"
+          >
+            Edit
+          </th>
           <th class="col-icon align-center">File</th>
         </tr>
       </thead>
@@ -45,57 +50,60 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu">
-                <li
-                  style="
-                    text-align: center;
-                    margin-top: 10px;
-                    margin-bottom: 10px;
-                  "
-                  v-if="checkAlreadyExit(`${item.id}`)"
-                >
-                  <button
-                    type="button"
-                    @click="EndSubMilestoneTimer(`${index}`, `${item.id}`)"
-                    class="btn btn-info icon_btn btn-weight stop-btn-color"
+                <template v-if="getPermission(`time_status_submilestone_list`)">
+                  <li
+                    style="
+                      text-align: center;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                    v-if="checkAlreadyExit(`${item.id}`)"
                   >
-                    End Time
-                  </button>
-                </li>
+                    <button
+                      type="button"
+                      @click="EndSubMilestoneTimer(`${index}`, `${item.id}`)"
+                      class="btn btn-info icon_btn btn-weight stop-btn-color"
+                    >
+                      End Time
+                    </button>
+                  </li>
 
-                <li
-                  style="
-                    text-align: center;
-                    margin-top: 10px;
-                    margin-bottom: 10px;
-                  "
-                  v-else-if="timerBtnCond.includes(`${item.id}`)"
-                >
-                  <button
-                    type="button"
-                    @click="EndSubMilestoneTimer(`${index}`, `${item.id}`)"
-                    class="btn btn-info icon_btn btn-weight stop-btn-color"
+                  <li
+                    style="
+                      text-align: center;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                    v-else-if="timerBtnCond.includes(`${item.id}`)"
                   >
-                    End Time
-                  </button>
-                </li>
+                    <button
+                      type="button"
+                      @click="EndSubMilestoneTimer(`${index}`, `${item.id}`)"
+                      class="btn btn-info icon_btn btn-weight stop-btn-color"
+                    >
+                      End Time
+                    </button>
+                  </li>
 
-                <li
-                  style="
-                    text-align: center;
-                    margin-top: 10px;
-                    margin-bottom: 10px;
-                  "
-                  v-else
-                >
-                  <button
-                    type="button"
-                    @click="StartSubMilestoneTimer(`${index}`, `${item.id}`)"
-                    class="btn btn-info icon_btn btn-weight"
+                  <li
+                    style="
+                      text-align: center;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                    v-else
                   >
-                    Start Time
-                  </button>
-                </li>
-                <li>
+                    <button
+                      type="button"
+                      @click="StartSubMilestoneTimer(`${index}`, `${item.id}`)"
+                      class="btn btn-info icon_btn btn-weight"
+                    >
+                      Start Time
+                    </button>
+                  </li>
+                </template>
+
+                <li v-if="getPermission(`time_tracker_submilestone_list`)">
                   <router-link
                     v-if="route.params.milestone_id != ''"
                     :to="`/pmm/sub-miletone-time-tracker/${route.params.milestone_id}/${item.id}`"
@@ -110,7 +118,7 @@
                   >
                 </li>
 
-                <li>
+                <li v-if="getPermission(`details_submilestone_list`)">
                   <router-link
                     v-if="route.params.milestone_id != ''"
                     :to="`/pmm/sub-milestones/${route.params.milestone_id}/details/${item.id}`"
@@ -125,7 +133,7 @@
                   >
                 </li>
 
-                <li>
+                <li v-if="getPermission(`delete_submilestone_list`)">
                   <a
                     href="#"
                     @click.prevent="removeItem(item.id)"
@@ -135,7 +143,10 @@
                   >
                 </li>
 
-                <li style="text-align: center; margin-top: 10px">
+                <li
+                  style="text-align: center; margin-top: 10px"
+                  v-if="getPermission(`add_sub_task_submilestone_list`)"
+                >
                   <router-link
                     :to="`/pmm/tasks/${item.id}`"
                     class="btn btn-info icon_btn"
@@ -197,7 +208,11 @@
               </template>
             </select>
           </td>
-          <td class="action-field" style="text-align: center">
+          <td
+            class="action-field"
+            style="text-align: center"
+            v-if="getPermission(`edit_submilestone_list`)"
+          >
             <router-link
               v-if="route.params.milestone_id != ''"
               :to="`/pmm/sub-milestones/${item.id}/edit/${route.params.milestone_id}`"
@@ -243,6 +258,9 @@ import { reactive } from "vue";
 import Axios from "@/http-common";
 import toastr from "toastr";
 import { useRoute } from "vue-router";
+import { usePermission } from "@/composables/permissions";
+
+const { getPermission } = usePermission();
 
 const store = useStore();
 const user_id = computed(() => store.state.currentUser.user.id);

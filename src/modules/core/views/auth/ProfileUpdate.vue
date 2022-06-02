@@ -175,37 +175,16 @@
             </div>
           </div>
           <!--end row -->
-          <!--start row -->
-          <div class="row form-row">
-            <div class="col-md-4 offset-md-1">
-              <label class="form-label">About Employee</label>
-              <TheCKEditor
-                @sendContent="getAboutEmployee"
-                :content="formState.about_employee"
-                v-if="loadCKEditor"
-              />
-            </div>
-            <div class="col-md-4 offset-md-2">
-              <label class="form-label">Joinning Date</label>
-              <input
-                type="date"
-                class="form-input"
-                placeholder="Title here"
-                v-model.lazy="formState.joinning_date"
-              />
-            </div>
-          </div>
-          <!--end row -->
 
           <!--start row -->
           <div class="row form-row">
             <div class="col-md-4 offset-md-1">
               <label class="form-label">Present Addresss</label>
-              <TheCKEditor
-                @sendContent="getAboutEmployee"
-                :content="formState.about_employee"
-                v-if="loadCKEditor"
-              />
+
+              <textarea
+                placeholder="Parmanent Address here"
+                v-model.lazy="formState.present_address"
+              ></textarea>
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Parmanent Address</label>
@@ -213,6 +192,29 @@
                 placeholder="Parmanent Address here"
                 v-model.lazy="formState.parmanent_address"
               ></textarea>
+            </div>
+          </div>
+          <!--end row -->
+
+          <!--start row -->
+          <!-- <div class="row form-row">
+            <div class="col-md-4 offset-md-1">
+              <label class="form-label">Avatar</label>
+
+              <input type="file" @change="avatarFile" />
+            </div>
+          </div> -->
+          <!--end row -->
+
+          <!--start row -->
+          <div class="row form-row">
+            <div class="col-md-4 offset-md-1">
+              <label class="form-label">Avatar</label>
+
+              <single-image-uploader-two
+                label="Company Logo"
+                field_name="avatar"
+              ></single-image-uploader-two>
             </div>
           </div>
           <!--end row -->
@@ -235,6 +237,8 @@ import TheButton from "@/modules/shared/TheButton.vue";
 import Select2 from "vue3-select2-component";
 import DataLoadingSpinner from "@/modules/shared/DataLoadingSpinner.vue";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
+import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
+import SingleImageUploaderTwo from "@/modules/core/shared/SingleImageUploaderTwo.vue";
 
 //create store
 const store = useStore();
@@ -257,6 +261,7 @@ const getAboutEmployee = (value: any) => {
 const getPresentAddress = (value: any) => {
   formState.present_address = value;
 };
+
 //Button Loading
 let buttonLoading = ref(false);
 
@@ -276,6 +281,7 @@ const formState = reactive({
   department_id: "",
   joinning_date: "",
   about_employee: "",
+  token: store.state.currentUser.token,
 });
 
 const rules: any = {
@@ -352,6 +358,7 @@ onMounted(async () => {
       formState.nid_number = singleData.nid_number;
       formState.department_id = singleData.department_id;
       formState.joinning_date = singleData.joinning_date;
+      formState.avatar = singleData.avatar;
       formState.about_employee = singleData.about_employee;
       store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
     }

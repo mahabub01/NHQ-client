@@ -57,7 +57,6 @@
                         style="margin-right: 7px"
                         ><i class="fas fa-plus"></i> Create</router-link
                       >
-                      <!-- v-if="getPermission(`import_project_list`)" -->
                       <router-link
                         v-if="getPermission(`import_project_list`)"
                         to="#"

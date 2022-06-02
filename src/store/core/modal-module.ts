@@ -1,6 +1,7 @@
 export default {
   namespaced: true,
   state: {
+    avatarModal: false,
     creatModal: false,
     editModal: false,
     passwordModal: false,
@@ -12,6 +13,9 @@ export default {
   },
   getters: {},
   mutations: {
+    CHNAGE_AVATAR_MODAL(state: any, data: boolean) {
+      state.avatarModal = data;
+    },
     CHNAGE_CREATE_MODAL(state: any, data: boolean) {
       state.creatModal = data;
     },

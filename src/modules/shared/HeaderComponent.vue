@@ -19,7 +19,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" href="/pmm/projects"> Projects </a>
+            <a class="nav-link" href="/pmm/projects"> Projects</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#"> CRM</a>
@@ -28,7 +28,6 @@
             <a class="nav-link" href="#"> Support </a>
           </li>
         </ul>
-
         <ul class="navbar-nav d-flex header_icon align-item-center">
           <li>
             <div class="dropdown">
@@ -64,6 +63,7 @@
               </ul>
             </div>
           </li>
+
           <li>
             <div class="dropdown">
               <button

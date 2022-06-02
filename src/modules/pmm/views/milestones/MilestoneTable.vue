@@ -3,17 +3,22 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial" style="width: 70px !important">
+          <th class="col-serial" style="width: 20px !important">
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
-            Serial
+          </th>
+          <th
+            class="col-serial"
+            style="width: 30px !important; text-align: center"
+          >
+            <span>SL</span>
           </th>
           <th style="width: 220px">Milestone Name</th>
           <th style="width: 90px !important">Milestone ID</th>
-          <th style="width: 80px !important">Project ID</th>
           <th>Start Date</th>
           <th>End Date</th>
           <th>Extended</th>
           <th>Milestone Progress</th>
+          <th class="text-center" style="width: 50px !important">Priority</th>
           <th v-if="getPermission(`status_milestone_list`)">Status</th>
           <th
             class="col-icon align-center"
@@ -27,14 +32,19 @@
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
         <tr v-for="(td, index) in $attrs.entries" :key="td">
-          <td class="col-serial" style="width: 70px !important">
+          <td class="col-serial" style="width: 20px !important">
             <input
               type="checkbox"
               v-model="multiselect"
               :value="td.id"
               @change="updateCheckall"
             />
-            {{ index + 1 }}
+          </td>
+          <td
+            class="col-serial"
+            style="width: 30px !important; text-align: center"
+          >
+            <span>{{ index + 1 }}</span>
           </td>
           <td style="width: 220px">
             <router-link :to="`/pmm/sub-milestones/${td.id}`">{{
@@ -42,13 +52,32 @@
             }}</router-link>
           </td>
           <td style="width: 90px !important">{{ td.milestone_id }}</td>
-          <td style="width: 80px !important">{{ td.project_name }}</td>
           <td>{{ td.start_date }}</td>
           <td>{{ td.end_date }}</td>
           <td>{{ td.extended_date }}</td>
+          <td>
+            <div class="progress" style="height: 14px; position: relative">
+              <div
+                class="progress-bar bg-info change-bg-color"
+                role="progressbar"
+                :style="`width: ${td.progress}%`"
+                :aria-valuenow="`${td.progress}`"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              ></div>
+              <span class="progress-bar-text-design">{{ td.progress }}%</span>
+            </div>
+          </td>
+          <td
+            class="text-center"
+            v-html="td.priority"
+            style="width: 50px !important"
+          ></td>
+
           <td style="width: 100px !important">
             <select
               class="show-data-select"
+              style="width: 100%"
               @change="changeStatus($event, td.id)"
             >
               <template v-for="status in taskStatusSelectable" :key="status.id">
@@ -64,20 +93,6 @@
                 </option>
               </template>
             </select>
-          </td>
-
-          <td>
-            <div class="progress" style="height: 14px; position: relative">
-              <div
-                class="progress-bar bg-info change-bg-color"
-                role="progressbar"
-                :style="`width: ${td.progress}%`"
-                :aria-valuenow="`${td.progress}`"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              ></div>
-              <span class="progress-bar-text-design">{{ td.progress }}%</span>
-            </div>
           </td>
 
           <td
@@ -207,9 +222,9 @@ const props = defineProps({
 
 // status
 const taskStatusSelectable = reactive([
-  { id: "1", text: "To-do" },
-  { id: "2", text: "Completed" },
+  { id: "1", text: "To Do" },
   { id: "3", text: "In Progress" },
+  { id: "2", text: "Completed" },
 ]);
 
 //Change selected data status
@@ -299,5 +314,9 @@ function removeItem(id: number) {
 }
 .progress {
   background-color: #c2cfe0 !important;
+}
+
+.text-center {
+  text-align: center;
 }
 </style>

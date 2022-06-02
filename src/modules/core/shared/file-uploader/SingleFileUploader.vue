@@ -55,7 +55,17 @@ const props = defineProps({
   versionId: String,
 });
 
-const singleFileValidation = ref(["xlsx"]);
+const singleFileValidation = ref([
+  "pdf",
+  "xls",
+  "xlsx",
+  "odt",
+  "ppt",
+  "pptx",
+  "txt",
+  "doc",
+  "docx",
+]);
 
 const progress_bar_filename = ref("");
 const fileUploader = ref();

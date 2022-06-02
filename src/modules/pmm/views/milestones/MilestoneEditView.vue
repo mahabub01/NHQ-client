@@ -193,17 +193,41 @@
             <div class="col-md-4 offset-md-2">
               <!--start row -->
               <div class="row form-row">
-                <div class="col-md-12">
-                  <label class="form-label">Choose File</label>
-                  <single-file-uploader
-                    field_name="create_milestone"
-                  ></single-file-uploader>
-                  <a
-                    target="_blank"
-                    v-if="getFiles != null"
-                    :href="`${getFiles}`"
-                    >Download File</a
-                  >
+                <!--start field -->
+                <div class="form-row">
+                  <label class="form-label">Status</label>
+                  <Select2
+                    v-model="formState.status"
+                    :options="taskStatusSelectable"
+                    :settings="{ placeholder: 'Choose' }"
+                  />
+                </div>
+                <!--end field -->
+
+                <!--start field -->
+                <div class="form-row">
+                  <label class="form-label">Priority</label>
+                  <Select2
+                    v-model="formState.priority_id"
+                    :options="prioritySelectable"
+                    :settings="{ placeholder: 'Choose' }"
+                  />
+                </div>
+                <!--end field -->
+
+                <div class="row form-row">
+                  <div class="col-md-12">
+                    <label class="form-label">Choose File</label>
+                    <single-file-uploader
+                      field_name="create_milestone"
+                    ></single-file-uploader>
+                    <a
+                      target="_blank"
+                      v-if="getFiles != null"
+                      :href="`${getFiles}`"
+                      >Download File</a
+                    >
+                  </div>
                 </div>
               </div>
               <!--end row -->
@@ -342,7 +366,18 @@ const formState = reactive({
   user_id: user_id.value,
   is_auto_point: "",
   flag: flag.value,
+  priority_id: "",
+  status: "1",
 });
+
+//priority List
+const prioritySelectable = ref([]);
+
+const taskStatusSelectable = reactive([
+  { id: "1", text: "To Do" },
+  { id: "3", text: "In Progress" },
+  { id: "2", text: "Completed" },
+]);
 
 const rules: any = {
   project_name: { required },
@@ -357,7 +392,27 @@ const old_weightage = ref(0);
 const max_ele_error = ref("");
 const is_milestone_point_auto = ref("");
 
-onMounted(async () => {
+//get Priorities for Selectable
+async function getPriorities() {
+  await Axios.get("/priority-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        prioritySelectable.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+onMounted(() => {
+  getPriorities();
+  loadEditableData();
+});
+
+async function loadEditableData() {
   loadingSpinner.value = true;
   await Axios.get("/milestones/" + route.params.id).then((response) => {
     if (response.data.data != "") {
@@ -379,10 +434,12 @@ onMounted(async () => {
       store.commit("modalModule/LOAD_CKEDITOR_MODAL", true);
       old_weightage.value = response.data.data.points;
       formState.is_auto_point = response.data.data.is_milestone_point_auto;
+      formState.priority_id = String(response.data.data.priority_id);
+      formState.status = String(response.data.data.status);
     }
     loadingSpinner.value = false;
   });
-});
+}
 
 //Updated Data
 async function handleSubmit() {

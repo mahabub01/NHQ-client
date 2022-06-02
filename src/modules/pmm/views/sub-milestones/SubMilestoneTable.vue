@@ -3,11 +3,21 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial">
+          <th class="col-serial" style="width: 20px !important">
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
-            Serial
           </th>
-          <th class="col-serial" style="width: 50px !important"></th>
+          <th
+            class="col-serial"
+            style="width: 30px !important; text-align: center"
+          >
+            SL
+          </th>
+          <th
+            class="col-serial"
+            style="width: 50px !important; text-align: cente"
+          >
+            Action
+          </th>
           <th>Time</th>
           <th style="width: 280px">Sub Milestone Name</th>
           <th>Sub Milestone ID</th>
@@ -16,9 +26,10 @@
           <th>Start Date</th>
           <th>End Date</th>
           <th>Sub Milestone Progress</th>
+          <th class="text-center" style="width: 70px !important">Priority</th>
           <th
             v-if="getPermission(`status_submilestone_list`)"
-            style="width: 100px !important"
+            style="width: 80px !important"
           >
             Status
           </th>
@@ -33,17 +44,25 @@
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
         <tr v-for="(item, index) in entries" :key="item.id">
-          <td class="col-serial">
+          <td class="col-serial" style="width: 20px !important">
             <input
               type="checkbox"
               v-model="multiselect"
               :value="item.id"
               @change="updateCheckall"
             />
-            {{ index + 1 }}
+          </td>
+          <td
+            class="col-serial"
+            style="width: 30px !important; text-align: center"
+          >
+            <span>{{ index + 1 }}</span>
           </td>
 
-          <td class="col-serial" style="width: 50px !important">
+          <td
+            class="col-serial"
+            style="width: 50px !important; text-align: cente"
+          >
             <div class="btn-group">
               <button
                 type="button"
@@ -193,8 +212,14 @@
               <span class="progress-bar-text-design">{{ item.progress }}%</span>
             </div>
           </td>
-          <td style="width: 100px !important">
+          <td
+            class="text-center"
+            v-html="item.priority"
+            style="width: 70px !important"
+          ></td>
+          <td style="width: 80px !important">
             <select
+              style="width: 100%"
               class="show-data-select"
               @change="changeStatus($event, item.id)"
             >
@@ -365,7 +390,8 @@ function EndSubMilestoneTimer(index: any, task_id: any) {
 }
 
 const taskStatusSelectable = reactive([
-  { id: "1", text: "In Progress" },
+  { id: "1", text: "To Do" },
+  { id: "3", text: "In Progress" },
   { id: "2", text: "Completed" },
 ]);
 

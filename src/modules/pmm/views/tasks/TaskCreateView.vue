@@ -9,7 +9,7 @@
               :to="`/pmm/tasks/${route.params.submilestone_id}`"
               >Task List <i class="fas fa-chevron-right"></i
             ></router-link>
-            <router-link v-else to="`/pmm/tasks"
+            <router-link v-else to="/pmm/tasks"
               >Task List <i class="fas fa-chevron-right"></i
             ></router-link>
             <router-link to="#">Create</router-link>
@@ -161,7 +161,7 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Assign Team Member</label>
+                <label class="form-label">Assignee</label>
                 <Select2
                   v-model="formState.team_member_id"
                   :options="teamSelectable"
@@ -218,6 +218,17 @@
                   type="date"
                   class="form-input"
                   v-model.lazy="formState.extended_date"
+                />
+              </div>
+              <!--end field -->
+
+              <!--start field -->
+              <div class="form-row">
+                <label class="form-label">Priority</label>
+                <Select2
+                  v-model="formState.priority_id"
+                  :options="prioritySelectable"
+                  :settings="{ placeholder: 'Choose' }"
                 />
               </div>
               <!--end field -->
@@ -336,6 +347,7 @@ const formState = reactive({
   duration: "",
   token: localStorage.getItem("token"),
   user_id: user_id.value,
+  priority_id: "",
 });
 
 const rules: any = {
@@ -354,8 +366,10 @@ const projectsSelectable = ref([]);
 const milestoneSelectable = ref([]);
 const teamSelectable = ref([]); //Team Members
 const submileStoneSelectable = ref([]);
+
 const taskStatusSelectable = reactive([
-  { id: "1", text: "In Progress" },
+  { id: "1", text: "To Do" },
+  { id: "3", text: "In Progress" },
   { id: "2", text: "Completed" },
 ]);
 
@@ -377,11 +391,15 @@ function autoPoint(event: any) {
 let savingSpinner = ref(false);
 let loadingSpinner = ref(false);
 
+//show Priority Selectable Data
+const prioritySelectable = ref([]);
+
 //Load Data form computed onMounted
 onMounted(() => {
   getProjects();
   //getSubmilestones();
   getTeamMembers();
+  getPriorities();
   if (route.params.submilestone_id != "") {
     loadIds();
     getMilestones(formState.project_id);
@@ -399,6 +417,21 @@ async function loadIds() {
         formState.project_id = String(response.data.data.project_id);
         formState.submilestone_id = String(route.params.submilestone_id);
         loadingSpinner.value = false;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+//get Priorities for Selectable
+async function getPriorities() {
+  await Axios.get("/priority-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        prioritySelectable.value = response.data.data;
       } else {
         toastr.error(response.data.message);
       }
@@ -550,7 +583,6 @@ async function handleSubmit() {
     savingSpinner.value = true;
     await Axios.post("tasks", formState)
       .then((response) => {
-        console.log(response);
         if (response.data.code === 200) {
           resetForm();
           //Stop Saving Spinner

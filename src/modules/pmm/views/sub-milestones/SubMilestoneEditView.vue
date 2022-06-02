@@ -109,7 +109,7 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Assign Team Member</label>
+                <label class="form-label">Assignee</label>
                 <Select2
                   v-model="formState.team_member_id"
                   :options="teamSelectable"
@@ -374,7 +374,8 @@ const followupSelectable = ref([]);
 const taskCategorySelectable = ref([]);
 const prioritySelectable = ref([]);
 const taskStatusSelectable = reactive([
-  { id: "1", text: "In Progress" },
+  { id: "1", text: "To Do" },
+  { id: "3", text: "In Progress" },
   { id: "2", text: "Completed" },
 ]);
 

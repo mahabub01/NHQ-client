@@ -3,11 +3,16 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial">
+          <th class="col-serial" style="width: 20px !important">
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
-            Serial
           </th>
-          <th class="col-serial" style="width: 50px !important"></th>
+          <th
+            class="col-serial"
+            style="width: 30px !important; text-align: center"
+          >
+            SL
+          </th>
+          <th class="col-serial" style="width: 50px !important">Action</th>
           <th>Time</th>
           <th style="width: 280px">Task Name</th>
           <th>Task ID</th>
@@ -15,6 +20,7 @@
           <th>Actual</th>
           <th>Start Date</th>
           <th>End Date</th>
+          <th class="text-center" style="width: 70px !important">Priority</th>
           <th v-if="getPermission(`status_task`)">Status</th>
           <th class="col-icon align-center" v-if="getPermission(`edit_task`)">
             Edit
@@ -24,14 +30,19 @@
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
         <tr v-for="(item, index) in entries" :key="item.id">
-          <td class="col-serial">
+          <td class="col-serial" style="width: 20px !important">
             <input
               type="checkbox"
               v-model="multiselect"
               :value="item.id"
               @change="updateCheckall"
             />
-            {{ index + 1 }}
+          </td>
+          <td
+            class="col-serial"
+            style="width: 30px !important; text-align: center"
+          >
+            <span>{{ index + 1 }}</span>
           </td>
 
           <td class="col-serial" style="width: 50px !important">
@@ -154,6 +165,11 @@
           <td>{{ item.actual_duration }}</td>
           <td>{{ item.start_date }}</td>
           <td>{{ item.end_date }}</td>
+          <td
+            class="text-center"
+            v-html="item.priority"
+            style="width: 70px !important"
+          ></td>
           <td v-if="getPermission(`status_task`)">
             <select
               class="show-data-select"
@@ -317,7 +333,8 @@ function EndTaskTimer(index: any, task_id: any) {
 }
 
 const taskStatusSelectable = reactive([
-  { id: "1", text: "In Progress" },
+  { id: "1", text: "To Do" },
+  { id: "3", text: "In Progress" },
   { id: "2", text: "Completed" },
 ]);
 

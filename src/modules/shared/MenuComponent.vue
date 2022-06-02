@@ -3,7 +3,7 @@
   <nav class="navbar navbar-expand-lg nav-bg main-nav">
     <div class="container-fluid">
       <router-link :to="'/core/dashboard'" class="navbar-brand"
-        >ImpacTech ERP</router-link
+        >NHQ ERP</router-link
       >
       <button
         class="navbar-toggler"
@@ -215,6 +215,11 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-lg-0">
+          <li class="nav-item dropdown">
+            <router-link class="nav-link" to="/core/dashboard">
+              Dashboard
+            </router-link>
+          </li>
           <template
             v-for="(viewmodulelist, comindex) in userComponents"
             :key="comindex"

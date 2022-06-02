@@ -260,8 +260,9 @@ const setDescription = (value: any) => {
 
 //Status List for Status Select
 const StatusList = reactive([
-  { id: 0, text: "In Progress" },
-  { id: 1, text: "Completed" },
+  { id: 1, text: "To Do" },
+  { id: 3, text: "In Progress" },
+  { id: 2, text: "Completed" },
 ]);
 
 //Category list for Category Select

@@ -23,6 +23,7 @@ onMounted(() => {
 
 async function getAllPermissions(userId: string | null) {
   await Axios.get("/get-user-all-permissions/" + userId).then((response) => {
+    console.log(response.data);
     store.dispatch("currentUser/assignAllPermission", response.data);
     store.dispatch("currentUser/assignCurrentUser", {
       id: response.data.id,
@@ -33,7 +34,6 @@ async function getAllPermissions(userId: string | null) {
       role: response.data.role.name,
     });
     progress.finish();
-    console.log("store" + store.state.currentUser.user);
   });
 }
 </script>

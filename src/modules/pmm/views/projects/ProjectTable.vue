@@ -109,7 +109,7 @@
                   <router-link
                     :to="`/pmm/pocs/${item.id}`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> POC
+                    ><i class="fas fa-angle-right"></i> POC
                     Document</router-link
                   >
                 </li>
@@ -117,7 +117,7 @@
                   <router-link
                     :to="`/pmm/boqs/${item.id}`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> BOQ</router-link
+                    ><i class="fas fa-angle-right"></i> BOQ</router-link
                   >
                 </li>
 
@@ -125,7 +125,7 @@
                   <router-link
                     :to="`/pmm/oems/${item.id}`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> OEM
+                    ><i class="fas fa-angle-right"></i> OEM
                     Communication</router-link
                   >
                 </li>
@@ -133,7 +133,7 @@
                   <router-link
                     :to="`/pmm/customer-pos/${item.id}`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Customer PO</router-link
+                    ><i class="fas fa-angle-right"></i> Customer PO</router-link
                   >
                 </li>
                 <li v-if="getPermission(`display_disti_order`)">
@@ -147,7 +147,7 @@
                   <router-link
                     :to="`/pmm/delivery-timelines/${item.id}`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Delivery
+                    ><i class="fas fa-angle-right"></i> Delivery
                     Timeline</router-link
                   >
                 </li>
@@ -156,7 +156,7 @@
                   <router-link
                     :to="`/pmm/delivery-challans/${item.id}`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Delivery
+                    ><i class="fas fa-angle-right"></i> Delivery
                     Challan</router-link
                   >
                 </li>
@@ -184,7 +184,7 @@
                     :to="`/pmm/milestones/${item.id}`"
                     class="btn btn-info icon_btn"
                     style="width: 80%"
-                    ><i class="far fa-plus-square"></i> Add
+                    ><i class="fas fa-angle-right"></i> Add
                     Milestone</router-link
                   >
                 </li>

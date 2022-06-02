@@ -14,6 +14,7 @@
           <th>End Date</th>
           <th>Extended</th>
           <th>Milestone Progress</th>
+          <th v-if="getPermission(`status_milestone_list`)">Status</th>
           <th
             class="col-icon align-center"
             v-if="getPermission(`edit_milestone_list`)"
@@ -45,6 +46,25 @@
           <td>{{ td.start_date }}</td>
           <td>{{ td.end_date }}</td>
           <td>{{ td.extended_date }}</td>
+          <td style="width: 100px !important">
+            <select
+              class="show-data-select"
+              @change="changeStatus($event, td.id)"
+            >
+              <template v-for="status in taskStatusSelectable" :key="status.id">
+                <option
+                  v-if="status.id == td.status"
+                  :value="status.id"
+                  selected
+                >
+                  {{ status.text }}
+                </option>
+                <option v-else :value="status.id">
+                  {{ status.text }}
+                </option>
+              </template>
+            </select>
+          </td>
 
           <td>
             <div class="progress" style="height: 14px; position: relative">
@@ -104,24 +124,6 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li v-if="getPermission(`status_milestone_list`)">
-                  <a
-                    href="#"
-                    v-if="td.is_active == 1"
-                    class="dropdown-item inactiveStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-times-circle"></i> In-complete</a
-                  >
-
-                  <a
-                    href="#"
-                    v-else
-                    :to="`/pmm/milestones/${td.id}/edit`"
-                    class="dropdown-item activeStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-check-circle"></i> Complete</a
-                  >
-                </li>
                 <li v-if="getPermission(`delete_milestone_list`)">
                   <a
                     href="#"
@@ -168,14 +170,24 @@
 </template>
 
 <script setup lang="ts">
-import { useAttrs, ref, defineEmits, defineProps, defineExpose } from "vue";
+import {
+  useAttrs,
+  ref,
+  reactive,
+  defineEmits,
+  defineProps,
+  defineExpose,
+} from "vue";
 import { usePermission } from "@/composables/permissions";
 import { useRoute } from "vue-router";
+import Axios from "@/http-common";
+import toastr from "toastr";
 
 const { getPermission } = usePermission();
 
 const attrs = useAttrs();
 const route = useRoute();
+const entries = ref();
 
 const multiselect = ref([]);
 let isCheckAll = ref(false);
@@ -192,6 +204,32 @@ const props = defineProps({
   isActiveSearch: String,
   nameSearch: String,
 });
+
+// status
+const taskStatusSelectable = reactive([
+  { id: "1", text: "To-do" },
+  { id: "2", text: "Completed" },
+  { id: "3", text: "In Progress" },
+]);
+
+//Change selected data status
+const selectedStatusId = ref("");
+async function changeStatus(event: any, id: number) {
+  let result = taskStatusSelectable.filter(
+    (item) => item.id == event.target.value
+  );
+  selectedStatusId.value = result[0].id;
+
+  await Axios.post("/milestones-status", { id: id, status: result[0] }).then(
+    (response) => {
+      if (response.data.code == 200) {
+        toastr.success("Change Status Successfully");
+      } else {
+        toastr.error(response.data.message);
+      }
+    }
+  );
+}
 
 defineExpose({ multiselect });
 
@@ -215,14 +253,14 @@ function updateCheckall() {
   }
 }
 
-//isActive Data
-function isActive(val: number) {
-  if (val == 1) {
-    return "Complete";
-  } else {
-    return "In-Complete";
-  }
-}
+// //isActive Data
+// function isActive(val: number) {
+//   if (val == 1) {
+//     return "Complete";
+//   } else {
+//     return "In-Complete";
+//   }
+// }
 
 //Delete Emit use for Delete
 function removeItem(id: number) {
@@ -230,13 +268,13 @@ function removeItem(id: number) {
 }
 
 //Change Status
-function changeStatus(id: number, status: number) {
-  let full_status = {
-    id: id,
-    status: status,
-  };
-  emit("activation", full_status);
-}
+// function changeStatus(id: number, status: number) {
+//   let full_status = {
+//     id: id,
+//     status: status,
+//   };
+//   emit("activation", full_status);
+// }
 </script>
 
 <style scoped>

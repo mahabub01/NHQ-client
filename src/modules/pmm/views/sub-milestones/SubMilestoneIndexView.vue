@@ -108,6 +108,15 @@
                         ><i class="fas fa-cloud-upload-alt"></i> Import</label
                       >
 
+                      <button
+                        type="button"
+                        class="link_btn"
+                        style="margin-right: 7px"
+                        @click="exportSubmilestone()"
+                      >
+                        <i class="fas fa-file-excel"></i> Export
+                      </button>
+
                       <div
                         class="btn-group"
                         v-if="getPermission(`bulk_delete_submilestone_list`)"
@@ -128,6 +137,15 @@
                               @click="bulkDelete"
                               class="dropdown-item"
                               ><i class="fas fa-trash-alt"></i> Bulk Delete</a
+                            >
+                          </li>
+                          <li>
+                            <a
+                              href="#"
+                              @click="bulkDelete"
+                              class="dropdown-item"
+                              ><i class="fas fa-download"></i> Download Import
+                              template</a
                             >
                           </li>
                         </ul>
@@ -283,6 +301,8 @@ import FilterModal from "../../../core/shared/FilterModal.vue";
 import Select2 from "vue3-select2-component";
 import { useRoute } from "vue-router";
 import { usePermission } from "@/composables/permissions";
+import { useExcelExport } from "@/composables/export-excel";
+import toastr from "toastr";
 
 const { getPermission } = usePermission();
 //create store
@@ -526,6 +546,53 @@ function bulkDelete() {
           icon: "success",
         });
       });
+    }
+  });
+}
+
+//Start Export
+const { excelExport } = useExcelExport(true, true); //Have title and Subtitle in excel file
+const exportTitle = "Sub Milestone List";
+const exportSubtitle =
+  "Lorem Ipsum is simply dummy text of the printing and typesetting industry";
+const exportHeader: any = [
+  "SL",
+  "Project Name",
+  "Milestone Name",
+  "Submilestone Name",
+  "Duration (Minutes)",
+  "Points",
+];
+const exportColumn: any = [
+  { key: "id" },
+  { key: "project_name" },
+  { key: "milestone_name" },
+  { key: "submilestone_name" },
+  { key: "duration" },
+  { key: "points" },
+];
+
+const exportSpinner = ref(false);
+
+async function exportSubmilestone() {
+  exportSpinner.value = true;
+  await Axios.post("/submilestones-export", {
+    milestone_id: route.params.milestone_id,
+    user_id: user_id.value,
+    flag: flag.value,
+    search: search.value,
+  }).then((response) => {
+    exportSpinner.value = false;
+    if (response.data.code == 200) {
+      excelExport(
+        response.data.data,
+        exportHeader,
+        exportColumn,
+        exportTitle,
+        exportSubtitle
+      );
+    } else {
+      toastr.error(response.data.message);
     }
   });
 }

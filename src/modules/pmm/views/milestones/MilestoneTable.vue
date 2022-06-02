@@ -47,17 +47,16 @@
           <td>{{ td.extended_date }}</td>
 
           <td>
-            <div class="progress" style="height: 14px">
+            <div class="progress" style="height: 14px; position: relative">
               <div
-                class="progress-bar bg-info"
+                class="progress-bar bg-info change-bg-color"
                 role="progressbar"
-                style="width: 75%"
-                aria-valuenow="75"
+                :style="`width: ${td.progress}%`"
+                :aria-valuenow="`${td.progress}`"
                 aria-valuemin="0"
                 aria-valuemax="100"
-              >
-                75%
-              </div>
+              ></div>
+              <span class="progress-bar-text-design">{{ td.progress }}%</span>
             </div>
           </td>
 
@@ -246,5 +245,21 @@ function changeStatus(id: number, status: number) {
 }
 .inactiveStatus {
   color: red;
+}
+.progress-bar-text-design {
+  font-size: 11px;
+  font-weight: bold;
+  display: block;
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  color: white;
+}
+
+.change-bg-color {
+  background-color: #017e84 !important;
+}
+.progress {
+  background-color: #c2cfe0 !important;
 }
 </style>

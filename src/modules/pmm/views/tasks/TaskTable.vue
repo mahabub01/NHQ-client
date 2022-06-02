@@ -15,7 +15,6 @@
           <th>Actual</th>
           <th>Start Date</th>
           <th>End Date</th>
-          <th>Task Progress</th>
           <th v-if="getPermission(`status_task`)">Status</th>
           <th class="col-icon align-center" v-if="getPermission(`edit_task`)">
             Edit
@@ -155,20 +154,6 @@
           <td>{{ item.actual_duration }}</td>
           <td>{{ item.start_date }}</td>
           <td>{{ item.end_date }}</td>
-          <td>
-            <div class="progress" style="height: 11px">
-              <div
-                class="progress-bar bg-info"
-                role="progressbar"
-                style="width: 75%"
-                aria-valuenow="75"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                75%
-              </div>
-            </div>
-          </td>
           <td v-if="getPermission(`status_task`)">
             <select
               class="show-data-select"

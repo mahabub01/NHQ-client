@@ -15,8 +15,13 @@
           <th>Actual</th>
           <th>Start Date</th>
           <th>End Date</th>
-          <th>Task Progress</th>
-          <th v-if="getPermission(`status_submilestone_list`)">Status</th>
+          <th>Sub Milestone Progress</th>
+          <th
+            v-if="getPermission(`status_submilestone_list`)"
+            style="width: 100px !important"
+          >
+            Status
+          </th>
           <th
             class="col-icon align-center"
             v-if="getPermission(`edit_submilestone_list`)"
@@ -176,20 +181,19 @@
           <td>{{ item.start_date }}</td>
           <td>{{ item.end_date }}</td>
           <td>
-            <div class="progress" style="height: 11px">
+            <div class="progress" style="height: 14px; position: relative">
               <div
-                class="progress-bar bg-info"
+                class="progress-bar bg-info change-bg-color"
                 role="progressbar"
-                style="width: 75%"
-                aria-valuenow="75"
+                :style="`width: ${item.progress}%`"
+                :aria-valuenow="`${item.progress}`"
                 aria-valuemin="0"
                 aria-valuemax="100"
-              >
-                75%
-              </div>
+              ></div>
+              <span class="progress-bar-text-design">{{ item.progress }}%</span>
             </div>
           </td>
-          <td>
+          <td style="width: 100px !important">
             <select
               class="show-data-select"
               @change="changeStatus($event, item.id)"
@@ -402,5 +406,22 @@ async function changeStatus(event: any, id: number) {
 
 .btn-weight {
   width: 128px;
+}
+
+.progress-bar-text-design {
+  font-size: 11px;
+  font-weight: bold;
+  display: block;
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  color: white;
+}
+
+.change-bg-color {
+  background-color: #017e84 !important;
+}
+.progress {
+  background-color: #c2cfe0 !important;
 }
 </style>

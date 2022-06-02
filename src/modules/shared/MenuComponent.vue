@@ -87,6 +87,9 @@
                     <ul class="auth_card">
                       <li class="auth_img">
                         <img src="@/assets/images/ellipse_1.png" width="48" />
+                        <a href="#" @click="avaterChange"
+                          ><i class="fas fa-camera camera"></i
+                        ></a>
                       </li>
                       <li class="auth_name">
                         <h3>{{ userInfo.name }}</h3>
@@ -256,27 +259,115 @@
       </div>
     </nav>
   </div>
+
+  <!--start Edit Modal -->
+  <AvatarModal :modalsize="modalSize" v-if="avatarModalState" class="z-index">
+    <template v-slot:avatarheader
+      ><i class="fas fa-plus-square"></i> Edit Avatar
+    </template>
+    <template v-slot:avatarbody>
+      <form @submit.prevent="handleSubmit" class="form-page">
+        <div class="row">
+          <div class="col-md-12">
+            <label class="form-label">Avatar</label>
+
+            <single-image-uploader-two
+              label="Company Logo"
+              field_name="avatar"
+            ></single-image-uploader-two>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            @click.prevent="
+              store.commit('modalModule/CHNAGE_AVATAR_MODAL', false)
+            "
+          >
+            <i class="far fa-times-circle"></i> Close
+          </button>
+          <button type="submit" class="btn pro-button">
+            <i class="fas fa-save"></i> Save
+          </button>
+        </div>
+      </form>
+    </template>
+  </AvatarModal>
+  <!--end Edit Modal -->
 </template>
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, reactive } from "vue";
 import { useCookies } from "vue3-cookies";
 import Axios from "@/http-common";
 import { useRouter } from "vue-router";
 import toastr from "toastr";
+import swal from "sweetalert";
+import AvatarModal from "../core/shared/AvatarModal.vue";
+import SingleImageUploaderTwo from "@/modules/core/shared/SingleImageUploaderTwo.vue";
+// import { required } from "@vuelidate/validators";
+// import { useVuelidate } from "@vuelidate/core";
 
 const router = useRouter();
 const store = useStore();
 const { cookies } = useCookies();
+//Button Loading
+let savingSpinner = ref(false);
+
+const modalSize = ref("modal-md");
 
 const userInfo = computed(() => {
   return store.state.currentUser.userPemissions;
 });
 
+const avatarModalState = computed(() => {
+  return store.state.modalModule.avatarModal;
+});
+
 const userComponents = ref([] as any[]);
 function loadComponent(module_index: any) {
   userComponents.value = userInfo.value.modules[module_index].components;
+}
+const formState = reactive({
+  avatar: "",
+  token: store.state.currentUser.token,
+});
+
+// const rules: any = {
+//   avatar: { required },
+// };
+
+// const v$ = useVuelidate(rules, formState);
+
+//Updated Data
+async function handleSubmit() {
+  // v$.value.$validate();
+  // v$.value.$touch();
+  // if (!v$.value.$error) {
+  savingSpinner.value = true;
+  await Axios.post("/avatar-update", formState)
+    .then((response) => {
+      savingSpinner.value = false;
+      if (response.data.code === 200) {
+        store.commit("modalModule/CHNAGE_AVATAR_MODAL", false);
+
+        swal(
+          "Success Job!",
+          "Your information updated successfully!",
+          "success"
+        );
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+  // }
 }
 
 onMounted(() => {
@@ -288,6 +379,10 @@ async function loadFirstComponent() {
   await Axios.get("/get-first-module-component/" + user_id).then((response) => {
     userComponents.value = response.data.data.components;
   });
+}
+
+function avaterChange() {
+  store.commit("modalModule/CHNAGE_AVATAR_MODAL", true);
 }
 
 async function signOut() {
@@ -327,4 +422,14 @@ async function signOut() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.auth_img {
+  position: relative;
+}
+.camera {
+  position: absolute;
+  top: 0;
+  right: -8px;
+  color: rgb(118, 179, 155);
+}
+</style>

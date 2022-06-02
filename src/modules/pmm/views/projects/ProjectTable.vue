@@ -140,7 +140,7 @@
                   <router-link
                     :to="`/pmm/disti-orders/${item.id}`"
                     class="dropdown-item"
-                    ><i class="far fa-plus-square"></i> Disti Order</router-link
+                    ><i class="fas fa-angle-right"></i> Disti Order</router-link
                   >
                 </li>
                 <li v-if="getPermission(`display_delivery_timeline`)">

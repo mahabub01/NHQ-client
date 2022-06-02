@@ -401,6 +401,15 @@ export const PmmModuleRoute = [
           ),
         meta: { middleware: "auth" },
       },
+      {
+        path: "delivery-timelines/details/:slug",
+        name: "delivery-timelines-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/delivery-timelines/DeliveryTimelineDetailsView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
 
       {
         path: "delivery-challans/:project_id",
@@ -408,6 +417,15 @@ export const PmmModuleRoute = [
         component: () =>
           import(
             /* webpackChunkName: "pmm-module" */ "./views/delivery-challans/DeliveryChallanIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "delivery-challans/details/:slug",
+        name: "delivery-challans-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/delivery-challans/DeliveryChallanDetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -422,11 +440,29 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
+        path: "disti-orders/details/:slug",
+        name: "disti-orders-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/disti-orders/DistiOrderDetailsView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
         path: "customer-pos/:project_id",
         name: "customer-pos",
         component: () =>
           import(
             /* webpackChunkName: "pmm-module" */ "./views/customer-pos/CustomerPOIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "customer-pos/details/:slug",
+        name: "customer-pos-details",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/customer-pos/CustomerPODetailsView.vue"
           ),
         meta: { middleware: "auth" },
       },

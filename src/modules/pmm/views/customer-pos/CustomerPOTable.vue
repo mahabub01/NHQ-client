@@ -76,6 +76,13 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
+                <li>
+                  <router-link
+                    :to="`/pmm/customer-pos/details/${item.id}`"
+                    class="dropdown-item"
+                    ><i class="fas fa-eye"></i> Details</router-link
+                  >
+                </li>
                 <li v-if="getPermission(`delete_customer_po`)">
                   <a
                     href="#"

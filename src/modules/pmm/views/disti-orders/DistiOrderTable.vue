@@ -76,6 +76,14 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
+                <li>
+                  <router-link
+                    :to="`/pmm/disti-orders/details/${item.id}`"
+                    class="dropdown-item"
+                    ><i class="fas fa-eye"></i> Details</router-link
+                  >
+                </li>
+
                 <li v-if="getPermission(`delete_disti_order`)">
                   <a
                     href="#"

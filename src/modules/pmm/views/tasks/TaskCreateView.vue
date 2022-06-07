@@ -378,6 +378,7 @@ const submileStoneSelectable = ref([]);
 const taskStatusSelectable = reactive([
   { id: "1", text: "To Do" },
   { id: "3", text: "In Progress" },
+  { id: "4", text: "Dependency" },
   { id: "2", text: "Completed" },
 ]);
 

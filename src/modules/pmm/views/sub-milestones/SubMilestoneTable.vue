@@ -81,24 +81,7 @@
                       margin-top: 10px;
                       margin-bottom: 10px;
                     "
-                    v-if="checkAlreadyExit(`${item.id}`)"
-                  >
-                    <button
-                      type="button"
-                      @click="EndSubMilestoneTimer(`${index}`, `${item.id}`)"
-                      class="btn btn-info icon_btn btn-weight stop-btn-color"
-                    >
-                      End Time
-                    </button>
-                  </li>
-
-                  <li
-                    style="
-                      text-align: center;
-                      margin-top: 10px;
-                      margin-bottom: 10px;
-                    "
-                    v-else-if="timerBtnCond.includes(`${item.id}`)"
+                    v-if="timerBtnCond.includes(`${item.id}`)"
                   >
                     <button
                       type="button"
@@ -132,13 +115,15 @@
                     v-if="route.params.milestone_id != ''"
                     :to="`/pmm/sub-miletone-time-tracker/${route.params.milestone_id}/${item.id}`"
                     class="dropdown-item"
-                    >Time Tracker</router-link
+                    ><i class="fas fa-angle-right"></i> Time
+                    Tracker</router-link
                   >
                   <router-link
                     v-else
                     :to="`/pmm/sub-miletone-time-tracker/${item.id}`"
                     class="dropdown-item"
-                    >Time Tracker</router-link
+                    ><i class="fas fa-angle-right"></i> Time
+                    Tracker</router-link
                   >
                 </li>
 
@@ -147,13 +132,15 @@
                     v-if="route.params.milestone_id != ''"
                     :to="`/pmm/sub-milestones/${route.params.milestone_id}/details/${item.id}`"
                     class="dropdown-item"
-                    >Sub Milestone Details</router-link
+                    ><i class="fas fa-angle-right"></i> Sub Milestone
+                    Details</router-link
                   >
                   <router-link
                     v-else
                     :to="`/pmm/sub-milestones/details/${item.id}`"
                     class="dropdown-item"
-                    >Sub Milestone Details</router-link
+                    ><i class="fas fa-angle-right"></i> Sub Milestone
+                    Details</router-link
                   >
                 </li>
 
@@ -163,7 +150,7 @@
                     @click.prevent="removeItem(item.id)"
                     class="dropdown-item"
                   >
-                    Delete</a
+                    <i class="fas fa-angle-right"></i> Delete</a
                   >
                 </li>
 
@@ -283,7 +270,7 @@ import {
 } from "vue";
 import SubMilestoneTimer from "./SubMilestoneTimer.vue";
 import { useTimeTracker } from "@/composables/time-tracker";
-import { reactive } from "vue";
+import { reactive, onMounted } from "vue";
 import Axios from "@/http-common";
 import toastr from "toastr";
 import { useRoute } from "vue-router";
@@ -293,7 +280,7 @@ const { getPermission } = usePermission();
 
 const store = useStore();
 const user_id = computed(() => store.state.currentUser.user.id);
-
+const localUser = ref(localStorage.getItem("user_id"));
 const route = useRoute();
 
 const attrs = useAttrs();
@@ -313,15 +300,6 @@ const emit = defineEmits([
   "activation",
 ]);
 
-function checkAlreadyExit(task_id: string) {
-  let running = localStorage.getItem("r_t_" + task_id + "_" + user_id.value);
-  if (running != "" && running != null) {
-    timerBtnCond.value.push(task_id);
-    return true;
-  }
-  return false;
-}
-
 const props = defineProps({
   multiselected: Array,
   isActiveSearch: String,
@@ -334,6 +312,15 @@ onUpdated(() => {
 });
 
 defineExpose({ multiselect });
+
+onMounted(() => {
+  //get timer id
+  let runnig_task_id = localStorage.getItem("submile_" + localUser.value);
+  if (runnig_task_id != null) {
+    timerBtnCond.value = [];
+    timerBtnCond.value.push(runnig_task_id);
+  }
+});
 
 //MultiSelect using checkbox
 function checkAll() {
@@ -362,19 +349,22 @@ function removeItem(id: number) {
 
 //Start SubMilestone Timer
 function StartSubMilestoneTimer(index: any, task_id: any) {
-  timerRef.value[index].startCounter(task_id);
-  timerBtnCond.value.push(task_id);
-  toastr.success("Timer started Successfully.");
+  let oldRtRunningTask = localStorage.getItem("sub_r_t_" + localUser.value);
+  if (oldRtRunningTask == null) {
+    timerRef.value[index].startCounter(task_id);
+    timerBtnCond.value.push(task_id);
+    toastr.success("Timer started Successfully.");
+  } else {
+    toastr.warning(
+      "Aready running Task. Please stop it then you can run other task."
+    );
+  }
 }
 
 //End SubMilestone timer
 function EndSubMilestoneTimer(index: any, task_id: any) {
   timerRef.value[index].endCounter(task_id);
-  let arrayIndex = timerBtnCond.value.indexOf(task_id);
-  if (arrayIndex > -1) {
-    timerBtnCond.value.splice(arrayIndex, 1);
-  }
-  // let data = attrs.entries.filter((item: any) => item.id != task_id);
+  timerBtnCond.value = [];
   props.entries.forEach((item, index) => {
     if (item.id == task_id) {
       let sumSecond =

@@ -5,6 +5,7 @@ export const Axios = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   headers: {
     "Private-Key": process.env.VUE_APP_PRIVATE_KEY,
+    origin: process.env.VUE_APP_DOMAIN_URL,
     //Authorization: `Bearer ${localStorage.getItem("token")}`,
   },
 });
@@ -15,6 +16,7 @@ Axios.interceptors.request.use(
     config.headers = {
       Authorization: "Bearer " + localStorage.getItem("token"),
     };
+
     return config;
   },
   (error) => {

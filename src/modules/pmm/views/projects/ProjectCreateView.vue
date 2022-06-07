@@ -373,7 +373,6 @@ async function handleSubmit() {
     savingSpinner.value = true;
     await Axios.post("/projects/projects", formState)
       .then((response) => {
-        // console.log(response);
         // console.log(response.data.message);
 
         if (response.data.code === 200) {

@@ -272,12 +272,20 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Duration</label>
+                <label class="form-label"
+                  >Duration
+                  <span style="color: silver">( 0w 0d 0h 0m )</span></label
+                >
                 <input
                   type="text"
                   class="form-input"
-                  v-model.lazy="formState.duration"
+                  v-model="formState.duration"
                 />
+
+                <p class="error-mgs" v-if="duration_error != ''">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ duration_error }}
+                </p>
               </div>
               <!--end field -->
 
@@ -565,10 +573,13 @@ async function getTeamMembers() {
 
 const v$ = useVuelidate(rules, formState);
 
+const duration_error = ref("");
+
 async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
 
+  //Validation for Point valid or Not
   if (formState.points > max_ele.value) {
     max_ele_error.value = "It's not posible. Your point is over total point.";
     return false;
@@ -578,6 +589,26 @@ async function handleSubmit() {
   } else {
     max_ele_error.value = "";
   }
+
+  //Validation for Duration
+  if (formState.duration != "") {
+    let duration_keyword_validation = ["w", "d", "h", "m"];
+    let ex = formState.duration.split(" ");
+    let duration_vl_error = 0;
+    ex.forEach((item) => {
+      let last_character = item.charAt(item.length - 1);
+      if (!duration_keyword_validation.includes(last_character)) {
+        duration_vl_error++;
+        duration_error.value =
+          "Duration insert format is not valid. Insert format example: 0w 0d 0h 0m";
+      }
+    });
+    if (duration_vl_error != 0) {
+      return false;
+    }
+  }
+
+  //end  Validation for Duration
 
   if (!v$.value.$error) {
     savingSpinner.value = true;

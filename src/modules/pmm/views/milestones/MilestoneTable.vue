@@ -12,13 +12,14 @@
           >
             <span>SL</span>
           </th>
+          <th class="col-serial">Action</th>
           <th style="width: 220px">Milestone Name</th>
           <th style="width: 90px !important">Milestone ID</th>
           <th>Start Date</th>
           <th>End Date</th>
           <th>Extended</th>
           <th>Milestone Progress</th>
-          <th class="text-center" style="width: 50px !important">Priority</th>
+          <th class="text-center" style="width: 60px !important">Priority</th>
           <th v-if="getPermission(`status_milestone_list`)">Status</th>
           <th
             class="col-icon align-center"
@@ -27,7 +28,6 @@
             Edit
           </th>
           <th class="col-icon align-center">File</th>
-          <th class="col-serial">Action</th>
         </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
@@ -46,6 +46,59 @@
           >
             <span>{{ index + 1 }}</span>
           </td>
+
+          <td class="col-serial">
+            <div class="btn-group">
+              <button
+                type="button"
+                class="table_icon_btn"
+                data-bs-toggle="dropdown"
+                data-bs-display="static"
+                aria-expanded="false"
+              >
+                <i class="fas fa-sort-down"></i>
+              </button>
+              <ul class="dropdown-menu table-dropdown">
+                <li v-if="getPermission(`delete_milestone_list`)">
+                  <a
+                    href="#"
+                    @click.prevent="removeItem(td.id)"
+                    class="dropdown-item"
+                    ><i class="fas fa-angle-right"></i> Delete</a
+                  >
+                </li>
+
+                <li v-if="getPermission(`details_milestone_list`)">
+                  <router-link
+                    v-if="route.params.project_id != ''"
+                    :to="`/pmm/milestones/details/${td.slug}/${route.params.project_id}`"
+                    class="dropdown-item"
+                    ><i class="fas fa-angle-right"></i> Details</router-link
+                  >
+                  <router-link
+                    v-else
+                    :to="`/pmm/milestones/details/${td.slug}`"
+                    class="dropdown-item"
+                    ><i class="fas fa-angle-right"></i> Details</router-link
+                  >
+                </li>
+
+                <li
+                  style="text-align: center; margin-top: 10px"
+                  v-if="getPermission(`display_submilestone_list`)"
+                >
+                  <router-link
+                    :to="`/pmm/sub-milestones/${td.id}`"
+                    class="btn btn-info icon_btn"
+                    style="width: 80%; font-size: 11px"
+                    ><i class="far fa-plus-square"></i> Add Sub
+                    Milestone</router-link
+                  >
+                </li>
+              </ul>
+            </div>
+          </td>
+
           <td style="width: 220px">
             <router-link :to="`/pmm/sub-milestones/${td.id}`">{{
               td.milestone_name
@@ -71,7 +124,7 @@
           <td
             class="text-center"
             v-html="td.priority"
-            style="width: 50px !important"
+            style="width: 60px !important"
           ></td>
 
           <td style="width: 100px !important">
@@ -126,58 +179,6 @@
               ><i class="fa fa-paperclip action-icon" style="opacity: 0.6"></i
             ></a>
           </td>
-
-          <td class="col-serial">
-            <div class="btn-group">
-              <button
-                type="button"
-                class="table_icon_btn"
-                data-bs-toggle="dropdown"
-                data-bs-display="static"
-                aria-expanded="false"
-              >
-                <i class="fas fa-sort-down"></i>
-              </button>
-              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li v-if="getPermission(`delete_milestone_list`)">
-                  <a
-                    href="#"
-                    @click.prevent="removeItem(td.id)"
-                    class="dropdown-item"
-                    ><i class="fas fa-trash-alt"></i> Delete</a
-                  >
-                </li>
-
-                <li v-if="getPermission(`details_milestone_list`)">
-                  <router-link
-                    v-if="route.params.project_id != ''"
-                    :to="`/pmm/milestones/details/${td.slug}/${route.params.project_id}`"
-                    class="dropdown-item"
-                    ><i class="fas fa-eye"></i> Details</router-link
-                  >
-                  <router-link
-                    v-else
-                    :to="`/pmm/milestones/details/${td.slug}`"
-                    class="dropdown-item"
-                    ><i class="fas fa-eye"></i> Details</router-link
-                  >
-                </li>
-
-                <li
-                  style="text-align: center; margin-top: 10px"
-                  v-if="getPermission(`display_submilestone_list`)"
-                >
-                  <router-link
-                    :to="`/pmm/sub-milestones/${td.id}`"
-                    class="btn btn-info icon_btn"
-                    style="width: 80%; font-size: 11px"
-                    ><i class="far fa-plus-square"></i> Add Sub
-                    Milestone</router-link
-                  >
-                </li>
-              </ul>
-            </div>
-          </td>
         </tr>
       </tbody>
     </table>
@@ -224,6 +225,7 @@ const props = defineProps({
 const taskStatusSelectable = reactive([
   { id: "1", text: "To Do" },
   { id: "3", text: "In Progress" },
+  { id: "4", text: "Dependency" },
   { id: "2", text: "Completed" },
 ]);
 
@@ -234,9 +236,11 @@ async function changeStatus(event: any, id: number) {
     (item) => item.id == event.target.value
   );
   selectedStatusId.value = result[0].id;
+  console.log("your selected value" + result[0].id);
 
   await Axios.post("/milestones-status", { id: id, status: result[0] }).then(
     (response) => {
+      console.log(response);
       if (response.data.code == 200) {
         toastr.success("Change Status Successfully");
       } else {

@@ -5,7 +5,22 @@
       <div class="col-md-4">
         <div class="card">
           <div class="card-body">
-            <h1>Projects</h1>
+            <div class="d-flex justify-content-between p-md-1">
+              <div class="d-flex flex-row">
+                <div class="align-self-center">
+                  <i class="fas fa-project-diagram text-info fa-3x me-4"></i>
+                </div>
+                <div>
+                  <h4>Projects</h4>
+                  <p class="mb-0">Number of Project</p>
+                </div>
+              </div>
+              <div class="align-self-center">
+                <h2 class="h1 mb-0" v-if="dashboard != ''">
+                  {{ dashboard.projects_count }}
+                </h2>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -15,7 +30,22 @@
       <div class="col-md-4">
         <div class="card">
           <div class="card-body">
-            <h1>Clients</h1>
+            <div class="d-flex justify-content-between p-md-1">
+              <div class="d-flex flex-row">
+                <div class="align-self-center">
+                  <i class="fas fa-chart-bar text-info fa-3x me-4"></i>
+                </div>
+                <div>
+                  <h4>Milestone</h4>
+                  <p class="mb-0">Number of Milestone</p>
+                </div>
+              </div>
+              <div class="align-self-center">
+                <h2 class="h1 mb-0" v-if="dashboard != ''">
+                  {{ dashboard.milestone_count }}
+                </h2>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -25,39 +55,47 @@
       <div class="col-md-4">
         <div class="card">
           <div class="card-body">
-            <h1>POC</h1>
-          </div>
-        </div>
-      </div>
-      <!--end-->
-    </div>
-
-    <div class="row">
-      <!--start-->
-      <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h1>BOQ</h1>
-          </div>
-        </div>
-      </div>
-      <!--end-->
-
-      <!--start-->
-      <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h1>OME</h1>
+            <div class="d-flex justify-content-between p-md-1">
+              <div class="d-flex flex-row">
+                <div class="align-self-center">
+                  <i class="fas fa-chart-pie-alt text-info fa-3x me-4"></i>
+                </div>
+                <div>
+                  <h4>Submilestone</h4>
+                  <p class="mb-0">Number of Submilestone</p>
+                </div>
+              </div>
+              <div class="align-self-center">
+                <h2 class="h1 mb-0" v-if="dashboard != ''">
+                  {{ dashboard.submilestone_count }}
+                </h2>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <!--end-->
 
       <!--start-->
-      <div class="col-md-4">
+      <div class="col-md-4" style="margin-top: 30px">
         <div class="card">
           <div class="card-body">
-            <h1>Task</h1>
+            <div class="d-flex justify-content-between p-md-1">
+              <div class="d-flex flex-row">
+                <div class="align-self-center">
+                  <i class="fas fa-tasks text-info fa-3x me-4"></i>
+                </div>
+                <div>
+                  <h4>Task</h4>
+                  <p class="mb-0">Number of Task</p>
+                </div>
+              </div>
+              <div class="align-self-center">
+                <h2 class="h1 mb-0" v-if="dashboard != ''">
+                  {{ dashboard.task_count }}
+                </h2>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -67,105 +105,34 @@
 </template>
 
 <script setup lang="ts">
-import Excel from "exceljs";
-import { saveAs } from "file-saver";
-// import { useStore } from "vuex";
-// import { useCookies } from "vue3-cookies";
+import { reactive, ref, onMounted } from "vue";
+import Axios from "@/http-common";
+import toastr from "toastr";
 
-// const { cookies } = useCookies();
+onMounted(() => {
+  getDashboard();
+});
 
-// const store = useStore();
-// console.log(store.state.currentUser.user);
+const dashboard = ref("");
 
-async function exportData() {
-  // Create workbook & add worksheet
-  const workbook = new Excel.Workbook();
-  const worksheet = workbook.addWorksheet("ExampleSheet", {
-    views: [{ showGridLines: true }],
-  });
-
-  //worksheet.headerFooter.firstHeader = "Hello Exceljs";
-
-  worksheet.mergeCells("A3", "C3");
-  worksheet.getCell("A3").value = "Detail Requerment";
-  worksheet.getCell("A3").font = {
-    bold: true,
-    size: 18,
-  };
-  worksheet.getCell("A3").alignment = {
-    vertical: "middle",
-    horizontal: "center",
-  };
-
-  worksheet.mergeCells("A4", "C4");
-  worksheet.getCell("A4").value =
-    "  The supplier shall have to do the entire work or job for the implementation of the Secure Proxy Capacity expansion HW & SW including  supply, delivery, installation and commissioning of all necessary Hardware of the system with all features, designing & planning, integration, deployment, customization, testing, commissioning for the end to end Solution, and UAT.	";
-
-  /*Column headers*/
-  worksheet.getRow(6).values = [
-    "SL",
-    "List of Client Requirement",
-    "Remarks (If Any)",
-  ];
-  worksheet.getRow(6).font = {
-    bold: true,
-    size: 12,
-  };
-
-  worksheet.columns = [
-    { key: "sl" },
-    { key: "requirement" },
-    { key: "remarks" },
-  ];
-
-  // Add row using key mapping to columns
-  let arrData = [
-    { sl: "1", requirement: "Access control Requirement	", remarks: "" },
-    {
-      sl: "1.1",
-      requirement: "Preventing Installing Unauthorized Software",
-      remarks: "Application control",
-    },
-  ];
-
-  arrData.forEach(function (item, index) {
-    worksheet.addRow({
-      sl: item.sl,
-      requirement: item.requirement,
-      remarks: item.remarks,
+async function getDashboard() {
+  await Axios.get("/pmm-dashboard")
+    .then((response) => {
+      if (response.data.code === 200) {
+        dashboard.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
     });
-  });
-
-  // Add rows as Array values
-  //worksheet.addRow(["BCD", "Author Name 3"]);
-
-  // Add rows using both the above of rows
-  // const rows = [
-  //   ["FGH", "Author Name 4"],
-  //   { package_name: "PQR", author_name: "Author 5" },
-  // ];
-
-  //worksheet.addRows(rows);
-
-  // save workbook to disk
-  // workbook.xlsx
-  //   .writeBuffer("sample.xlsx")
-  //   .then(() => {
-  //     console.log("saved");
-  //   })
-  //   .catch((err) => {
-  //     console.log("err", err);
-  //   });
-
-  const buffer = await workbook.xlsx.writeBuffer();
-  const fileType =
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-  const fileExtension = ".xlsx";
-
-  const blob = new Blob([buffer], { type: fileType });
-
-  saveAs(blob, "fileName" + fileExtension);
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.custom-dashboard-card {
+  min-height: 200px;
+  border-radius: 40px;
+}
+</style>

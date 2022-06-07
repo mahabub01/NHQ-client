@@ -95,7 +95,7 @@ const timeTrackerState = reactive({
 onMounted(() => {
   loadTimerData();
   let exits_time_id = localStorage.getItem(
-    "sub_timer_" + route.params.submilestone_id_id
+    "sub_timer_" + route.params.submilestone_id
   );
   if (exits_time_id != null) {
     task_time_id.value = exits_time_id;
@@ -135,6 +135,7 @@ async function startTimer() {
           "sub_timer_" + route.params.submilestone_id,
           response.data.data.id
         );
+        toastr.success("Sub Milestone timer started successfully.");
       } else {
         toastr.error(response.data.message);
       }
@@ -160,6 +161,7 @@ async function stopTimer() {
       if (response.data.code === 200) {
         loadTimerData();
         localStorage.removeItem("sub_timer_" + route.params.submilestone_id);
+        toastr.success("Sub Milestone timer stopped successfully.");
       } else {
         toastr.error(response.data.message);
       }

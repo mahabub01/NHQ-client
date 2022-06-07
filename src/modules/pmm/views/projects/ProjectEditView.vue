@@ -238,13 +238,18 @@ let loadingSpinner = ref(false);
 const route = useRoute();
 const router = useRouter();
 
+//create store
+const store = useStore();
+
 // Load CkEditor Data
 const loadCKEditor = computed(() => {
   return store.state.modalModule.loadCKEditor;
 });
 
-//create store
-const store = useStore();
+//set CKEditor Data
+const setDescription = (value: any) => {
+  formState.description = value;
+};
 
 const formState = reactive({
   name: "",
@@ -268,18 +273,29 @@ const rules: any = {
   category_id: { required },
 };
 
-const emit = defineEmits(["select"]);
+const v$ = useVuelidate(rules, formState);
 
-//set CKEditor Data
-const setDescription = (value: any) => {
-  formState.description = value;
-};
+const emit = defineEmits(["select"]);
 
 //Status List for Status Select
 const StatusList = reactive([
   { id: 0, text: "In Progress" },
   { id: 1, text: "Completed" },
 ]);
+
+//Load Data form computed onMounted
+onMounted(() => {
+  getTeams();
+  getLeadList();
+  getClientList();
+  getTagList();
+  getCategoryList();
+  loadSingleData();
+  store.commit("modalModule/LOAD_CKEDITOR_MODAL", false);
+});
+
+//get Files
+const getFiles = ref(null);
 
 //Category list for Category Select
 const categoryList = ref([]);
@@ -295,20 +311,6 @@ const clientList = ref([]);
 
 //team list for Team Select
 const tagList = ref([]);
-
-//Load Data form computed onMounted
-onMounted(() => {
-  getTeams();
-  getLeadList();
-  getClientList();
-  getTagList();
-  getCategoryList();
-  loadSingleData();
-  store.commit("modalModule/LOAD_CKEDITOR_MODAL", false);
-});
-
-//get Files
-const getFiles = ref(null);
 
 //Load Single Data
 async function loadSingleData() {
@@ -412,7 +414,6 @@ async function getCategoryList() {
       console.log("problem Here" + error);
     });
 }
-const v$ = useVuelidate(rules, formState);
 
 async function handleSubmit() {
   v$.value.$validate();

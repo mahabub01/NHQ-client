@@ -6,6 +6,7 @@
         <div class="card">
           <div class="card-body">
             <h1>Projects</h1>
+            <p>Number of Projects : 0</p>
           </div>
         </div>
       </div>
@@ -69,6 +70,8 @@
 <script setup lang="ts">
 import Excel from "exceljs";
 import { saveAs } from "file-saver";
+import { useDatatable } from "@/composables/datatables";
+
 // import { useStore } from "vuex";
 // import { useCookies } from "vue3-cookies";
 

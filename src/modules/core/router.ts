@@ -105,6 +105,14 @@ export const CoreModuleRoute = [
             /* webpackChunkName: "authentication" */ "./views/users/UserIndexView.vue"
           ),
       },
+      {
+        path: "logs",
+        name: "logs",
+        component: () =>
+          import(
+            /* webpackChunkName: "authentication" */ "./views/logs/LogIndexView.vue"
+          ),
+      },
     ],
   },
 ];

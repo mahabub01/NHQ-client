@@ -208,8 +208,9 @@ const props = defineProps({
 // status
 const taskStatusSelectable = reactive([
   { id: "1", text: "To-do" },
-  { id: "2", text: "Completed" },
   { id: "3", text: "In Progress" },
+  { id: "4", text: "Dependency" },
+  { id: "2", text: "Completed" },
 ]);
 
 //Change selected data status

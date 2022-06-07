@@ -33,7 +33,6 @@ async function getAllPermissions(userId: string | null) {
       role: response.data.role.name,
     });
     progress.finish();
-    console.log("store" + store.state.currentUser.user);
   });
 }
 </script>

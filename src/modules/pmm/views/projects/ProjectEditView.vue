@@ -279,8 +279,9 @@ const emit = defineEmits(["select"]);
 
 //Status List for Status Select
 const StatusList = reactive([
-  { id: 0, text: "In Progress" },
-  { id: 1, text: "Completed" },
+  { id: 1, text: "To Do" },
+  { id: 3, text: "In Progress" },
+  { id: 2, text: "Completed" },
 ]);
 
 //Load Data form computed onMounted
@@ -318,7 +319,6 @@ async function loadSingleData() {
   await Axios.get("/projects/projects/" + route.params.id).then((response) => {
     loadingSpinner.value = false;
     if (response.data.code === 200) {
-      console.log(response);
       formState.name = response.data.data[0].project_name;
       formState.category_id = response.data.data[0].pmm_category_id;
       formState.team_id = response.data.data[0].pmm_team_id;
@@ -423,7 +423,6 @@ async function handleSubmit() {
     savingSpinner.value = true;
     await Axios.put("/projects/projects/" + route.params.id, formState)
       .then((response) => {
-        console.log(response);
         if (response.data.code === 200) {
           resetForm();
           //Stop Saving Spinner

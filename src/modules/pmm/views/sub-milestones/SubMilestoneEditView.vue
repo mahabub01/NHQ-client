@@ -109,7 +109,7 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Assign Team Member</label>
+                <label class="form-label">Assignee</label>
                 <Select2
                   v-model="formState.team_member_id"
                   :options="teamSelectable"
@@ -239,12 +239,19 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Duration</label>
+                <label class="form-label"
+                  >Duration
+                  <span style="color: silver">( 0w 0d 0h 0m )</span></label
+                >
                 <input
                   type="text"
                   class="form-input"
-                  v-model.lazy="formState.duration"
+                  v-model="formState.duration"
                 />
+                <p class="error-mgs" v-if="duration_error != ''">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ duration_error }}
+                </p>
               </div>
               <!--end field -->
 
@@ -374,7 +381,8 @@ const followupSelectable = ref([]);
 const taskCategorySelectable = ref([]);
 const prioritySelectable = ref([]);
 const taskStatusSelectable = reactive([
-  { id: "1", text: "In Progress" },
+  { id: "1", text: "To Do" },
+  { id: "3", text: "In Progress" },
   { id: "2", text: "Completed" },
 ]);
 
@@ -535,6 +543,8 @@ async function getTeamMembers() {
 
 const v$ = useVuelidate(rules, formState);
 
+const duration_error = ref("");
+
 async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
@@ -547,6 +557,24 @@ async function handleSubmit() {
     return false;
   } else {
     max_ele_error.value = "";
+  }
+
+  //Validation for Duration
+  if (formState.duration != "") {
+    let duration_keyword_validation = ["w", "d", "h", "m"];
+    let ex = formState.duration.split(" ");
+    let duration_vl_error = 0;
+    ex.forEach((item) => {
+      let last_character = item.charAt(item.length - 1);
+      if (!duration_keyword_validation.includes(last_character)) {
+        duration_vl_error++;
+        duration_error.value =
+          "Duration insert format is not valid. Insert format example: 0w 0d 0h 0m";
+      }
+    });
+    if (duration_vl_error != 0) {
+      return false;
+    }
   }
 
   if (!v$.value.$error) {

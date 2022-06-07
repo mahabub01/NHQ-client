@@ -3,11 +3,16 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial">
+          <th class="col-serial" style="width: 20px !important">
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
-            Serial
           </th>
-          <th class="col-serial" style="width: 50px !important"></th>
+          <th
+            class="col-serial"
+            style="width: 30px !important; text-align: center"
+          >
+            SL
+          </th>
+          <th class="col-serial" style="width: 50px !important">Action</th>
           <th>Time</th>
           <th style="width: 280px">Task Name</th>
           <th>Task ID</th>
@@ -15,6 +20,7 @@
           <th>Actual</th>
           <th>Start Date</th>
           <th>End Date</th>
+          <th class="text-center" style="width: 70px !important">Priority</th>
           <th v-if="getPermission(`status_task`)">Status</th>
           <th class="col-icon align-center" v-if="getPermission(`edit_task`)">
             Edit
@@ -24,14 +30,19 @@
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
         <tr v-for="(item, index) in entries" :key="item.id">
-          <td class="col-serial">
+          <td class="col-serial" style="width: 20px !important">
             <input
               type="checkbox"
               v-model="multiselect"
               :value="item.id"
               @change="updateCheckall"
             />
-            {{ index + 1 }}
+          </td>
+          <td
+            class="col-serial"
+            style="width: 30px !important; text-align: center"
+          >
+            <span>{{ index + 1 }}</span>
           </td>
 
           <td class="col-serial" style="width: 50px !important">
@@ -47,30 +58,14 @@
               </button>
               <ul class="dropdown-menu">
                 <template v-if="getPermission(`time_status_task`)">
+                  <!--v-if="getPermission(`time_status_task`)"-->
                   <li
                     style="
                       text-align: center;
                       margin-top: 10px;
                       margin-bottom: 10px;
                     "
-                    v-if="checkAlreadyExit(`${item.id}`)"
-                  >
-                    <button
-                      type="button"
-                      @click="EndTaskTimer(`${index}`, `${item.id}`)"
-                      class="btn btn-info icon_btn btn-weight stop-btn-color"
-                    >
-                      End Time
-                    </button>
-                  </li>
-
-                  <li
-                    style="
-                      text-align: center;
-                      margin-top: 10px;
-                      margin-bottom: 10px;
-                    "
-                    v-else-if="timerBtnCond.includes(`${item.id}`)"
+                    v-if="timerBtnCond.includes(`${item.id}`)"
                   >
                     <button
                       type="button"
@@ -104,13 +99,15 @@
                     v-if="route.params.submilestone_id != ''"
                     :to="`/pmm/task-time-tracker/${route.params.submilestone_id}/${item.id}`"
                     class="dropdown-item"
-                    >Time Tracker</router-link
+                    ><i class="fas fa-angle-right"></i> Time
+                    Tracker</router-link
                   >
                   <router-link
                     v-else
                     :to="`/pmm/task-time-tracker/${item.id}`"
                     class="dropdown-item"
-                    >Time Tracker</router-link
+                    ><i class="fas fa-angle-right"></i> Time
+                    Tracker</router-link
                   >
                 </li>
 
@@ -119,13 +116,15 @@
                     v-if="route.params.submilestone_id != ''"
                     :to="`/pmm/tasks/${route.params.submilestone_id}/details/${item.id}`"
                     class="dropdown-item"
-                    >Task Details</router-link
+                    ><i class="fas fa-angle-right"></i> Task
+                    Details</router-link
                   >
                   <router-link
                     v-else
                     :to="`/pmm/tasks/details/${item.id}`"
                     class="dropdown-item"
-                    >Task Details</router-link
+                    ><i class="fas fa-angle-right"></i> Task
+                    Details</router-link
                   >
                 </li>
 
@@ -135,7 +134,7 @@
                     @click.prevent="removeItem(item.id)"
                     class="dropdown-item"
                   >
-                    Delete</a
+                    <i class="fas fa-angle-right"></i> Delete</a
                   >
                 </li>
               </ul>
@@ -154,6 +153,11 @@
           <td>{{ item.actual_duration }}</td>
           <td>{{ item.start_date }}</td>
           <td>{{ item.end_date }}</td>
+          <td
+            class="text-center"
+            v-html="item.priority"
+            style="width: 70px !important"
+          ></td>
           <td v-if="getPermission(`status_task`)">
             <select
               class="show-data-select"
@@ -212,7 +216,7 @@ import TaskTimer from "./TaskTimer.vue";
 import { useTimeTracker } from "@/composables/task-time-tracker";
 import toastr from "toastr";
 import { useRoute } from "vue-router";
-import { reactive } from "vue";
+import { reactive, onMounted } from "vue";
 import Axios from "@/http-common";
 import { usePermission } from "@/composables/permissions";
 
@@ -222,6 +226,7 @@ const route = useRoute();
 
 const store = useStore();
 const user_id = computed(() => store.state.currentUser.user.id);
+const localUser = ref(localStorage.getItem("user_id"));
 
 const attrs = useAttrs();
 
@@ -240,15 +245,6 @@ const emit = defineEmits([
   "activation",
 ]);
 
-function checkAlreadyExit(task_id: string) {
-  let running = localStorage.getItem("r_t_" + task_id + "_" + user_id.value);
-  if (running != "" && running != null) {
-    timerBtnCond.value.push(task_id);
-    return true;
-  }
-  return false;
-}
-
 const props = defineProps({
   multiselected: Array,
   isActiveSearch: String,
@@ -261,6 +257,15 @@ onUpdated(() => {
 });
 
 defineExpose({ multiselect });
+
+onMounted(() => {
+  //get timer id
+  let runnig_task_id = localStorage.getItem("task_" + localUser.value);
+  if (runnig_task_id != null) {
+    timerBtnCond.value = [];
+    timerBtnCond.value.push(runnig_task_id);
+  }
+});
 
 //MultiSelect using checkbox
 function checkAll() {
@@ -289,19 +294,28 @@ function removeItem(id: number) {
 
 //Start Task Timer
 function StartTaskTimer(index: any, task_id: any) {
-  timerRef.value[index].startCounter(task_id);
-  timerBtnCond.value.push(task_id);
-  toastr.success("Timer started Successfully.");
+  let oldRtRunningTask = localStorage.getItem("r_t_" + "_" + user_id.value);
+  if (oldRtRunningTask == null) {
+    timerRef.value[index].startCounter(task_id);
+    timerBtnCond.value.push(task_id);
+
+    toastr.success("Timer started Successfully.");
+  } else {
+    toastr.warning(
+      "Aready running Task. Please stop it then you can run other task."
+    );
+  }
 }
 
 //End Task timer
 function EndTaskTimer(index: any, task_id: any) {
   timerRef.value[index].endCounter(task_id);
-  let arrayIndex = timerBtnCond.value.indexOf(task_id);
-  if (arrayIndex > -1) {
-    timerBtnCond.value.splice(arrayIndex, 1);
-  }
+  // let arrayIndex = timerBtnCond.value.indexOf(task_id);
+  // if (arrayIndex > -1) {
+  //   timerBtnCond.value.splice(arrayIndex, 1);
+  // }
   // let data = attrs.entries.filter((item: any) => item.id != task_id);
+  timerBtnCond.value = [];
   props.entries.forEach((item, index) => {
     if (item.id == task_id) {
       let sumSecond =
@@ -317,7 +331,8 @@ function EndTaskTimer(index: any, task_id: any) {
 }
 
 const taskStatusSelectable = reactive([
-  { id: "1", text: "In Progress" },
+  { id: "1", text: "To Do" },
+  { id: "3", text: "In Progress" },
   { id: "2", text: "Completed" },
 ]);
 

@@ -1,5 +1,4 @@
-import { reactive, ref, computed } from "vue";
-import { useStore } from "vuex";
+import { reactive, ref } from "vue";
 
 export function useTimeTracker() {
   //Time Tracker Countable result
@@ -26,8 +25,9 @@ export function useTimeTracker() {
   //timer interval
   let timerInter: any = undefined;
   const trackerStatus = ref();
-  const store = useStore();
-  const user_id = computed(() => store.state.currentUser.user.id);
+  //const store = useStore();
+  //const user_id = computed(() => store.state.currentUser.user.id);
+  const user_id = ref(localStorage.getItem("user_id"));
 
   //setup
   function trackerTimer(
@@ -85,12 +85,13 @@ export function useTimeTracker() {
 
         //use local storage
         if (isStartForLocalStore == true) {
-          if (tracker_type == "counter") {
-            localStorage.removeItem(
-              "sub_r_t_counter_" + task_id + "_" + user_id.value
-            );
+          const exitingLocal = localStorage.getItem(
+            "sub_r_t_counter_" + user_id.value
+          );
+
+          if (exitingLocal != "") {
             localStorage.setItem(
-              "sub_r_t_counter_" + task_id + "_" + user_id.value,
+              "sub_r_t_" + user_id.value,
               JSON.stringify({
                 h: hours,
                 m: minutes,
@@ -98,17 +99,10 @@ export function useTimeTracker() {
                 ats: allSeconds,
               })
             );
-          } else {
-            localStorage.removeItem("sub_r_t_" + task_id + "_" + user_id.value);
-            localStorage.setItem(
-              "sub_r_t_" + task_id + "_" + user_id.value,
-              JSON.stringify({
-                h: hours,
-                m: minutes,
-                s: seconds,
-                ats: allSeconds,
-              })
-            );
+
+            if (task_id != "") {
+              localStorage.setItem("submile_" + user_id.value, task_id);
+            }
           }
         }
       }, 1000);
@@ -148,6 +142,7 @@ export function useTimeTracker() {
         localStorage.removeItem(
           "sub_r_t_counter_" + task_id + "_" + user_id.value
         );
+        localStorage.removeItem("submile_" + user_id.value);
       }
     }
   }
@@ -245,13 +240,10 @@ export function useTimeTracker() {
       const arrIntervalId = [JSON.parse(getInvervalId)];
       arrIntervalId.forEach((item) => {
         window.clearInterval(item);
-        console.log(item);
       });
       localStorage.removeItem("sub_runnig_inverval_" + task_id);
-      localStorage.removeItem("sub_r_t_" + task_id + "_" + user_id.value);
-      localStorage.removeItem(
-        "sub_r_t_counter_" + task_id + "_" + user_id.value
-      );
+      localStorage.removeItem("sub_r_t_" + user_id.value);
+      localStorage.removeItem("sub_r_t_counter_" + user_id.value);
     }
   }
 

@@ -823,6 +823,7 @@ async function updateHandler() {
 async function getVersions() {
   await Axios.get("get-versions")
     .then((response) => {
+      console.log(response.data.data);
       versions.value = response.data.data;
     })
     .catch((error) => {

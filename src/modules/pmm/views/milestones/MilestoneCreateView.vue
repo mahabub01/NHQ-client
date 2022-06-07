@@ -207,6 +207,28 @@
               <TheCKEditor @sendContent="setDescription" />
             </div>
             <div class="col-md-4 offset-md-2">
+              <!--start field -->
+              <div class="form-row">
+                <label class="form-label">Status</label>
+                <Select2
+                  v-model="formState.status"
+                  :options="taskStatusSelectable"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+              <!--end field -->
+
+              <!--start field -->
+              <div class="form-row">
+                <label class="form-label">Priority</label>
+                <Select2
+                  v-model="formState.priority_id"
+                  :options="prioritySelectable"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+              <!--end field -->
+
               <!--start row -->
               <div class="row form-row">
                 <div class="col-md-12">
@@ -292,7 +314,15 @@ const formState = reactive({
   token: store.state.currentUser.token,
   user_id: String(user_id.value),
   is_auto_point: "2", //default autometic created point
+  priority_id: "",
+  status: "1",
 });
+
+const taskStatusSelectable = reactive([
+  { id: "1", text: "To Do" },
+  { id: "3", text: "In Progress" },
+  { id: "2", text: "Completed" },
+]);
 
 const rules: any = {
   project_name: { required },
@@ -313,11 +343,15 @@ const project_names = ref([]);
 //categories list for Category Select
 const categories = ref([]);
 
+//priority List
+const prioritySelectable = ref([]);
+
 //Load Data form computed onMounted
 onMounted(() => {
   getAssignEmployees();
   getCategories();
   getProjectNames();
+  getPriorities();
   if (route.params.project_id != "") {
     getWeigttageSum(String(route.params.project_id));
     formState.project_name = String(route.params.project_id);
@@ -352,6 +386,21 @@ async function getWeigttageSum(project_id: string) {
         }
         // formState.points = response.data.data.weightage;
         // is_view_point_show.value = response.data.data.is_milestone_point_auto;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+//get Priorities for Selectable
+async function getPriorities() {
+  await Axios.get("/priority-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        prioritySelectable.value = response.data.data;
       } else {
         toastr.error(response.data.message);
       }

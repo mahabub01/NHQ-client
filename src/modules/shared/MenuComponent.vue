@@ -3,7 +3,7 @@
   <nav class="navbar navbar-expand-lg nav-bg main-nav">
     <div class="container-fluid">
       <router-link :to="'/core/dashboard'" class="navbar-brand"
-        >ImpacTech ERP</router-link
+        >NHQ ERP</router-link
       >
       <button
         class="navbar-toggler"
@@ -74,7 +74,7 @@
                 aria-expanded="false"
               >
                 <div class="profile-icons">
-                  <img src="@/assets/images/ellipse_1.png" width="48" />
+                  <img src="@/assets/images/icon_orginal.jpg" width="48" />
                 </div>
               </button>
 
@@ -86,7 +86,10 @@
                   <div>
                     <ul class="auth_card">
                       <li class="auth_img">
-                        <img src="@/assets/images/ellipse_1.png" width="48" />
+                        <img
+                          src="@/assets/images/icon_orginal.jpg"
+                          width="48"
+                        />
                         <a href="#" @click="avaterChange"
                           ><i class="fas fa-camera camera"></i
                         ></a>
@@ -215,6 +218,11 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-lg-0">
+          <li class="nav-item dropdown">
+            <router-link class="nav-link" to="/core/dashboard">
+              Dashboard
+            </router-link>
+          </li>
           <template
             v-for="(viewmodulelist, comindex) in userComponents"
             :key="comindex"
@@ -332,6 +340,7 @@ const userComponents = ref([] as any[]);
 function loadComponent(module_index: any) {
   userComponents.value = userInfo.value.modules[module_index].components;
 }
+
 const formState = reactive({
   avatar: "",
   token: store.state.currentUser.token,
@@ -387,8 +396,8 @@ function avaterChange() {
 
 async function signOut() {
   const signoutState = {
-    token: store.state.currentUser.token,
-    user_id: userInfo.value.id,
+    token: localStorage.getItem("token"),
+    user_id: localStorage.getItem("user_id"),
   };
 
   await Axios.post("/signout", signoutState)
@@ -411,6 +420,8 @@ async function signOut() {
         //   isLoggedIn: false,
         // });
 
+        localStorage.clear();
+
         router.push("/login");
       } else {
         toastr.error(response.data.message);
@@ -425,11 +436,16 @@ async function signOut() {
 <style scoped>
 .auth_img {
   position: relative;
+  border-radius: 50%;
+  border: 2px solid rgb(189, 189, 189);
+  width: 50px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 .camera {
   position: absolute;
-  top: 0;
-  right: -8px;
+  bottom: 0px;
+  right: 13px;
   color: rgb(118, 179, 155);
 }
 </style>

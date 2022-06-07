@@ -46,32 +46,15 @@ const props = defineProps({
 });
 
 onMounted(() => {
-  let running = localStorage.getItem(
-    "sub_r_t_" + props.taskid + "_" + props.userid
-  );
-
-  //when start from time tracker page
-  let exits_time_tracker = localStorage.getItem(
-    "sub_r_t_counter_" + props.taskid + "_" + props.userid
-  );
-
-  if (exits_time_tracker != null) {
-    let getable: string[] = [
-      JSON.parse(exits_time_tracker).h,
-      JSON.parse(exits_time_tracker).m,
-      JSON.parse(exits_time_tracker).s,
-      JSON.parse(exits_time_tracker).ats,
-    ];
-    trackerTimer(true, true, String(props.taskid), true, getable, "counter");
-    isStartTimer.value = true;
-    storeIntervalId(Number(props.taskid), Number(timeTrackerResult.intervalId));
-  } else if (running != null) {
+  let running = localStorage.getItem("sub_r_t_" + props.userid);
+  if (running != null) {
     let getable: string[] = [
       JSON.parse(running).h,
       JSON.parse(running).m,
       JSON.parse(running).s,
       JSON.parse(running).ats,
     ];
+    removeIntervalId(Number(props.taskid));
     trackerTimer(true, true, String(props.taskid), true, getable, "counter");
     isStartTimer.value = true;
     storeIntervalId(Number(props.taskid), Number(timeTrackerResult.intervalId));

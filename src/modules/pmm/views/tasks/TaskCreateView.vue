@@ -9,7 +9,7 @@
               :to="`/pmm/tasks/${route.params.submilestone_id}`"
               >Task List <i class="fas fa-chevron-right"></i
             ></router-link>
-            <router-link v-else to="`/pmm/tasks"
+            <router-link v-else to="/pmm/tasks"
               >Task List <i class="fas fa-chevron-right"></i
             ></router-link>
             <router-link to="#">Create</router-link>
@@ -161,7 +161,7 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Assign Team Member</label>
+                <label class="form-label">Assignee</label>
                 <Select2
                   v-model="formState.team_member_id"
                   :options="teamSelectable"
@@ -224,6 +224,17 @@
 
               <!--start field -->
               <div class="form-row">
+                <label class="form-label">Priority</label>
+                <Select2
+                  v-model="formState.priority_id"
+                  :options="prioritySelectable"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+              <!--end field -->
+
+              <!--start field -->
+              <div class="form-row">
                 <label class="form-label">Task Point</label>
                 <span
                   v-if="
@@ -261,12 +272,20 @@
 
               <!--start field -->
               <div class="form-row">
-                <label class="form-label">Duration</label>
+                <label class="form-label"
+                  >Duration
+                  <span style="color: silver">( 0w 0d 0h 0m )</span></label
+                >
                 <input
                   type="text"
                   class="form-input"
-                  v-model.lazy="formState.duration"
+                  v-model="formState.duration"
                 />
+
+                <p class="error-mgs" v-if="duration_error != ''">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ duration_error }}
+                </p>
               </div>
               <!--end field -->
 
@@ -336,6 +355,7 @@ const formState = reactive({
   duration: "",
   token: localStorage.getItem("token"),
   user_id: user_id.value,
+  priority_id: "",
 });
 
 const rules: any = {
@@ -354,8 +374,10 @@ const projectsSelectable = ref([]);
 const milestoneSelectable = ref([]);
 const teamSelectable = ref([]); //Team Members
 const submileStoneSelectable = ref([]);
+
 const taskStatusSelectable = reactive([
-  { id: "1", text: "In Progress" },
+  { id: "1", text: "To Do" },
+  { id: "3", text: "In Progress" },
   { id: "2", text: "Completed" },
 ]);
 
@@ -377,11 +399,15 @@ function autoPoint(event: any) {
 let savingSpinner = ref(false);
 let loadingSpinner = ref(false);
 
+//show Priority Selectable Data
+const prioritySelectable = ref([]);
+
 //Load Data form computed onMounted
 onMounted(() => {
   getProjects();
   //getSubmilestones();
   getTeamMembers();
+  getPriorities();
   if (route.params.submilestone_id != "") {
     loadIds();
     getMilestones(formState.project_id);
@@ -399,6 +425,21 @@ async function loadIds() {
         formState.project_id = String(response.data.data.project_id);
         formState.submilestone_id = String(route.params.submilestone_id);
         loadingSpinner.value = false;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
+//get Priorities for Selectable
+async function getPriorities() {
+  await Axios.get("/priority-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        prioritySelectable.value = response.data.data;
       } else {
         toastr.error(response.data.message);
       }
@@ -532,10 +573,13 @@ async function getTeamMembers() {
 
 const v$ = useVuelidate(rules, formState);
 
+const duration_error = ref("");
+
 async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
 
+  //Validation for Point valid or Not
   if (formState.points > max_ele.value) {
     max_ele_error.value = "It's not posible. Your point is over total point.";
     return false;
@@ -546,11 +590,30 @@ async function handleSubmit() {
     max_ele_error.value = "";
   }
 
+  //Validation for Duration
+  if (formState.duration != "") {
+    let duration_keyword_validation = ["w", "d", "h", "m"];
+    let ex = formState.duration.split(" ");
+    let duration_vl_error = 0;
+    ex.forEach((item) => {
+      let last_character = item.charAt(item.length - 1);
+      if (!duration_keyword_validation.includes(last_character)) {
+        duration_vl_error++;
+        duration_error.value =
+          "Duration insert format is not valid. Insert format example: 0w 0d 0h 0m";
+      }
+    });
+    if (duration_vl_error != 0) {
+      return false;
+    }
+  }
+
+  //end  Validation for Duration
+
   if (!v$.value.$error) {
     savingSpinner.value = true;
     await Axios.post("tasks", formState)
       .then((response) => {
-        console.log(response);
         if (response.data.code === 200) {
           resetForm();
           //Stop Saving Spinner

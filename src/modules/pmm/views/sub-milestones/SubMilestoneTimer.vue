@@ -9,18 +9,9 @@
 
 <script setup lang="ts">
 import { useTimeTracker } from "@/composables/time-tracker";
-import {
-  defineProps,
-  computed,
-  onMounted,
-  defineExpose,
-  reactive,
-  ref,
-} from "vue";
-import { useStore } from "vuex";
+import { defineProps, onMounted, defineExpose, reactive, ref } from "vue";
 import Axios from "@/http-common";
 
-const store = useStore();
 //const user_id = computed(() => store.state.currentUser.user.id);
 
 const user_id = ref(localStorage.getItem("user_id"));
@@ -57,23 +48,30 @@ const timeTrackerState = reactive({
 
 onMounted(() => {
   //get timer id
-  let exits_time_id = localStorage.getItem("sub_timer_" + prop.taskId);
-  if (exits_time_id != null) {
-    task_time_id.value = exits_time_id;
-  }
-
-  let running = localStorage.getItem(
-    "sub_r_t_" + prop.taskId + "_" + user_id.value
-  );
-  if (running != "" && running != null) {
-    let getable: string[] = [
-      JSON.parse(running).h,
-      JSON.parse(running).m,
-      JSON.parse(running).s,
-      JSON.parse(running).ats,
-    ];
-    trackerTimer(true, true, prop.taskId, true, getable);
-    storeIntervalId(Number(prop.taskId), Number(timeTrackerResult.intervalId));
+  let runnig_task_id = localStorage.getItem("submile_" + user_id.value);
+  if (runnig_task_id != null) {
+    if (runnig_task_id == prop.taskId) {
+      let running = localStorage.getItem("sub_r_t_" + user_id.value);
+      if (running != "" && running != null) {
+        let getable: string[] = [
+          JSON.parse(running).h,
+          JSON.parse(running).m,
+          JSON.parse(running).s,
+          JSON.parse(running).ats,
+        ];
+        task_time_id.value = localStorage.getItem(
+          "sub_timer_" + runnig_task_id
+        );
+        removeIntervalId(Number(runnig_task_id));
+        trackerTimer(true, true, runnig_task_id, true, getable);
+        storeIntervalId(
+          Number(runnig_task_id),
+          Number(timeTrackerResult.intervalId)
+        );
+      } else {
+        console.log("problem here");
+      }
+    }
   }
 });
 
@@ -97,10 +95,9 @@ const startCounter = async (task_id: any) => {
 
   await Axios.post("submilestone-timers", timeTrackerState)
     .then((response) => {
-      console.log(response);
       if (response.data.code === 200) {
         task_time_id.value = response.data.data.id;
-        localStorage.setItem("timer_" + task_id, response.data.data.id);
+        localStorage.setItem("sub_timer_" + task_id, response.data.data.id);
       } else {
         console.log(response.data.message);
       }
@@ -124,7 +121,10 @@ const endCounter = async (task_id: any) => {
   timeTrackerState.all_seconds = Number(exposeData.all_seconds);
 
   //Remove task taimer id
-  localStorage.removeItem("timer_" + task_id);
+  localStorage.removeItem("sub_timer_" + task_id);
+
+  //Remove Task Id
+  localStorage.removeItem("submile_" + user_id.value);
 
   //Remove Interval by Invervalid
   removeIntervalId(task_id);

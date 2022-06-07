@@ -9,7 +9,7 @@
               :to="`/pmm/tasks/${route.params.submilestone_id}`"
               >Task List <i class="fas fa-chevron-right"></i
             ></router-link>
-            <router-link v-else to="`/pmm/tasks"
+            <router-link v-else to="/pmm/tasks"
               >Task List <i class="fas fa-chevron-right"></i
             ></router-link>
             <router-link to="#">Edit</router-link>
@@ -196,6 +196,17 @@
 
               <!--start field -->
               <div class="form-row">
+                <label class="form-label">Priority</label>
+                <Select2
+                  v-model="formState.priority_id"
+                  :options="prioritySelectable"
+                  :settings="{ placeholder: 'Choose' }"
+                />
+              </div>
+              <!--end field -->
+
+              <!--start field -->
+              <div class="form-row">
                 <label class="form-label">Task Point</label>
                 <template v-if="is_submilestone_point_auto == '3'">
                   <input
@@ -232,6 +243,10 @@
                   class="form-input"
                   v-model.lazy="formState.duration"
                 />
+                <p class="error-mgs" v-if="duration_error != ''">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ duration_error }}
+                </p>
               </div>
               <!--end field -->
 
@@ -333,6 +348,7 @@ const formState = reactive({
   token: localStorage.getItem("token"),
   user_id: user_id.value,
   is_auto_point: "",
+  priority_id: "",
 });
 
 const rules: any = {
@@ -351,11 +367,14 @@ const projectsSelectable = ref([]);
 const milestoneSelectable = ref([]);
 const teamSelectable = ref([]); //Team Members
 const submileStoneSelectable = ref([]);
+//show Priority Selectable Data
+const prioritySelectable = ref([]);
+
 const taskStatusSelectable = reactive([
-  { id: "1", text: "In Progress" },
+  { id: "1", text: "To Do" },
+  { id: "3", text: "In Progress" },
   { id: "2", text: "Completed" },
 ]);
-
 const loadingSpinner = ref(false);
 //use for saving preloader
 let savingSpinner = ref(false);
@@ -369,6 +388,7 @@ onMounted(() => {
   getSubmilestones();
   getTeamMembers();
   loadEditData();
+  getPriorities();
 });
 
 async function loadEditData() {
@@ -391,6 +411,7 @@ async function loadEditData() {
         formState.task_status = response.data.data.task_status;
         formState.duration = response.data.data.duration;
         formState.team_member_id = response.data.data.team_member_id;
+        formState.priority_id = String(response.data.data.priority_id);
         getFiles.value = response.data.data.file;
         snapshots.value = response.data.data.task_snapshots;
         old_weightage.value = response.data.data.weightage;
@@ -405,12 +426,26 @@ async function loadEditData() {
     });
 }
 
+//get Priorities for Selectable
+async function getPriorities() {
+  await Axios.get("/priority-selectable")
+    .then((response) => {
+      if (response.data.code === 200) {
+        prioritySelectable.value = response.data.data;
+      } else {
+        toastr.error(response.data.message);
+      }
+    })
+    .catch((error) => {
+      console.log("problem Here" + error);
+    });
+}
+
 // load task Weighttage Sum
 async function getWeigttageSum(submilestone_id: string) {
   loadingSpinner.value = true;
   await Axios.get("/get-tasks-weightage/" + submilestone_id)
     .then((response) => {
-      console.log(response);
       if (response.data.code === 200) {
         loadingSpinner.value = false;
         let project_weightage_way = response.data.data.is_task_point_auto;
@@ -495,6 +530,8 @@ async function getTeamMembers() {
 
 const v$ = useVuelidate(rules, formState);
 
+const duration_error = ref("");
+
 async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
@@ -508,6 +545,26 @@ async function handleSubmit() {
   } else {
     max_ele_error.value = "";
   }
+
+  //Validation for Duration
+  //Validation for Duration
+  if (formState.duration != "") {
+    let duration_keyword_validation = ["w", "d", "h", "m"];
+    let ex = formState.duration.split(" ");
+    let duration_vl_error = 0;
+    ex.forEach((item) => {
+      let last_character = item.charAt(item.length - 1);
+      if (!duration_keyword_validation.includes(last_character)) {
+        duration_vl_error++;
+        duration_error.value =
+          "Duration insert format is not valid. Insert format example: 0w 0d 0h 0m";
+      }
+    });
+    if (duration_vl_error != 0) {
+      return false;
+    }
+  }
+  //end  Validation for Duration
 
   if (!v$.value.$error) {
     savingSpinner.value = true;

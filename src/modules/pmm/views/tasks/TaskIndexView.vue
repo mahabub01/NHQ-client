@@ -559,7 +559,7 @@ const exportHeader: any = [
   "SL",
   "Submilestone ID",
   "Task",
-  "Duration (Minutes)",
+  "Duration",
   "Points",
 ];
 const exportColumn: any = [

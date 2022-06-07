@@ -1,7 +1,3 @@
-import { useCookies } from "vue3-cookies";
-
-const { cookies } = useCookies();
-
 export default {
   namespaced: true,
   state: {

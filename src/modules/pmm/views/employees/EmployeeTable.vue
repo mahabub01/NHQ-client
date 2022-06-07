@@ -3,9 +3,20 @@
     <table class="table" id="selectable-table">
       <thead>
         <tr>
-          <th class="col-serial">
+          <th class="col-serial" style="width: 20px !important">
             <input type="checkbox" @click="checkAll()" v-model="isCheckAll" />
-            Serial
+          </th>
+          <th
+            class="col-serial"
+            style="width: 30px !important; text-align: center"
+          >
+            SL
+          </th>
+          <th
+            class="col-serial"
+            style="width: 50px !important; text-align: cente"
+          >
+            Action
           </th>
           <th>Name</th>
           <th>Email</th>
@@ -14,19 +25,75 @@
           <th>Designation</th>
           <th>Employee ID</th>
           <th>Status</th>
-          <th class="col-serial">Action</th>
         </tr>
       </thead>
       <tbody :class="{ tableLoader: $attrs.loadingState }">
         <tr v-for="(td, index) in $attrs.entries" :key="td">
-          <td class="col-serial">
+          <td class="col-serial" style="width: 20px !important">
             <input
               type="checkbox"
               v-model="multiselect"
               :value="td.id"
               @change="updateCheckall"
             />
-            {{ index + 1 }}
+          </td>
+          <td
+            class="col-serial"
+            style="width: 30px !important; text-align: center"
+          >
+            <span>{{ index + 1 }}</span>
+          </td>
+
+          <td
+            class="col-serial"
+            style="width: 50px !important; text-align: cente"
+          >
+            <div class="btn-group">
+              <button
+                type="button"
+                class="table_icon_btn"
+                data-bs-toggle="dropdown"
+                data-bs-display="static"
+                aria-expanded="false"
+              >
+                <i class="fas fa-sort-down"></i>
+              </button>
+              <ul class="dropdown-menu table-dropdown">
+                <li v-if="getPermission(`status_employee`)">
+                  <a
+                    href="#"
+                    v-if="td.is_active == 1"
+                    class="dropdown-item inactiveStatus"
+                    @click.prevent="changeStatus(td.id, td.is_active)"
+                    ><i class="fas fa-angle-right"></i> In-Active</a
+                  >
+
+                  <a
+                    href="#"
+                    v-else
+                    :to="`/pmm/categories/${td.id}/edit`"
+                    class="dropdown-item activeStatus"
+                    @click.prevent="changeStatus(td.id, td.is_active)"
+                    ><i class="fas fa-angle-right"></i> Active</a
+                  >
+                </li>
+                <li v-if="getPermission(`edit_employee`)">
+                  <router-link
+                    :to="`/pmm/employees/${td.id}/edit`"
+                    class="dropdown-item"
+                    ><i class="fas fa-angle-right"></i> Edit</router-link
+                  >
+                </li>
+                <li v-if="getPermission(`delete_employee`)">
+                  <a
+                    href="#"
+                    @click.prevent="removeItem(td.id)"
+                    class="dropdown-item"
+                    ><i class="fas fa-angle-right"></i> Delete</a
+                  >
+                </li>
+              </ul>
+            </div>
           </td>
           <td>{{ td.name }}</td>
           <td>{{ td.email }}</td>
@@ -44,55 +111,6 @@
               ><i class="far fa-times-circle"></i>
               {{ isActive(td.is_active) }}</span
             >
-          </td>
-
-          <td class="col-serial">
-            <div class="btn-group">
-              <button
-                type="button"
-                class="table_icon_btn"
-                data-bs-toggle="dropdown"
-                data-bs-display="static"
-                aria-expanded="false"
-              >
-                <i class="fas fa-sort-down"></i>
-              </button>
-              <ul class="dropdown-menu table-dropdown dropdown-menu-lg-end">
-                <li v-if="getPermission(`status_employee`)">
-                  <a
-                    href="#"
-                    v-if="td.is_active == 1"
-                    class="dropdown-item inactiveStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-times-circle"></i> In-Active</a
-                  >
-
-                  <a
-                    href="#"
-                    v-else
-                    :to="`/pmm/categories/${td.id}/edit`"
-                    class="dropdown-item activeStatus"
-                    @click.prevent="changeStatus(td.id, td.is_active)"
-                    ><i class="far fa-check-circle"></i> Active</a
-                  >
-                </li>
-                <li v-if="getPermission(`edit_employee`)">
-                  <router-link
-                    :to="`/pmm/employees/${td.id}/edit`"
-                    class="dropdown-item"
-                    ><i class="fas fa-edit"></i> Edit</router-link
-                  >
-                </li>
-                <li v-if="getPermission(`delete_employee`)">
-                  <a
-                    href="#"
-                    @click.prevent="removeItem(td.id)"
-                    class="dropdown-item"
-                    ><i class="fas fa-trash-alt"></i> Delete</a
-                  >
-                </li>
-              </ul>
-            </div>
           </td>
         </tr>
       </tbody>

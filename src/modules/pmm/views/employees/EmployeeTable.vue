@@ -95,7 +95,12 @@
               </ul>
             </div>
           </td>
-          <td>{{ td.name }}</td>
+
+          <td style="width: 220px">
+            <router-link :to="`/pmm/projects-by-employee/${td.id}`">{{
+              td.name
+            }}</router-link>
+          </td>
           <td>{{ td.email }}</td>
           <td>{{ td.phone }}</td>
           <td>{{ td.department }}</td>

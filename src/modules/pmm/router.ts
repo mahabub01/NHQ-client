@@ -99,6 +99,15 @@ export const PmmModuleRoute = [
         meta: { middleware: "auth" },
       },
       {
+        path: "projects-by-employee/:user_id?",
+        name: "projects-by-employee",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/projects/employees/ProjectByEmployeeView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
         path: "projects/:slug",
         name: "projects-details",
         component: () =>
@@ -140,6 +149,15 @@ export const PmmModuleRoute = [
         component: () =>
           import(
             /* webpackChunkName: "pmm-module" */ "./views/milestones/MilestoneIndexView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+      {
+        path: "milestones-by-employee/:user_id?/:project_id?",
+        name: "milestones-by-employee",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/projects/employees/MilestoneByEmployeeView.vue"
           ),
         meta: { middleware: "auth" },
       },
@@ -207,6 +225,16 @@ export const PmmModuleRoute = [
         component: () =>
           import(
             /* webpackChunkName: "pmm-module" */ "./views/sub-milestones/SubMilestoneEditView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
+        path: "sub-milestones-by-employee/:user_id?/:project_id?/:milestone_id?",
+        name: "sub-milestones-by-employee",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/projects/employees/SubMilestoneByEmployeeView.vue"
           ),
         meta: { middleware: "auth" },
       },

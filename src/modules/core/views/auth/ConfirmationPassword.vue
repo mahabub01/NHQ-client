@@ -138,6 +138,9 @@ import { useRouter } from "vue-router";
 import { useCookies } from "vue3-cookies";
 import Axios from "@/http-common";
 import toastr from "toastr";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const isShowAlert = ref(false);
 const isShowSuccess = ref(false);
@@ -147,6 +150,7 @@ const router = useRouter();
 const store = useStore();
 
 const formState = reactive({
+  email: route.params.email,
   password: "",
   password_confirmation: "",
 });

@@ -339,6 +339,16 @@ export const PmmModuleRoute = [
       },
 
       {
+        path: "tasks-by-employee/:user_id?/:project_id?/:milestone_id?/:submilestone_id?",
+        name: "tasks-by-employee",
+        component: () =>
+          import(
+            /* webpackChunkName: "pmm-module" */ "./views/projects/employees/TaskByEmployeeView.vue"
+          ),
+        meta: { middleware: "auth" },
+      },
+
+      {
         path: "pocs/:project_id",
         name: "pocs",
         component: () =>

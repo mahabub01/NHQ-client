@@ -16,20 +16,15 @@
             Action
           </th>
           <!-- <th>Time</th> -->
-          <th style="width: 280px">Sub Milestone Name</th>
-          <th>Sub Milestone ID</th>
+          <th style="width: 280px">Task Name</th>
+          <th>Task ID</th>
           <th>Expected</th>
           <th>Actual</th>
           <th>Start Date</th>
           <th>End Date</th>
-          <th>Sub Milestone Progress</th>
+          <th>Task Progress</th>
           <th class="text-center" style="width: 70px !important">Priority</th>
-          <th
-            v-if="getPermission(`status_submilestone_list`)"
-            style="width: 80px !important"
-          >
-            Status
-          </th>
+          <th style="width: 80px !important">Status</th>
 
           <th class="col-icon align-center">File</th>
         </tr>
@@ -58,40 +53,26 @@
                 <i class="fas fa-sort-down"></i>
               </button>
               <ul class="dropdown-menu">
-                <li v-if="getPermission(`details_submilestone_list`)">
+                <li>
                   <router-link
-                    v-if="route.params.milestone_id != ''"
-                    :to="`/pmm/sub-milestones/${route.params.milestone_id}/details/${item.id}`"
+                    :to="`/pmm/tasks/details/${item.id}`"
                     class="dropdown-item"
-                    ><i class="fas fa-angle-right"></i> Sub Milestone
-                    Details</router-link
-                  >
-                  <router-link
-                    v-else
-                    :to="`/pmm/sub-milestones/details/${item.id}`"
-                    class="dropdown-item"
-                    ><i class="fas fa-angle-right"></i> Sub Milestone
+                    ><i class="fas fa-angle-right"></i> Task
                     Details</router-link
                   >
                 </li>
               </ul>
             </div>
           </td>
-          <!-- <td>
-            <sub-milestone-timer
-              :key="item.id"
-              :taskId="`${item.id}`"
-              ref="timerRef"
-            ></sub-milestone-timer>
-          </td> -->
+
           <td style="width: 280px">
             <router-link
               :to="`/pmm/tasks-by-employee/${route.params.user_id}/${route.params.project_id}/${route.params.milestone_id}/${item.id}`"
             >
-              {{ item.submilestone_name }}
+              {{ item.task_name }}
             </router-link>
           </td>
-          <td>{{ item.submilestone_unique_id }}</td>
+          <td>{{ item.task_unique_id }}</td>
           <td>{{ item.expected_duration }}</td>
           <td>{{ item.actual_duration }}</td>
           <td>{{ item.start_date }}</td>
@@ -160,13 +141,9 @@ import {
   computed,
   onUpdated,
 } from "vue";
-// import SubMilestoneTimer from "./SubMilestoneTimer.vue";
 import { useTimeTracker } from "@/composables/time-tracker";
 import { reactive, onMounted } from "vue";
-import { usePermission } from "@/composables/permissions";
 import { useRoute } from "vue-router";
-
-const { getPermission } = usePermission();
 
 const store = useStore();
 const user_id = computed(() => store.state.currentUser.user.id);
@@ -190,15 +167,6 @@ const props = defineProps({
 
 onUpdated(() => {
   entries.value = props.entries;
-});
-
-onMounted(() => {
-  //get timer id
-  let runnig_task_id = localStorage.getItem("submile_" + localUser.value);
-  if (runnig_task_id != null) {
-    timerBtnCond.value = [];
-    timerBtnCond.value.push(runnig_task_id);
-  }
 });
 
 const taskStatusSelectable = reactive([

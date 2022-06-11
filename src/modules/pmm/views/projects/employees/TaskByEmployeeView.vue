@@ -14,10 +14,8 @@
                     <i class="fas fa-address-card"></i>
                   </button>
                   <div class="page-bootcamp-left">
-                    <router-link
-                      to="/pmm/sub-milestones"
-                      class="rev-underline-subtitle"
-                      >Sub Milestone List</router-link
+                    <router-link to="/pmm/tasks" class="rev-underline-subtitle"
+                      >Task List</router-link
                     >
                   </div>
                   <div class="page-bootcamp-left">
@@ -73,12 +71,12 @@
               <div class="row">
                 <div class="col-md-12">
                   <div style="overflow-x: auto; margin-bottom: 10px">
-                    <sub-milestone-table
+                    <task-table
                       :entries="entries"
                       :loadingState="datatables.loadingState"
                       v-model:nameSearch.lazy="nameSearch"
                       v-model:isActiveSearch.lazy="isActiveSearch"
-                    ></sub-milestone-table>
+                    ></task-table>
 
                     <!--start table pagination -->
                     <table-pagination
@@ -104,7 +102,7 @@
   <div>
     <filter-modal>
       <template v-slot:header
-        ><i class="fas fa-filter"></i> Filter Submilestone
+        ><i class="fas fa-filter"></i> Filter Task
       </template>
       <template v-slot:body>
         <form @submit.prevent="filterSubmit" class="form-page">
@@ -114,7 +112,7 @@
               <input
                 type="text"
                 class="form-input"
-                v-model="filterState.submilestone_name_id"
+                v-model="filterState.task_name_id"
               />
             </div>
 
@@ -169,14 +167,13 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed, reactive } from "vue";
 import Axios from "@/http-common";
-import SubMilestoneTable from "./SubMilestoneTable.vue";
-import swal from "sweetalert";
+import TaskTable from "./TaskTable.vue";
 import { useDatatable } from "@/composables/datatables";
 import FilterModal from "../../../../core/shared/FilterModal.vue";
+
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
-import { useExcelImport } from "@/composables/excel-import";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
@@ -197,20 +194,12 @@ let isActiveSearch = ref("");
 
 //search field
 let search = ref("");
-let filteringSpinner = ref(false);
-
-const filterState = reactive({
-  submilestone_name_id: "",
-  extended_date: "",
-  start_date: "",
-  end_date: "",
-});
 
 //filter by POC ID/ Poc title
 watch([search], async () => {
   //fetchData("/tasks", search.value);
   filterData(
-    "/employee-sub-milestone",
+    "/employee-task",
     "&user_id=" +
       route.params.user_id +
       "&search=" +
@@ -218,6 +207,8 @@ watch([search], async () => {
       "&project_id =" +
       route.params.project_id +
       "&milestone_id =" +
+      route.params.milestone_id +
+      "&submilestone_id =" +
       route.params.id
   );
 });
@@ -226,44 +217,59 @@ watch([search], async () => {
 onMounted(() => {
   // fetchData("/tasks");
   filterData(
-    "/employee-sub-milestone",
+    "/employee-task",
     "&user_id=" +
       route.params.user_id +
+      "&search=" +
+      search.value +
       "&project_id =" +
       route.params.project_id +
       "&milestone_id =" +
+      route.params.milestone_id +
+      "&submilestone_id =" +
       route.params.id
   );
 });
+
+const filterState = reactive({
+  task_name_id: "",
+  extended_date: "",
+  start_date: "",
+  end_date: "",
+});
+
+let filteringSpinner = ref(false);
 
 async function filterSubmit() {
   store.commit("modalModule/CHNAGE_FILTER_MODAL", false);
   datatables.loadingState = true;
   filteringSpinner.value = true;
 
-  await Axios.post("employee-sub-milestone-filter", filterState).then(
-    (response) => {
-      filteringSpinner.value = false;
-      entries.value = response.data.data;
-      datatables.totalItems = response.data.meta.total;
-      datatables.currentPage = response.data.meta.current_page;
-      datatables.allPages = response.data.meta.last_page;
-      datatables.pagination = response.data.meta.links;
-      datatables.loadingState = false;
-    }
-  );
+  await Axios.post("employee-task-filter", filterState).then((response) => {
+    filteringSpinner.value = false;
+    entries.value = response.data.data;
+    datatables.totalItems = response.data.meta.total;
+    datatables.currentPage = response.data.meta.current_page;
+    datatables.allPages = response.data.meta.last_page;
+    datatables.pagination = response.data.meta.links;
+    datatables.loadingState = false;
+  });
 }
 
 //show data using show Menu
 function paginateEntries(e: any) {
   currentEntries.value = e.target.value;
   filterData(
-    "/employee-sub-milestone",
+    "/employee-task",
     "&user_id=" +
       route.params.user_id +
+      "&search=" +
+      search.value +
       "&project_id =" +
       route.params.project_id +
       "&milestone_id =" +
+      route.params.milestone_id +
+      "&submilestone_id =" +
       route.params.id
   );
 }
@@ -273,12 +279,16 @@ function prev() {
   if (datatables.currentPage > 1) {
     datatables.currentPage = datatables.currentPage - 1;
     filterData(
-      "/employee-sub-milestone",
+      "/employee-task",
       "&user_id=" +
         route.params.user_id +
+        "&search=" +
+        search.value +
         "&project_id =" +
         route.params.project_id +
         "&milestone_id =" +
+        route.params.milestone_id +
+        "&submilestone_id =" +
         route.params.id
     );
   }
@@ -289,12 +299,16 @@ function next() {
   if (datatables.currentPage != datatables.allPages) {
     datatables.currentPage = datatables.currentPage + 1;
     filterData(
-      "/employee-sub-milestone",
+      "/employee-task",
       "&user_id=" +
         route.params.user_id +
+        "&search=" +
+        search.value +
         "&project_id =" +
         route.params.project_id +
         "&milestone_id =" +
+        route.params.milestone_id +
+        "&submilestone_id =" +
         route.params.id
     );
   }
@@ -304,12 +318,16 @@ function next() {
 function currentPage(currentp: number) {
   datatables.currentPage = currentp;
   filterData(
-    "/employee-sub-milestone",
+    "/employee-task",
     "&user_id=" +
       route.params.user_id +
+      "&search=" +
+      search.value +
       "&project_id =" +
       route.params.project_id +
       "&milestone_id =" +
+      route.params.milestone_id +
+      "&submilestone_id =" +
       route.params.id
   );
 }

@@ -23,6 +23,14 @@ export const CoreModuleRoute = [
             /* webpackChunkName: "authentication" */ "./views/auth/PasswordChange.vue"
           ),
       },
+      {
+        path: "password-confirmation/:email",
+        name: "password-confirmation",
+        component: () =>
+          import(
+            /* webpackChunkName: "authentication" */ "./views/auth/ConfirmationPassword.vue"
+          ),
+      },
 
       {
         path: "profile-update",

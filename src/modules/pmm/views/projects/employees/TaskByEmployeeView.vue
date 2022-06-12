@@ -118,27 +118,15 @@
 
             <div class="col-md-4 mb_30">
               <label class="form-label"> Extend Date </label>
-              <input
-                type="date"
-                class="form-input"
-                v-model="filterState.extended_date"
-              />
+              <datepicker :value="filterState.extended_date"></datepicker>
             </div>
             <div class="col-md-4 mb_30">
               <label class="form-label"> Start Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model="filterState.start_date"
-              />
+              <datepicker :value="filterState.start_date"></datepicker>
             </div>
             <div class="col-md-4 mb_30">
               <label class="form-label"> End Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model="filterState.end_date"
-              />
+              <datepicker :value="filterState.end_date"></datepicker>
             </div>
           </div>
 
@@ -170,7 +158,7 @@ import Axios from "@/http-common";
 import TaskTable from "./TaskTable.vue";
 import { useDatatable } from "@/composables/datatables";
 import FilterModal from "../../../../core/shared/FilterModal.vue";
-
+import Datepicker from "vuejs3-datepicker";
 import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
 import TheSpinner from "../../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";

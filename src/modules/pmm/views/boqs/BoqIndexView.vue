@@ -540,19 +540,11 @@
             </div>
             <div class="col-md-4">
               <label class="form-label"> Created Date </label>
-              <input
-                type="date"
-                class="form-input"
-                v-model="filterState.created_date"
-              />
+              <datepicker :value="filterState.created_date"></datepicker>
             </div>
             <div class="col-md-4">
               <label class="form-label"> Updated Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model="filterState.updated_date"
-              />
+              <datepicker :value="filterState.updated_date"></datepicker>
             </div>
           </div>
 
@@ -600,6 +592,7 @@ import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import CreateModal from "../../../core/shared/CreateModal.vue";
 import EditModal from "../../../core/shared/EditModal.vue";
 import FilterModal from "../../../core/shared/FilterModal.vue";
+import Datepicker from "vuejs3-datepicker";
 import { useStore } from "vuex";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";

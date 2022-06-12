@@ -114,12 +114,7 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Date of Birth</label>
-              <input
-                type="date"
-                class="form-input"
-                placeholder="Date of Birth here"
-                v-model.lazy="formState.date_of_birth"
-              />
+              <datepicker :value="formState.date_of_birth"></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -166,12 +161,7 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Joinning Date</label>
-              <input
-                type="date"
-                class="form-input"
-                placeholder="Title here"
-                v-model.lazy="formState.joinning_date"
-              />
+              <datepicker :value="formState.joinning_date"></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -239,6 +229,7 @@ import DataLoadingSpinner from "@/modules/shared/DataLoadingSpinner.vue";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
 import SingleImageUploaderTwo from "@/modules/core/shared/SingleImageUploaderTwo.vue";
+import Datepicker from "vuejs3-datepicker";
 
 //create store
 const store = useStore();

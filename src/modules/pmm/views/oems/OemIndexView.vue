@@ -395,19 +395,11 @@
             </div>
             <div class="col-md-4">
               <label class="form-label"> Created Date </label>
-              <input
-                type="date"
-                class="form-input"
-                v-model="filterState.created_date"
-              />
+              <datepicker :value="filterState.created_date"></datepicker>
             </div>
             <div class="col-md-4">
               <label class="form-label"> Updated Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model="filterState.updated_date"
-              />
+              <datepicker :value="filterState.updated_date"></datepicker>
             </div>
           </div>
 
@@ -446,26 +438,28 @@
 
 <script setup lang="ts">
 import { onMounted, ref, reactive, computed, watch } from "vue";
-import Axios from "@/http-common";
-import OemTable from "./OemTable.vue";
-import swal from "sweetalert";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+import { useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
 import { useDatatable } from "@/composables/datatables";
-import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
+import { usePermission } from "@/composables/permissions";
+import toastr from "toastr";
+import swal from "sweetalert";
+import Axios from "@/http-common";
+import Datepicker from "vuejs3-datepicker";
+import Select2 from "vue3-select2-component";
+import OemTable from "./OemTable.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import CreateModal from "../../../core/shared/CreateModal.vue";
 import EditModal from "../../../core/shared/EditModal.vue";
 import FilterModal from "../../../core/shared/FilterModal.vue";
-import { useStore } from "vuex";
-import { useVuelidate } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
-import Select2 from "vue3-select2-component";
-import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
-import { useRoute } from "vue-router";
-import toastr from "toastr";
-import { usePermission } from "@/composables/permissions";
+import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
+import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
 
 const { getPermission } = usePermission();
+
 //get route information using route
 const route = useRoute();
 

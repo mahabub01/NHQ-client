@@ -165,27 +165,15 @@
 
               <div class="col-md-4 mb_30">
                 <label class="form-label"> Extend Date </label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model="filterState.extended_date"
-                />
+                <datepicker :value="filterState.extended_date"></datepicker>
               </div>
               <div class="col-md-4 mb_30">
                 <label class="form-label"> Start Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model="filterState.start_date"
-                />
+                <datepicker :value="filterState.start_date"></datepicker>
               </div>
               <div class="col-md-4 mb_30">
                 <label class="form-label"> End Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model="filterState.end_date"
-                />
+                <datepicker :value="filterState.end_date"></datepicker>
               </div>
             </div>
 
@@ -214,13 +202,15 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch, reactive } from "vue";
-import Axios from "@/http-common";
-import MilestoneTable from "./MilestoneTable.vue";
 import swal from "sweetalert";
+import Axios from "@/http-common";
+import Datepicker from "vuejs3-datepicker";
 import { useDatatable } from "@/composables/datatables";
-import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
-import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import MilestoneTable from "./MilestoneTable.vue";
 import FilterModal from "../../../core/shared/FilterModal.vue";
+import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import TablePagination from "@/modules/shared/pagination/TablePagination.vue";
+
 import { useStore } from "vuex";
 import { usePermission } from "@/composables/permissions";
 import { useRoute } from "vue-router";

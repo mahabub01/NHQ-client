@@ -159,31 +159,22 @@
               <!--start field-->
               <div class="form-row">
                 <label class="form-label">Start Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model.lazy="formState.start_date"
-                />
+                <datepicker
+                  v-model="formState.start_date"
+                  :value="formState.start_date"
+                ></datepicker>
               </div>
               <!--end field-->
               <!--start field-->
               <div class="form-row">
                 <label class="form-label">End Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model.lazy="formState.end_date"
-                />
+                <datepicker :value="formState.end_date"></datepicker>
               </div>
               <!--end field-->
               <!--start field-->
               <div class="form-row">
                 <label class="form-label">Extended Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model.lazy="formState.extended_date"
-                />
+                <datepicker :value="formState.extended_date"></datepicker>
               </div>
               <!--end field-->
               <!--start field-->
@@ -229,6 +220,7 @@ import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
+import Datepicker from "vuejs3-datepicker";
 
 //use for saving preloader
 let savingSpinner = ref(false);
@@ -420,6 +412,8 @@ async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
 
+  console.log(formState);
+
   if (!v$.value.$error) {
     savingSpinner.value = true;
     await Axios.put("/projects/projects/" + route.params.id, formState)
@@ -429,7 +423,7 @@ async function handleSubmit() {
           //Stop Saving Spinner
           savingSpinner.value = false;
           swal("Success Job!", "Updated record successfully!", "success");
-          router.push("/pmm/projects");
+          // router.push("/pmm/projects");
         } else {
           savingSpinner.value = false;
           //Show Error message

@@ -236,27 +236,15 @@
 
             <div class="col-md-4 mb_30">
               <label class="form-label"> Extend Date </label>
-              <input
-                type="date"
-                class="form-input"
-                v-model="filterState.extended_date"
-              />
+              <datepicker :value="filterState.extended_date"></datepicker>
             </div>
             <div class="col-md-4 mb_30">
               <label class="form-label"> Start Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model="filterState.start_date"
-              />
+              <datepicker :value="filterState.start_date"></datepicker>
             </div>
             <div class="col-md-4 mb_30">
               <label class="form-label"> End Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model="filterState.end_date"
-              />
+              <datepicker :value="filterState.end_date"></datepicker>
             </div>
           </div>
 
@@ -298,6 +286,7 @@ import FilterModal from "../../../core/shared/FilterModal.vue";
 import Select2 from "vue3-select2-component";
 import { usePermission } from "@/composables/permissions";
 import toastr from "toastr";
+import Datepicker from "vuejs3-datepicker";
 
 const { getPermission } = usePermission();
 //create store

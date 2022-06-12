@@ -104,11 +104,7 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Date of Birth</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model.lazy="formState.date_of_birth"
-              />
+              <datepicker :value="formState.date_of_birth"></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -156,11 +152,7 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Joinning Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model.lazy="formState.joinning_date"
-              />
+              <datepicker :value="formState.joinning_date"></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -208,6 +200,7 @@ import Select2 from "vue3-select2-component";
 import { useRouter } from "vue-router";
 import toastr from "toastr";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import Datepicker from "vuejs3-datepicker";
 
 const router = useRouter();
 let savingSpinner = ref(false);

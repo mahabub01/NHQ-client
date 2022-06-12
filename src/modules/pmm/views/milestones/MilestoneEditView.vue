@@ -64,11 +64,7 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Start Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model.lazy="formState.start_date"
-              />
+              <datepicker :value="formState.start_date"></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -95,11 +91,7 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">End Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model.lazy="formState.end_date"
-              />
+              <datepicker :value="formState.end_date"></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -116,11 +108,7 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Extended Date</label>
-              <input
-                type="date"
-                class="form-input"
-                v-model.lazy="formState.extended_date"
-              />
+              <datepicker :value="formState.extended_date"></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -253,16 +241,17 @@
 import { reactive, ref, defineEmits, onMounted, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import Axios from "@/http-common";
-import swal from "sweetalert";
 import { useRoute, useRouter } from "vue-router";
-import Select2 from "vue3-select2-component";
-import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
+import { useStore } from "vuex";
+import Axios from "@/http-common";
 import toastr from "toastr";
+import swal from "sweetalert";
+import Datepicker from "vuejs3-datepicker";
+import Select2 from "vue3-select2-component";
+import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
-import { useStore } from "vuex";
-import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
+import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
 
 const route = useRoute();
 const router = useRouter();

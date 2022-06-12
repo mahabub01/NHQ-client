@@ -137,33 +137,21 @@
               <!--start field -->
               <div class="form-row">
                 <label class="form-label">Start Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model.lazy="formState.start_date"
-                />
+                <datepicker :value="formState.start_date"></datepicker>
               </div>
               <!--end field -->
 
               <!--start field -->
               <div class="form-row">
                 <label class="form-label">End Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model.lazy="formState.end_date"
-                />
+                <datepicker :value="formState.end_date"></datepicker>
               </div>
               <!--end field -->
 
               <!--start field -->
               <div class="form-row">
                 <label class="form-label">Extended Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model.lazy="formState.extended_date"
-                />
+                <datepicker :value="formState.extended_date"></datepicker>
               </div>
               <!--end field -->
 
@@ -242,6 +230,7 @@ import toastr from "toastr";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import Datepicker from "vuejs3-datepicker";
 
 const store = useStore();
 const router = useRouter();

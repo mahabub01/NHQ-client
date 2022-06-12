@@ -1506,3 +1506,40 @@ a:hover {
 .mb_30 {
   margin-bottom: 30px;
 }
+
+.vuejs3-datepicker__value {
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  cursor: pointer;
+  width: 100% !important;
+  background-color: #edf0f4;
+  border: none;
+  padding: 8px 10px;
+  height: 34px;
+}
+
+.vuejs3-datepicker {
+  position: relative;
+  display: block !important;
+  border: none !important;
+}
+
+.vuejs3-datepicker__value {
+  min-width: 200px;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  border-radius: 5px;
+  padding: 10px 15px !important;
+  cursor: pointer;
+  border: none !important;
+}
+
+.vuejs3-datepicker__calendar {
+  z-index: 3000 !important;
+}
+
+.vuejs3-datepicker__content {
+  font-size: 12px !important;
+}

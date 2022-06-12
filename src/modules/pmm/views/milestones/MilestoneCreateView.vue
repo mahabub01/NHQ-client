@@ -69,11 +69,12 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Start Date</label>
-              <input
+              <datepicker :value="formState.start_date"></datepicker>
+              <!-- <input
                 type="date"
                 class="form-input"
                 v-model.lazy="formState.start_date"
-              />
+              /> -->
             </div>
           </div>
           <!--end row -->
@@ -100,11 +101,12 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">End Date</label>
-              <input
+              <!-- <input
                 type="date"
                 class="form-input"
                 v-model.lazy="formState.end_date"
-              />
+              /> -->
+              <datepicker :value="formState.end_date"></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -122,11 +124,12 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Extended Date</label>
-              <input
+              <!-- <input
                 type="date"
                 class="form-input"
                 v-model.lazy="formState.extended_date"
-              />
+              /> -->
+              <datepicker :value="formState.extended_date"></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -195,12 +198,20 @@
               <!--end row -->
 
               <div class="form-row">
-                <label class="form-label">Duration</label>
+                <label class="form-label"
+                  >Duration<span style="color: silver"
+                    >( 0w 0d 0h 0m )</span
+                  ></label
+                >
                 <input
                   type="text"
                   class="form-input"
                   v-model.lazy="formState.duration"
                 />
+                <p class="error-mgs" v-if="duration_error != ''">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ duration_error }}
+                </p>
               </div>
 
               <label class="form-label">Description</label>
@@ -259,7 +270,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, watchEffect } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";
@@ -269,14 +280,28 @@ import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUpl
 import toastr from "toastr";
 import { useRouter, useRoute } from "vue-router";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
-import { useStore } from "vuex";
 import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
+import { useHelper } from "@/composables/helper";
+import { useMilestone } from "../../composable/useMilestone";
+import Datepicker from "vuejs3-datepicker";
+
+const { compareDate } = useHelper();
+const {
+  assign_employees,
+  project_names,
+  categories,
+  prioritySelectable,
+  taskStatusSelectable,
+  formState,
+  getPriorities,
+  getAssignEmployees,
+  getCategories,
+  getProjectNames,
+} = useMilestone();
 
 const router = useRouter();
 const route = useRoute();
-
-const store = useStore();
 
 const loadingSpinner = ref(false);
 
@@ -294,37 +319,6 @@ function autoPoint(event: any) {
 const max_ele = ref(100);
 const max_ele_error = ref("");
 
-//use for saving preloader
-const user_id = ref(localStorage.getItem("user_id"));
-const flag = ref(localStorage.getItem("flag"));
-
-const formState = reactive({
-  project_name: "",
-  start_date: "",
-  milestone_name: "",
-  end_date: "",
-  assign_employee: "",
-  extended_date: "",
-  follow_up: "",
-  points: 0,
-  category: "",
-  file_name: "",
-  description: "",
-  duration: "",
-  token: store.state.currentUser.token,
-  user_id: String(user_id.value),
-  is_auto_point: "2", //default autometic created point
-  priority_id: "",
-  status: "1",
-});
-
-const taskStatusSelectable = reactive([
-  { id: "1", text: "To Do" },
-  { id: "3", text: "In Progress" },
-  { id: "4", text: "Dependency" },
-  { id: "2", text: "Completed" },
-]);
-
 const rules: any = {
   project_name: { required },
   milestone_name: { required },
@@ -334,18 +328,6 @@ const rules: any = {
 const setDescription = (value: any) => {
   formState.description = value;
 };
-
-//employee list for assain employee Select
-const assign_employees = ref([]);
-
-//categories list for Category Select
-const project_names = ref([]);
-
-//categories list for Category Select
-const categories = ref([]);
-
-//priority List
-const prioritySelectable = ref([]);
 
 //Load Data form computed onMounted
 onMounted(() => {
@@ -359,9 +341,34 @@ onMounted(() => {
   }
 });
 
+const stopWatchEffect = watchEffect(() => {
+  if (project_names.value.length != 0) {
+    if (route.params.project_id != "") {
+      let loadingProject = project_names.value.filter(
+        (item) => item.id == route.params.project_id
+      );
+
+      formState.start_date = loadingProject[0].start_date;
+      formState.end_date = loadingProject[0].end_date;
+      project_exits_dates.start_date = loadingProject[0].start_date;
+      project_exits_dates.end_date = loadingProject[0].end_date;
+      stopWatchEffect();
+    }
+  }
+});
+
+const project_exits_dates = reactive({
+  start_date: "",
+  end_date: "",
+});
+
 //changing weighttage by project Id
-function projectChangeEvent({ id, text }) {
+function projectChangeEvent({ id, text, start_date, end_date }) {
   getWeigttageSum(id);
+  formState.start_date = start_date;
+  formState.end_date = end_date;
+  project_exits_dates.start_date = start_date;
+  project_exits_dates.end_date = end_date;
 }
 
 async function getWeigttageSum(project_id: string) {
@@ -396,71 +403,14 @@ async function getWeigttageSum(project_id: string) {
     });
 }
 
-//get Priorities for Selectable
-async function getPriorities() {
-  await Axios.get("/priority-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        prioritySelectable.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-async function getProjectNames() {
-  await Axios.get(
-    "/project-selectable?flag=" + flag.value + "&user_id=" + user_id.value
-  )
-    .then((response) => {
-      if (response.data.code === 200) {
-        project_names.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-async function getCategories() {
-  await Axios.get("/milestone-categories-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        categories.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-async function getAssignEmployees() {
-  await Axios.get("/employees-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        assign_employees.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
+const duration_error = ref("");
 const v$ = useVuelidate(rules, formState);
 
 async function handleSubmit() {
   v$.value.$validate();
   v$.value.$touch();
 
+  //Point validation
   if (formState.points > max_ele.value) {
     max_ele_error.value = "It's not posible. Your point is over total point.";
     return false;
@@ -471,11 +421,41 @@ async function handleSubmit() {
     max_ele_error.value = "";
   }
 
+  //Validation for Duration
+  if (formState.duration != "") {
+    let duration_keyword_validation = ["w", "d", "h", "m"];
+    let ex = formState.duration.split(" ");
+    let duration_vl_error = 0;
+    ex.forEach((item) => {
+      let last_character = item.charAt(item.length - 1);
+      if (!duration_keyword_validation.includes(last_character)) {
+        duration_vl_error++;
+        duration_error.value =
+          "Duration insert format is not valid. Insert format example: 0w 0d 0h 0m";
+      }
+    });
+    if (duration_vl_error != 0) {
+      return false;
+    }
+  }
+
+  //Date validation
+  if (
+    compareDate(
+      { start_date: formState.start_date, end_date: formState.end_date },
+      project_exits_dates
+    )
+  ) {
+    toastr.warning(
+      "Date validation error. Please check start date, end date and enter valid data."
+    );
+    return false;
+  }
+
   if (!v$.value.$error) {
     await Axios.post("/milestones", formState)
       .then((response) => {
         if (response.data.code === 200) {
-          reset();
           swal("Success Job!", "Created record successfully!", "success");
           if (route.params.project_id != "") {
             router.push("/pmm/milestones/" + route.params.project_id);
@@ -490,20 +470,6 @@ async function handleSubmit() {
         console.log("problem Here" + error);
       });
   }
-}
-
-//reset all property
-function reset() {
-  formState.project_name = "";
-  formState.start_date = "";
-  formState.milestone_name = "";
-  formState.end_date = "";
-  formState.assign_employee = "";
-  formState.extended_date = "";
-  formState.points = 0;
-  formState.file_name = "";
-  formState.description = "";
-  v$.value.$reset();
 }
 </script>
 

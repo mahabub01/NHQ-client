@@ -58,20 +58,12 @@
                 <label class="form-label"
                   >Category Name<span class="mandatory">*</span></label
                 >
-                <Select2
-                  v-model="v$.category_id.$model"
-                  :options="categoryList"
+
+                <Select2ServerSide
+                  v-model.lazy="v$.category_id.$model"
                   :settings="{ placeholder: 'Choose' }"
                   :class="{ isInvalid: v$.category_id.$error }"
                 />
-                <p
-                  class="error-mgs"
-                  v-for="(error, index) in v$.category_id.$errors"
-                  :key="index"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ error.$message }}
-                </p>
               </div>
               <!--end field-->
 
@@ -153,31 +145,19 @@
               <!--start field-->
               <div class="form-row">
                 <label class="form-label">Start Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model.lazy="formState.start_date"
-                />
+                <datepicker :value="formState.start_date"></datepicker>
               </div>
               <!--end field-->
               <!--start field-->
               <div class="form-row">
                 <label class="form-label">End Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model.lazy="formState.end_date"
-                />
+                <datepicker :value="formState.end_date"></datepicker>
               </div>
               <!--end field-->
               <!--start field-->
               <div class="form-row">
                 <label class="form-label">Extended Date</label>
-                <input
-                  type="date"
-                  class="form-input"
-                  v-model.lazy="formState.extended_date"
-                />
+                <datepicker :value="formState.extended_date"></datepicker>
               </div>
               <!--end field-->
               <!--start field-->
@@ -218,6 +198,8 @@ import toastr from "toastr";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import Datepicker from "vuejs3-datepicker";
+import Select2ServerSide from "@/modules/shared/Select2ServerSide.vue";
 
 //use for saving preloader
 let savingSpinner = ref(false);
@@ -287,7 +269,7 @@ onMounted(() => {
   getLeadList();
   getClientList();
   getTagList();
-  getCategoryList();
+  //getCategoryList();
 });
 
 //get Selectable TeamList

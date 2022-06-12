@@ -109,11 +109,12 @@ export default {
           },
           method: "get",
           dataType: "json",
-          delay: 250,
+          delay: 550,
           data: function (params) {
             return {
               q: params.term, // search term
               page: params.page,
+              type: "public",
             };
           },
           processResults: function (data, params) {
@@ -134,7 +135,43 @@ export default {
         escapeMarkup: function (markup) {
           return markup;
         },
-        minimumInputLength: 1,
+        minimumInputLength: 2,
+        matcher: function matchStart(params, data) {
+          console.log("say Hello here......");
+          // If there are no search terms, return all of the data
+          if ($.trim(params.term) === "") {
+            return data;
+          }
+
+          // Skip if there is no 'children' property
+          if (typeof data.children === "undefined") {
+            return null;
+          }
+
+          // `data.children` contains the actual options that we are matching against
+          var filteredChildren = [];
+          $.each(data.children, function (idx, child) {
+            if (
+              child.text.toUpperCase().indexOf(params.term.toUpperCase()) == 0
+            ) {
+              filteredChildren.push(child);
+            }
+          });
+
+          // If we matched any of the timezone group's children, then set the matched children on the group
+          // and return the group object
+          if (filteredChildren.length) {
+            var modifiedData = $.extend({}, data, true);
+            modifiedData.children = filteredChildren;
+
+            // You can return modified objects from here
+            // This includes matching the `children` how you want in nested data sets
+            return modifiedData;
+          }
+
+          // Return `null` if the term should not be displayed
+          return null;
+        },
       })
       .on("select2:select select2:unselect", (ev) => {
         this.$emit("update:modelValue", this.select2.val());

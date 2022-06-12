@@ -58,12 +58,19 @@
                 <label class="form-label"
                   >Category Name<span class="mandatory">*</span></label
                 >
-
-                <Select2ServerSide
-                  v-model.lazy="v$.category_id.$model"
+                <Select2
+                  v-model="v$.category_id.$model"
+                  :options="categoryList"
                   :settings="{ placeholder: 'Choose' }"
-                  :class="{ isInvalid: v$.category_id.$error }"
                 />
+                <p
+                  class="error-mgs"
+                  v-for="(error, index) in v$.category_id.$errors"
+                  :key="index"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ error.$message }}
+                </p>
               </div>
               <!--end field-->
 
@@ -145,19 +152,30 @@
               <!--start field-->
               <div class="form-row">
                 <label class="form-label">Start Date</label>
-                <datepicker :value="formState.start_date"></datepicker>
+                <datepicker
+                  @selected="startDateHandler"
+                  format="dd-MM-yyyy"
+                ></datepicker>
               </div>
               <!--end field-->
               <!--start field-->
               <div class="form-row">
                 <label class="form-label">End Date</label>
-                <datepicker :value="formState.end_date"></datepicker>
+                <datepicker
+                  v-model="formState.end_date"
+                  @selected="endDateHandler"
+                  format="dd-MM-yyyy"
+                ></datepicker>
               </div>
               <!--end field-->
               <!--start field-->
               <div class="form-row">
                 <label class="form-label">Extended Date</label>
-                <datepicker :value="formState.extended_date"></datepicker>
+                <datepicker
+                  v-model="formState.extended_date"
+                  @selected="extendedDateHandler"
+                  format="dd-MM-yyyy"
+                ></datepicker>
               </div>
               <!--end field-->
               <!--start field-->
@@ -186,7 +204,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, defineEmits, onMounted } from "vue";
+import { ref, defineEmits, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Axios from "@/http-common";
@@ -196,37 +214,34 @@ import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUpl
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import toastr from "toastr";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import Datepicker from "vuejs3-datepicker";
-import Select2ServerSide from "@/modules/shared/Select2ServerSide.vue";
+import { useProject } from "../../composable/useProject";
 
 //use for saving preloader
 let savingSpinner = ref(false);
 
 const router = useRouter();
 
-//create store
-const store = useStore();
-const user_id = ref(localStorage.getItem("user_id"));
-
-const formState = reactive({
-  name: "",
-  category_id: "",
-  team_id: "",
-  lead_id: "",
-  start_date: "",
-  end_date: "",
-  extended_date: "",
-  client_id: "",
-  tags: "",
-  description: "",
-  status: "",
-  token: store.state.currentUser.token,
-  onboarding_point: 30,
-  operation_point: 70,
-  created_by: user_id.value,
-});
+//use project libary
+const {
+  formState,
+  StatusList,
+  categoryList,
+  teamList,
+  leadList,
+  clientList,
+  tagList,
+  getTeams,
+  getLeadList,
+  getClientList,
+  getTagList,
+  getCategoryList,
+  startDateHandler,
+  endDateHandler,
+  extendedDateHandler,
+  resetForm,
+} = useProject();
 
 const rules: any = {
   name: { required },
@@ -240,112 +255,15 @@ const setDescription = (value: any) => {
   formState.description = value;
 };
 
-//Status List for Status Select
-const StatusList = reactive([
-  { id: "1", text: "To Do" },
-  { id: "3", text: "In Progress" },
-  { id: "4", text: "Dependency" },
-  { id: "2", text: "Completed" },
-]);
-
-//Category list for Category Select
-const categoryList = ref([]);
-
-//team list for Team Select
-const teamList = ref([]);
-
-//lead list for lead Select
-const leadList = ref([]);
-
-//client list for client Select
-const clientList = ref([]);
-
-//team list for Team Select
-const tagList = ref([]);
-
 //Load Data form computed onMounted
 onMounted(() => {
   getTeams();
   getLeadList();
   getClientList();
   getTagList();
-  //getCategoryList();
+  getCategoryList();
 });
 
-//get Selectable TeamList
-async function getTeams() {
-  await Axios.get("teams-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        teamList.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-//get Selectable leadList
-async function getLeadList() {
-  await Axios.get("teamlead-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        leadList.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-//get Selectable leadList
-async function getClientList() {
-  await Axios.get("clients-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        clientList.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-//get Selectable TagList
-async function getTagList() {
-  await Axios.get("tags-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        tagList.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-//get Selectable CategoryList
-async function getCategoryList() {
-  await Axios.get("categories-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        categoryList.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
 const v$ = useVuelidate(rules, formState);
 
 async function handleSubmit() {
@@ -374,24 +292,6 @@ async function handleSubmit() {
         console.log("problem Here" + error);
       });
   }
-}
-
-//reset all property
-function resetForm() {
-  formState.name = "";
-  formState.category_id = "";
-  formState.team_id = "";
-  formState.lead_id = "";
-  formState.start_date = "";
-  formState.end_date = "";
-  formState.extended_date = "";
-  formState.client_id = "";
-  formState.tags = "";
-  formState.description = "";
-  formState.status = "";
-  formState.operation_point = 70;
-  formState.onboarding_point = 30;
-  v$.value.$reset();
 }
 </script>
 

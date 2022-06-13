@@ -14,6 +14,10 @@ export function useMilestone() {
   //priority List
   const prioritySelectable = ref([]);
 
+  const old_weightage = ref(0);
+  const max_ele_error = ref("");
+  const is_milestone_point_auto = ref("");
+
   const taskStatusSelectable = reactive([
     { id: "1", text: "To Do" },
     { id: "3", text: "In Progress" },
@@ -110,18 +114,52 @@ export function useMilestone() {
       });
   }
 
+  //reset all property
+  function resetForm() {
+    formState.project_name = "";
+    formState.milestone_name = "";
+    formState.assign_employee = "";
+    formState.points = 0;
+    formState.follow_up = "";
+    formState.category = "";
+    formState.start_date = "";
+    formState.end_date = "";
+    formState.extended_date = "";
+    formState.file_name = "";
+    formState.description = "";
+  }
+
+  function startDateHandler(value: any) {
+    formState.start_date = new Date(value).toISOString().slice(0, 10);
+  }
+
+  function endDateHandler(value: any) {
+    formState.end_date = new Date(value).toISOString().slice(0, 10);
+  }
+
+  function extendedDateHandler(value: any) {
+    formState.extended_date = new Date(value).toISOString().slice(0, 10);
+  }
+
   return {
     assign_employees,
     project_names,
     categories,
     prioritySelectable,
     taskStatusSelectable,
+    old_weightage,
+    max_ele_error,
+    is_milestone_point_auto,
     user_id,
     flag,
-    getPriorities,
-    getAssignEmployees,
     getCategories,
+    getAssignEmployees,
     getProjectNames,
+    getPriorities,
     formState,
+    resetForm,
+    startDateHandler,
+    endDateHandler,
+    extendedDateHandler,
   };
 }

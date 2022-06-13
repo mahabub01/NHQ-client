@@ -185,14 +185,22 @@
               <!--start field -->
               <div class="form-row">
                 <label class="form-label">Start Date</label>
-                <datepicker :value="formState.start_date"></datepicker>
+                <datepicker
+                  @selected="startDateHandler"
+                  format="dd-MM-yyyy"
+                  :value="formState.start_date"
+                ></datepicker>
               </div>
               <!--end field -->
 
               <!--start field -->
               <div class="form-row">
                 <label class="form-label">End Date</label>
-                <datepicker :value="formState.end_date"></datepicker>
+                <datepicker
+                  @selected="endDateHandler"
+                  format="dd-MM-yyyy"
+                  :value="formState.end_date"
+                ></datepicker>
               </div>
               <!--end field -->
 
@@ -200,6 +208,11 @@
               <div class="form-row">
                 <label class="form-label">Extended Date</label>
                 <datepicker :value="formState.extended_date"></datepicker>
+                <datepicker
+                  @selected="extendedDateHandler"
+                  format="dd-MM-yyyy"
+                  :value="formState.extended_date"
+                ></datepicker>
               </div>
               <!--end field -->
 
@@ -311,163 +324,44 @@ import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUpl
 import toastr from "toastr";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import { useRouter, useRoute } from "vue-router";
-import { useStore } from "vuex";
 import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
 import Datepicker from "vuejs3-datepicker";
+import { useSubmilestone } from "../../composable/useSubmilestone";
 
-const store = useStore();
 const router = useRouter();
 const route = useRoute();
 
-const user_id = ref(localStorage.getItem("user_id"));
-const flag = ref(localStorage.getItem("flag"));
-
 const loadingSpinner = ref(false);
-
-//for show max element value
-const max_ele_error = ref("");
-const max_ele = ref(100); // use for set max value
-
-//use for point
-const is_view_point_show = ref("");
-function autoPoint(event: any) {
-  if (event.target.checked) {
-    formState.is_auto_point = "2";
-  } else {
-    formState.is_auto_point = "3";
-  }
-}
-
-const formState = reactive({
-  project_id: "",
-  submilestone_name: "",
-  milestone_id: "",
-  team_member_id: "",
-  status: "",
-  followup_id: "",
-  submilestone_category_id: "",
-  description: "",
-  start_date: "",
-  end_date: "",
-  extended_date: "",
-  priority_id: "",
-  duration: "",
-  token: store.state.currentUser.token,
-  points: 0,
-  is_auto_point: "2",
-  user_id: user_id.value,
-});
-
-const rules: any = {
-  project_id: { required },
-  submilestone_name: { required },
-  milestone_id: { required },
-};
-
-const setDescription = (value: any) => {
-  formState.description = value;
-};
-
-//projects selectable
-const projectsSelectable = ref([]);
-const milestoneSelectable = ref([]);
-const teamSelectable = ref([]); //Team Members
-const followupSelectable = ref([]);
-const taskCategorySelectable = ref([]);
-const prioritySelectable = ref([]);
-const taskStatusSelectable = reactive([
-  { id: "1", text: "To Do" },
-  { id: "3", text: "In Progress" },
-  { id: "4", text: "Dependency" },
-  { id: "2", text: "Completed" },
-]);
-
-//use for saving preloader
 let savingSpinner = ref(false);
+//for show max element value
 
-//Load Data form computed onMounted
-onMounted(() => {
-  getProjects();
-  // getMilestones();
-  getCategories();
-  getPriorities();
-  getTeamMembers();
-  if (route.params.milestone_id != "") {
-    formState.milestone_id = String(route.params.milestone_id);
-    getMilestonesById(route.params.milestone_id);
-    getWeigttageSum(String(route.params.milestone_id));
-  }
-});
-
-//use fun for get milestone using by milestone id
-async function getMilestonesById(milestone_id: any) {
-  loadingSpinner.value = true;
-  await Axios.get("/milestones-selectable-by-mid/" + milestone_id)
-    .then((response) => {
-      loadingSpinner.value = false;
-      if (response.data.code === 200) {
-        milestoneSelectable.value = response.data.data;
-        formState.project_id = String(response.data.data[0].project_id);
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-//get projects for Selectable
-async function getProjects() {
-  await Axios.get(
-    "/project-selectable?user_id=" + user_id.value + "&flag=" + flag.value
-  )
-    .then((response) => {
-      console.log(response);
-      if (response.data.code === 200) {
-        projectsSelectable.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-//load milestone by project
-function projectChangeEvent({ id, text }) {
-  getMilestones(id);
-}
-
-//get milestones for Selectable
-async function getMilestones(project_id: any) {
-  loadingSpinner.value = true;
-  await Axios.get(
-    "/milestones-selectable?user_id=" +
-      user_id.value +
-      "&flag=" +
-      flag.value +
-      "&project_id=" +
-      project_id
-  )
-    .then((response) => {
-      loadingSpinner.value = false;
-      if (response.data.code === 200) {
-        milestoneSelectable.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-//changing weighttage by project Id
-function milestoneChangeEvent({ id, text }) {
-  getWeigttageSum(id);
-}
+const {
+  taskStatusSelectable,
+  max_ele,
+  max_ele_error,
+  is_view_point_show,
+  user_id,
+  flag,
+  getCategories,
+  getProjects,
+  getPriorities,
+  formState,
+  resetForm,
+  startDateHandler,
+  endDateHandler,
+  extendedDateHandler,
+  projectsSelectable,
+  milestoneSelectable,
+  teamSelectable,
+  followupSelectable,
+  taskCategorySelectable,
+  prioritySelectable,
+  getMilestonesById,
+  getTeamMembers,
+  duration_error,
+  autoPoint,
+  getMilestones,
+} = useSubmilestone();
 
 async function getWeigttageSum(milestone_id: string) {
   loadingSpinner.value = true;
@@ -492,7 +386,6 @@ async function getWeigttageSum(milestone_id: string) {
           max_ele.value = 100 - response.data.data.weightage;
         }
         // formState.points = response.data.data.weightage;
-        // is_view_point_show.value = response.data.data.is_milestone_point_auto;
       } else {
         toastr.error(response.data.message);
       }
@@ -502,55 +395,40 @@ async function getWeigttageSum(milestone_id: string) {
     });
 }
 
-//get categories for Selectable
-async function getCategories() {
-  await Axios.get("/submilestone-categories-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        taskCategorySelectable.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
+//load milestone by project
+function projectChangeEvent({ id, text }) {
+  getMilestones(id);
 }
 
-//get Priorities for Selectable
-async function getPriorities() {
-  await Axios.get("/priority-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        prioritySelectable.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
+//changing weighttage by project Id
+function milestoneChangeEvent({ id, text }) {
+  getWeigttageSum(id);
 }
+const rules: any = {
+  project_id: { required },
+  submilestone_name: { required },
+  milestone_id: { required },
+};
 
-//get Priorities for Selectable
-async function getTeamMembers() {
-  await Axios.get("/users-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        teamSelectable.value = response.data.data;
-        followupSelectable.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
+const setDescription = (value: any) => {
+  formState.description = value;
+};
+
+//Load Data form computed onMounted
+onMounted(() => {
+  getProjects();
+  // getMilestones();
+  getCategories();
+  getPriorities();
+  getTeamMembers();
+  if (route.params.milestone_id != "") {
+    formState.milestone_id = String(route.params.milestone_id);
+    getMilestonesById(route.params.milestone_id);
+    getWeigttageSum(String(route.params.milestone_id));
+  }
+});
 
 const v$ = useVuelidate(rules, formState);
-
-const duration_error = ref("");
 
 async function handleSubmit() {
   v$.value.$validate();
@@ -613,13 +491,6 @@ async function handleSubmit() {
         console.log("problem Here" + error);
       });
   }
-}
-
-//reset all property
-function resetForm() {
-  // state.title = "";
-  // state.description = "";
-  // v$.value.$reset();
 }
 </script>
 

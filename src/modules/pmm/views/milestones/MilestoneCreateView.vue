@@ -69,7 +69,11 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Start Date</label>
-              <datepicker :value="formState.start_date"></datepicker>
+              <datepicker
+                @selected="startDateHandler"
+                format="dd-MM-yyyy"
+                :value="formState.start_date"
+              ></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -96,7 +100,11 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">End Date</label>
-              <datepicker :value="formState.end_date"></datepicker>
+              <datepicker
+                @selected="endDateHandler"
+                format="dd-MM-yyyy"
+                :value="formState.end_date"
+              ></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -114,8 +122,11 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Extended Date</label>
-
-              <datepicker :value="formState.extended_date"></datepicker>
+              <datepicker
+                @selected="extendedDateHandler"
+                format="dd-MM-yyyy"
+                :value="formState.extended_date"
+              ></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -273,17 +284,27 @@ import { useMilestone } from "../../composable/useMilestone";
 import Datepicker from "vuejs3-datepicker";
 
 const { compareDate } = useHelper();
+
 const {
   assign_employees,
   project_names,
   categories,
   prioritySelectable,
   taskStatusSelectable,
-  formState,
-  getPriorities,
-  getAssignEmployees,
+  old_weightage,
+  max_ele_error,
+  is_milestone_point_auto,
+  user_id,
+  flag,
   getCategories,
+  getAssignEmployees,
   getProjectNames,
+  getPriorities,
+  formState,
+  resetForm,
+  startDateHandler,
+  endDateHandler,
+  extendedDateHandler,
 } = useMilestone();
 
 const router = useRouter();
@@ -303,7 +324,6 @@ function autoPoint(event: any) {
 
 //max type able value
 const max_ele = ref(100);
-const max_ele_error = ref("");
 
 const rules: any = {
   project_name: { required },

@@ -64,7 +64,12 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Start Date</label>
-              <datepicker :value="formState.start_date"></datepicker>
+              <!-- <datepicker :value="formState.start_date"></datepicker> -->
+              <datepicker
+                @selected="startDateHandler"
+                format="dd-MM-yyyy"
+                :value="formState.start_date"
+              ></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -91,7 +96,12 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">End Date</label>
-              <datepicker :value="formState.end_date"></datepicker>
+              <!-- <datepicker :value="formState.end_date"></datepicker> -->
+              <datepicker
+                @selected="endDateHandler"
+                format="dd-MM-yyyy"
+                :value="formState.end_date"
+              ></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -108,7 +118,12 @@
             </div>
             <div class="col-md-4 offset-md-2">
               <label class="form-label">Extended Date</label>
-              <datepicker :value="formState.extended_date"></datepicker>
+              <!-- <datepicker :value="formState.extended_date"></datepicker> -->
+              <datepicker
+                @selected="extendedDateHandler"
+                format="dd-MM-yyyy"
+                :value="formState.extended_date"
+              ></datepicker>
             </div>
           </div>
           <!--end row -->
@@ -252,155 +267,69 @@ import MultiImageUploader from "@/modules/core/shared/MultiImageUploader.vue";
 import TheCKEditor from "../../../core/shared/TheCKEditor.vue";
 import TheSpinner from "../../../shared/spinners/TheSpinner.vue";
 import SingleFileUploader from "../../../core/shared/file-uploader/SingleFileUploader.vue";
-
-const route = useRoute();
-const router = useRouter();
-
-const store = useStore();
+import { useMilestone } from "../../composable/useMilestone";
 
 //Data Loading Spinner
 let loadingSpinner = ref(false);
 
-//categories list for Category Select
-const project_names = ref([]);
+//use route
+const route = useRoute();
+const router = useRouter();
 
-//categories list for Category Select
-const categories = ref([]);
-
-//employee list for assain employee Select
-const assign_employees = ref([]);
-
-//set CKEditor Data
-const setDescription = (value: any) => {
-  formState.description = value;
-};
-
-//Load Data form computed onMounted
-onMounted(() => {
-  getAssignEmployees();
-  getCategories();
-  getProjectNames();
-});
-
-//get Files
-const getFiles = ref(null);
-
-const user_id = ref(localStorage.getItem("user_id"));
-const token = ref(localStorage.getItem("token"));
-const flag = ref(localStorage.getItem("flag"));
+//create store
+const store = useStore();
 
 // Load CkEditor Data
 const loadCKEditor = computed(() => {
   return store.state.modalModule.loadCKEditor;
 });
 
-async function getProjectNames() {
-  await Axios.get(
-    "/project-selectable?flag=" + flag.value + "&user_id=" + user_id.value
-  )
-    .then((response) => {
-      if (response.data.code === 200) {
-        project_names.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
+//set CKEditor Data
+const setDescription = (value: any) => {
+  formState.description = value;
+};
 
-async function getCategories() {
-  await Axios.get("/milestone-categories-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        categories.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-async function getAssignEmployees() {
-  await Axios.get("/employees-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        assign_employees.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
-const formState = reactive({
-  project_name: "",
-  milestone_name: "",
-  assign_employee: "",
-  points: 0,
-  follow_up: "",
-  category: "",
-  start_date: "",
-  end_date: "",
-  extended_date: "",
-  file_name: "",
-  description: "",
-  token: token.value,
-  duration: "",
-  user_id: user_id.value,
-  is_auto_point: "",
-  flag: flag.value,
-  priority_id: "",
-  status: "1",
-});
-
-//priority List
-const prioritySelectable = ref([]);
-
-const taskStatusSelectable = reactive([
-  { id: "1", text: "To Do" },
-  { id: "3", text: "In Progress" },
-  { id: "4", text: "Dependency" },
-  { id: "2", text: "Completed" },
-]);
+const {
+  assign_employees,
+  project_names,
+  categories,
+  prioritySelectable,
+  taskStatusSelectable,
+  old_weightage,
+  max_ele_error,
+  is_milestone_point_auto,
+  user_id,
+  flag,
+  getCategories,
+  getAssignEmployees,
+  getProjectNames,
+  getPriorities,
+  formState,
+  resetForm,
+  startDateHandler,
+  endDateHandler,
+  extendedDateHandler,
+} = useMilestone();
 
 const rules: any = {
   project_name: { required },
   milestone_name: { required },
 };
 
+const v$ = useVuelidate(rules, formState);
 const emit = defineEmits(["select"]);
 
-const v$ = useVuelidate(rules, formState);
-
-const old_weightage = ref(0);
-const max_ele_error = ref("");
-const is_milestone_point_auto = ref("");
-
-//get Priorities for Selectable
-async function getPriorities() {
-  await Axios.get("/priority-selectable")
-    .then((response) => {
-      if (response.data.code === 200) {
-        prioritySelectable.value = response.data.data;
-      } else {
-        toastr.error(response.data.message);
-      }
-    })
-    .catch((error) => {
-      console.log("problem Here" + error);
-    });
-}
-
+//Load Data form computed onMounted
 onMounted(() => {
+  getAssignEmployees();
+  getCategories();
+  getProjectNames();
   getPriorities();
   loadEditableData();
 });
+
+//get Files
+const getFiles = ref(null);
 
 async function loadEditableData() {
   loadingSpinner.value = true;
@@ -452,7 +381,7 @@ async function handleSubmit() {
     await Axios.put("milestones/" + route.params.id, formState)
       .then((response) => {
         if (response.data.code === 200) {
-          reset();
+          resetForm();
           swal(
             "Success Job!",
             "Your milestones update successfully!",
@@ -471,22 +400,6 @@ async function handleSubmit() {
         console.log("problem Here" + error);
       });
   }
-}
-
-//reset all property
-function reset() {
-  formState.project_name = "";
-  formState.milestone_name = "";
-  formState.assign_employee = "";
-  formState.points = 0;
-  formState.follow_up = "";
-  formState.category = "";
-  formState.start_date = "";
-  formState.end_date = "";
-  formState.extended_date = "";
-  formState.file_name = "";
-  formState.description = "";
-  v$.value.$reset();
 }
 </script>
 
